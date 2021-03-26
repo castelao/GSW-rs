@@ -150,3 +150,26 @@ mod tests {
         assert_eq!(specvol, 0.00097855432330275953);
     }
 }
+
+/// Specific Volume of Standard Ocean Salinity
+///
+/// This function calculates specifc volume at the Standard Ocean Salinity,
+/// SSO, and at a Conservative Temperature of zero degrees C, as a function
+/// of pressure, p, in dbar, using a streamlined version of the 75-term CT
+/// version of specific volume, that is, a streamlined version of the code
+/// "gsw_specvol(SA,CT,p)".
+///
+/// version: 3.06.12
+///
+fn gsw_specvol_sso_0(p: f64) -> f64 {
+    let v005: f64 = -1.2647261286e-8;
+    let v006: f64 = 1.9613503930e-9;
+
+    let z = p * 1.0e-4;
+
+    9.726613854843870e-04
+        + z * (-4.505913211160929e-05
+            + z * (7.130728965927127e-06
+                + z * (-6.657179479768312e-07
+                    + z * (-2.994054447232880e-08 + z * (v005 + v006 * z)))))
+}
