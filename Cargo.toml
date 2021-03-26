@@ -11,6 +11,39 @@ repository = "https://github.com/castelao/GSW-rs"
 
 [dependencies]
 libm="0.2.1"
+libc = { version = "0.2", optional = true }
+
+[dev-dependencies]
+inline-c = "0.1"
 
 [build-dependencies]
-cbindgen = { version = "0.18", optional = true }
+cbindgen = { version = "0.18.0", optional = true }
+
+[features]
+default = []
+capi = ["libc"]
+
+[lib]
+name = "gsw"
+
+[profile.dev]
+panic = "abort"
+
+[package.metadata.capi]
+# Configures the minimum required cargo-c version. Trying to run with an
+# older version causes an error.
+min_version = "0.7.3"
+
+[package.metadata.capi.header]
+# Used as header file name. By default this is equal to the crate name.
+# The name can be with or without the header filename extension `.h`
+name = "gswteos-10.h"
+# Install the header into a subdirectory with the name of the crate. This
+# is enabled by default
+subdirectory = false
+# Generate the header file with `cbindgen`, or copy a pre-generated header
+# from the `assets` subdirectory. By default a header is generated.
+generation = false
+# Can be use to disable header generation completely.
+# This can be used when generating dynamic modules instead of an actual library.
+enabled = true

@@ -17,6 +17,7 @@ mod gsw_internal_const;
 /// cbindgen:ignore
 mod gsw_specvol_coefficients;
 
+#[cfg(feature = "capi")]
 mod ffi;
 
 use gsw_internal_const::*;
