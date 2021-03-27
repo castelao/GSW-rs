@@ -3,6 +3,12 @@
 //! Gibbs Sea Water Oceanographic Toolbox of TEOS-10
 //!
 
+mod gsw_internal_const;
+mod gsw_specvol_coefficients;
+
+use gsw_internal_const::*;
+use gsw_specvol_coefficients::*;
+
 /// function gsw_specvol(sa,ct,p)
 ///
 /// Calculates specific volume from Absolute Salinity, Conservative
