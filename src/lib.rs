@@ -1,3 +1,5 @@
+#![no_std]
+
 //! Gibbs Sea Water Oceanographic Toolbox of TEOS-10
 //!
 
@@ -20,7 +22,7 @@ fn gsw_specvol(sa: f64, ct: f64, p: f64) -> f64 {
     // deltaS = 24, offset = deltaS * gsw_sfac
     const OFFSET: f64 = 5.971840214030754e-1;
 
-    let xs: f64 = (GSW_SFAC * sa + OFFSET).sqrt();
+    let xs: f64 = libm::sqrt(GSW_SFAC * sa + OFFSET);
     let ys: f64 = ct * 0.025;
     let z: f64 = p * 1e-4;
 
