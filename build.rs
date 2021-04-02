@@ -1,7 +1,7 @@
-use std::env;
-
 #[cfg(feature = "cbindgen")]
 fn main() {
+    use std::env;
+
     let crate_dir = env::var("CARGO_MANIFEST_DIR").unwrap();
 
     cbindgen::generate(crate_dir)
