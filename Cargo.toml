@@ -10,3 +10,6 @@ repository = "https://github.com/castelao/GSW-rs"
 
 [dependencies]
 libm="0.2.1"
+
+[build-dependencies]
+cbindgen = { version = "0.18", optional = true }
