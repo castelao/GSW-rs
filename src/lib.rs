@@ -3,8 +3,13 @@
 //! Gibbs Sea Water Oceanographic Toolbox of TEOS-10
 //!
 
+/// cbindgen:ignore
 mod gsw_internal_const;
+
+/// cbindgen:ignore
 mod gsw_specvol_coefficients;
+
+mod ffi;
 
 use gsw_internal_const::*;
 use gsw_specvol_coefficients::*;
