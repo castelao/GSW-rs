@@ -261,3 +261,27 @@ fn gsw_specvol_alpha_beta(sa: f64, ct: f64, p: f64) -> (f64, f64, f64) {
 fn gsw_rho(sa: f64, ct: f64, p: f64) -> f64 {
     1.0 / gsw_specvol(sa, ct, p)
 }
+
+/// Height from pressure
+///
+/// Calculates the height z from pressure p
+///
+/// p [dbar] : sea pressure ( i.e. absolute pressure - 10.1325 dbar )
+/// lat [deg] : latitude
+/// geo_strf_dyn_height [m^2/s^2] : dynamic height anomaly
+///
+/// Note that the reference pressure, p_ref, of geo_strf_dyn_height must
+/// be zero (0) dbar.
+/// sea_surface_geopotential [m^2/s^2] : geopotential at zero sea pressure
+///
+fn gsw_z_from_p(p: f64, lat: f64, geo_strf_dyn_height: f64, sea_surface_geopotential: f64) -> f64 {
+    let x = libm::sin(lat * DEG2RAD);
+    let sin2 = x * x;
+    let b = 9.780327 * (1.0 + (5.2792e-3 + (2.32e-5 * sin2)) * sin2);
+    let a = -0.5 * GAMMA * b;
+    let c = gsw_enthalpy_sso_0(p) - (geo_strf_dyn_height + sea_surface_geopotential);
+
+    let z = -2.0 * c / (b + libm::sqrt(b * b - 4.0 * a * c));
+
+    return z;
+}
