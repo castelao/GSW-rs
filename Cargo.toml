@@ -1,9 +1,16 @@
 [package]
-name = "GSW"
+name = "gsw"
 version = "0.0.1"
 authors = ["Guilherme Castelão <guilherme@castelao.net>", "Luiz Irber <luiz.irber@gmail.com >"]
 edition = "2018"
+license = "BSD-3-Clause"
+description = "TEOS-10 v3.06.12 GSW Oceanographic Toolbox in Rust"
+repository = "https://github.com/castelao/GSW-rs"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
+libm="0.2.1"
+
+[build-dependencies]
+cbindgen = { version = "0.18", optional = true }
