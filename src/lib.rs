@@ -1,7 +1,15 @@
-#![no_std]
-
-//! Gibbs Sea Water Oceanographic Toolbox of TEOS-10
+//! # Gibbs Sea Water
 //!
+//! Gibbs Sea Water Oceanographic Toolbox of TEOS-10 implemented in Rust.
+//! version: 3.06.12
+//!
+//! http://www.teos-10.org
+//!
+
+////////////////////////////////////////////////////////////////////////////////
+
+// Do not depend on the standard library
+#![no_std]
 
 /// cbindgen:ignore
 mod gsw_internal_const;
@@ -14,18 +22,21 @@ mod ffi;
 use gsw_internal_const::*;
 use gsw_specvol_coefficients::*;
 
-/// function gsw_specvol(sa,ct,p)
+/// Calculates specific volume of sea water
 ///
 /// Calculates specific volume from Absolute Salinity, Conservative
 /// Temperature and pressure, using the computationally-efficient
 /// polynomial expression for specific volume (Roquet et al., 2014).
 ///
-/// sa     : Absolute Salinity                               [g/kg]
-/// ct     : Conservative Temperature (ITS-90)               [deg C]
-/// p      : sea pressure                                    [dbar]
-///          ( i.e. absolute pressure - 10.1325 dbar )
+/// sa [g/kg] : Absolute Salinity
+/// ct [deg C] : Conservative Temperature (ITS-90)
+/// p [dbar] : sea pressure ( i.e. absolute pressure - 10.1325 dbar )
 ///
-/// specvol: specific volume                                 [m^3/kg]
+/// specvol [m^3/kg] : specific volume
+///
+/// Note that the coefficients v(i,j,k) follow the convention in the original
+/// paper, which is different from the convention used in the C-library.
+///
 fn gsw_specvol(sa: f64, ct: f64, p: f64) -> f64 {
     /// sfac  =  1/(40*gsw_ups)
     const GSW_SFAC: f64 = 0.0248826675584615;
@@ -88,7 +99,7 @@ mod tests {
     }
 }
 
-/// Specific Volume of Standard Ocean Salinity
+/// Specific Volume of Standard Ocean Salinity and CT=0
 ///
 /// This function calculates specifc volume at the Standard Ocean Salinity,
 /// SSO, and at a Conservative Temperature of zero degrees C, as a function
