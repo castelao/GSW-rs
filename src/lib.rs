@@ -119,6 +119,21 @@ fn gsw_specvol_sso_0(p: f64) -> f64 {
                     + z * (-2.994054447232880e-08 + z * (V005 + V006 * z)))))
 }
 
+/// Specific Volume Anomaly of Standard Ocean Salinity and CT=0
+///
+/// Specific volume anomaly with reference of SA = SSO & CT = 0 (75-term equation)
+///
+///
+/// sa [g/kg] : Absolute Salinity
+/// ct [deg C] : Conservative Temperature (ITS-90)
+/// p [dbar] : sea pressure ( i.e. absolute pressure - 10.1325 dbar )
+///
+/// specvol_anom : specific volume anomaly of seawater
+///
+fn gsw_specvol_anom_standard(sa: f64, ct: f64, p: f64) -> f64 {
+    gsw_specvol(sa, ct, p) - gsw_specvol_sso_0(p)
+}
+
 fn gsw_enthalpy_sso_0(p: f64) -> f64 {
     let h006 = -2.10787688100e-9;
     let h007 = 2.80192913290e-10;
