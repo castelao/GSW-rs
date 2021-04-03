@@ -85,7 +85,26 @@ fn gsw_specvol(sa: f64, ct: f64, p: f64) -> f64 {
 
 #[cfg(test)]
 mod tests {
-    use super::gsw_specvol;
+    use super::{
+        gsw_specvol, gsw_specvol_alpha_beta, gsw_specvol_anom_standard, gsw_specvol_sso_0, GSW_SFAC,
+    };
+
+    #[test]
+    // Calculated SFAC is slightly different than the prescribed SFAC in other
+    // packages. Prescribed ends in 4615 while the here calculated ends in
+    // 461472. Which is the correct one?
+    fn test_const_sfac() {
+        // assert_eq!(GSW_SFAC, 0.0248826675584615);
+        assert_eq!(GSW_SFAC, 0.024882667558461472);
+    }
+
+    #[test]
+    // gsw_specvol at SSO & CT=0 should be identical to gsw_specvol_sso_0
+    fn test_specvol_vs_specvol_sso_0() {
+        let specvol = gsw_specvol(35.16504, 0., 1000.0);
+        let specvol_sso_0 = gsw_specvol_sso_0(1000.0);
+        assert_eq!(specvol, specvol_sso_0);
+    }
 
     #[test]
     fn test_gsw_specvol() {
@@ -96,6 +115,14 @@ mod tests {
         // Test value from C library.
         let specvol = gsw_specvol(34.507499465692057, 27.994827331978655, 0.0);
         assert_eq!(specvol, 0.00097855432330275953);
+    }
+
+    #[test]
+    fn test_gsw_specvol_anom_standard_at_standard() {
+        let sa: f64 = 35.16504;
+        let ct: f64 = 0.0;
+        let p: f64 = 1000.0;
+        assert_eq!(gsw_specvol_anom_standard(sa, ct, p), 0.0);
     }
 
     #[test]
