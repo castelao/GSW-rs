@@ -135,9 +135,8 @@ fn gsw_specvol_anom_standard(sa: f64, ct: f64, p: f64) -> f64 {
 }
 
 fn gsw_enthalpy_sso_0(p: f64) -> f64 {
-    let h006 = -2.10787688100e-9;
-    let h007 = 2.80192913290e-10;
-    let db2pa = 1.0e4;
+    const H006: f64 = -2.10787688100e-9;
+    const H007: f64 = 2.80192913290e-10;
 
     let z = p * 1.0e-4;
 
@@ -146,7 +145,7 @@ fn gsw_enthalpy_sso_0(p: f64) -> f64 {
             + z * (-2.252956605630465e-5
                 + z * (2.376909655387404e-6
                     + z * (-1.664294869986011e-7
-                        + z * (-5.988108894465758e-9 + z * (h006 + h007 * z))))));
+                        + z * (-5.988108894465758e-9 + z * (H006 + H007 * z))))));
 
-    return dynamic_enthalpy_sso_0_p * db2pa * 1.0e4;
+    dynamic_enthalpy_sso_0_p * DB2PA * 1.0e4
 }
