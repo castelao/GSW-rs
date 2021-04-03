@@ -154,11 +154,11 @@ mod tests {
 fn gsw_specvol_sso_0(p: f64) -> f64 {
     let z = p * 1.0e-4;
 
-    9.726_613_854_843_870e-04
-        + z * (-4.505_913_211_160_929e-05
-            + z * (7.130_728_965_927_127e-06
-                + z * (-6.657_179_479_768_312e-07
-                    + z * (-2.994_054_447_232_880e-08 + z * (V005 + V006 * z)))))
+    9.726_613_854_843_870e-4
+        + z * (-4.505_913_211_160_929e-5
+            + z * (7.130_728_965_927_127e-6
+                + z * (-6.657_179_479_768_312e-7
+                    + z * (-2.994_054_447_232_880e-8 + z * (V005 + V006 * z)))))
 }
 
 /// Specific Volume Anomaly of Standard Ocean Salinity and CT=0
@@ -270,7 +270,7 @@ fn gsw_specvol_alpha_beta(sa: f64, ct: f64, p: f64) -> (f64, f64, f64) {
                 + z * (B003 + B103 * xs + B013 * ys + B004 * z)));
     let beta = -v_sa_part * 0.5 * GSW_SFAC / (specvol * xs);
 
-    return (specvol, alpha, beta);
+    (specvol, alpha, beta)
 }
 
 /// in-situ density
