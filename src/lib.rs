@@ -97,6 +97,21 @@ mod tests {
         let specvol = gsw_specvol(34.507499465692057, 27.994827331978655, 0.0);
         assert_eq!(specvol, 0.00097855432330275953);
     }
+
+    #[test]
+    fn test_gsw_specvol_alpha_beta() {
+        let sa: f64 = 34.498125410468489;
+        let ct: f64 = 27.993857244537214;
+        let p: f64 = 10.;
+        assert_eq!(
+            gsw_specvol_alpha_beta(sa, ct, p),
+            (
+                0.0009785202606396445,
+                0.00031839471737905248,
+                0.00071883253649447111
+            )
+        );
+    }
 }
 
 /// Specific Volume of Standard Ocean Salinity and CT=0
@@ -148,4 +163,85 @@ fn gsw_enthalpy_sso_0(p: f64) -> f64 {
                         + z * (-5.988108894465758e-9 + z * (H006 + H007 * z))))));
 
     dynamic_enthalpy_sso_0_p * DB2PA * 1.0e4
+}
+
+fn gsw_specvol_alpha_beta(sa: f64, ct: f64, p: f64) -> (f64, f64, f64) {
+    // What to do with negative SA? Matlab does "SA(SA < 0) = 0;", but maybe we shouldn't guess and fail with assert.
+    const GSW_SFAC: f64 = 0.0248826675584615;
+    // deltaS = 24, offset = deltaS * gsw_sfac
+    const OFFSET: f64 = 5.971840214030754e-1;
+
+    let xs: f64 = libm::sqrt(GSW_SFAC * sa + OFFSET);
+    let ys: f64 = ct * 0.025;
+    let z: f64 = p * 1e-4;
+
+    let specvol = V000
+        + xs * (V100 + xs * (V200 + xs * (V300 + xs * (V400 + xs * (V500 + V600 * xs)))))
+        + ys * (V010
+            + xs * (V110 + xs * (V210 + xs * (V310 + xs * (V410 + V510 * xs))))
+            + ys * (V020
+                + xs * (V120 + xs * (V220 + xs * (V320 + V420 * xs)))
+                + ys * (V030
+                    + xs * (V130 + xs * (V230 + V330 * xs))
+                    + ys * (V040
+                        + xs * (V140 + V240 * xs)
+                        + ys * (V050 + V150 * xs + V060 * ys)))))
+        + z * (V001
+            + xs * (V101 + xs * (V201 + xs * (V301 + xs * (V401 + V501 * xs))))
+            + ys * (V011
+                + xs * (V111 + xs * (V211 + xs * (V311 + V411 * xs)))
+                + ys * (V021
+                    + xs * (V121 + xs * (V221 + V321 * xs))
+                    + ys * (V031
+                        + xs * (V131 + V231 * xs)
+                        + ys * (V041 + V141 * xs + V051 * ys))))
+            + z * (V002
+                + xs * (V102 + xs * (V202 + xs * (V302 + V402 * xs)))
+                + ys * (V012
+                    + xs * (V112 + xs * (V212 + V312 * xs))
+                    + ys * (V022
+                        + xs * (V122 + V222 * xs)
+                        + ys * (V032 + V132 * xs + V042 * ys)))
+                + z * (V003
+                    + xs * (V103 + V203 * xs)
+                    + ys * (V013 + V113 * xs + V023 * ys)
+                    + z * (V004 + V104 * xs + V014 * ys + z * (V005 + V006 * z)))));
+
+    let v_ct = A000
+        + xs * (A100 + xs * (A200 + xs * (A300 + xs * (A400 + A500 * xs))))
+        + ys * (A010
+            + xs * (A110 + xs * (A210 + xs * (A310 + A410 * xs)))
+            + ys * (A020
+                + xs * (A120 + xs * (A220 + A320 * xs))
+                + ys * (A030 + xs * (A130 + A230 * xs) + ys * (A040 + A140 * xs + A050 * ys))))
+        + z * (A001
+            + xs * (A101 + xs * (A201 + xs * (A301 + A401 * xs)))
+            + ys * (A011
+                + xs * (A111 + xs * (A211 + A311 * xs))
+                + ys * (A021 + xs * (A121 + A221 * xs) + ys * (A031 + A131 * xs + A041 * ys)))
+            + z * (A002
+                + xs * (A102 + xs * (A202 + A302 * xs))
+                + ys * (A012 + xs * (A112 + A212 * xs) + ys * (A022 + A122 * xs + A032 * ys))
+                + z * (A003 + A103 * xs + A013 * ys + A004 * z)));
+    let alpha = 0.025 * v_ct / specvol;
+
+    let v_sa_part = B000
+        + xs * (B100 + xs * (B200 + xs * (B300 + xs * (B400 + B500 * xs))))
+        + ys * (B010
+            + xs * (B110 + xs * (B210 + xs * (B310 + B410 * xs)))
+            + ys * (B020
+                + xs * (B120 + xs * (B220 + B320 * xs))
+                + ys * (B030 + xs * (B130 + B230 * xs) + ys * (B040 + B140 * xs + B050 * ys))))
+        + z * (B001
+            + xs * (B101 + xs * (B201 + xs * (B301 + B401 * xs)))
+            + ys * (B011
+                + xs * (B111 + xs * (B211 + B311 * xs))
+                + ys * (B021 + xs * (B121 + B221 * xs) + ys * (B031 + B131 * xs + B041 * ys)))
+            + z * (B002
+                + xs * (B102 + xs * (B202 + B302 * xs))
+                + ys * (B012 + xs * (B112 + B212 * xs) + ys * (B022 + B122 * xs + B032 * ys))
+                + z * (B003 + B103 * xs + B013 * ys + B004 * z)));
+    let beta = -v_sa_part * 0.5 * GSW_SFAC / (specvol * xs);
+
+    return (specvol, alpha, beta);
 }
