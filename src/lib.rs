@@ -301,14 +301,18 @@ fn gsw_rho(sa: f64, ct: f64, p: f64) -> f64 {
 /// be zero (0) dbar.
 /// sea_surface_geopotential [m^2/s^2] : geopotential at zero sea pressure
 ///
-fn gsw_z_from_p(p: f64, lat: f64, geo_strf_dyn_height: f64, sea_surface_geopotential: f64) -> f64 {
+fn gsw_z_from_p(
+    press: f64,
+    lat: f64,
+    geo_strf_dyn_height: f64,
+    sea_surface_geopotential: f64,
+) -> f64 {
     let x = libm::sin(lat * DEG2RAD);
     let sin2 = x * x;
     let b = 9.780327 * (1.0 + (5.2792e-3 + (2.32e-5 * sin2)) * sin2);
     let a = -0.5 * GAMMA * b;
-    let c = gsw_enthalpy_sso_0(p) - (geo_strf_dyn_height + sea_surface_geopotential);
+    let c = gsw_enthalpy_sso_0(press) - (geo_strf_dyn_height + sea_surface_geopotential);
 
-    let z = -2.0 * c / (b + libm::sqrt(b * b - 4.0 * a * c));
-
-    return z;
+    // Depth z
+    -2.0 * c / (b + libm::sqrt(b * b - 4.0 * a * c))
 }
