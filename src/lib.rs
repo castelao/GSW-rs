@@ -309,3 +309,67 @@ pub fn gsw_z_from_p(
     // Depth z
     -2.0 * c / (b + libm::sqrt(b * b - 4.0 * a * c))
 }
+
+fn gsw_alpha(sa: f64, ct: f64, p: f64) -> f64 {
+    // What to do with negative SA? Matlab does "SA(SA < 0) = 0;", but maybe we shouldn't guess and fail with assert.
+    /// sfac  =  1/(40*gsw_ups)
+    const GSW_SFAC: f64 = 0.0248826675584615;
+
+    // deltaS = 24, offset = deltaS * gsw_sfac
+    const OFFSET: f64 = 5.971840214030754e-1;
+
+    let xs: f64 = libm::sqrt(GSW_SFAC * sa + OFFSET);
+    let ys: f64 = ct * 0.025;
+    let z: f64 = p * 1e-4;
+
+    let v_ct: f64 = A000
+        + xs * (A100 + xs * (A200 + xs * (A300 + xs * (A400 + A500 * xs))))
+        + ys * (A010
+            + xs * (A110 + xs * (A210 + xs * (A310 + A410 * xs)))
+            + ys * (A020
+                + xs * (A120 + xs * (A220 + A320 * xs))
+                + ys * (A030 + xs * (A130 + A230 * xs) + ys * (A040 + A140 * xs + A050 * ys))))
+        + z * (A001
+            + xs * (A101 + xs * (A201 + xs * (A301 + A401 * xs)))
+            + ys * (A011
+                + xs * (A111 + xs * (A211 + A311 * xs))
+                + ys * (A021 + xs * (A121 + A221 * xs) + ys * (A031 + A131 * xs + A041 * ys)))
+            + z * (A002
+                + xs * (A102 + xs * (A202 + A302 * xs))
+                + ys * (A012 + xs * (A112 + A212 * xs) + ys * (A022 + A122 * xs + A032 * ys))
+                + z * (A003 + A103 * xs + A013 * ys + A004 * z)));
+
+    0.025 * v_ct / gsw_specvol(sa, ct, p)
+}
+
+fn gsw_beta(sa: f64, ct: f64, p: f64) -> f64 {
+    // What to do with negative SA? Matlab does "SA(SA < 0) = 0;", but maybe we shouldn't guess and fail with assert.
+    /// sfac  =  1/(40*gsw_ups)
+    const GSW_SFAC: f64 = 0.0248826675584615;
+
+    // deltaS = 24, offset = deltaS * gsw_sfac
+    const OFFSET: f64 = 5.971840214030754e-1;
+
+    let xs: f64 = libm::sqrt(GSW_SFAC * sa + OFFSET);
+    let ys: f64 = ct * 0.025;
+    let z: f64 = p * 1e-4;
+
+    let v_sa: f64 = B000
+        + xs * (B100 + xs * (B200 + xs * (B300 + xs * (B400 + B500 * xs))))
+        + ys * (B010
+            + xs * (B110 + xs * (B210 + xs * (B310 + B410 * xs)))
+            + ys * (B020
+                + xs * (B120 + xs * (B220 + B320 * xs))
+                + ys * (B030 + xs * (B130 + B230 * xs) + ys * (B040 + B140 * xs + B050 * ys))))
+        + z * (B001
+            + xs * (B101 + xs * (B201 + xs * (B301 + B401 * xs)))
+            + ys * (B011
+                + xs * (B111 + xs * (B211 + B311 * xs))
+                + ys * (B021 + xs * (B121 + B221 * xs) + ys * (B031 + B131 * xs + B041 * ys)))
+            + z * (B002
+                + xs * (B102 + xs * (B202 + B302 * xs))
+                + ys * (B012 + xs * (B112 + B212 * xs) + ys * (B022 + B122 * xs + B032 * ys))
+                + z * (B003 + B103 * xs + B013 * ys + B004 * z)));
+
+    -v_sa * 0.5 * GSW_SFAC / (gsw_specvol(sa, ct, p) * xs)
+}
