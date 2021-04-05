@@ -38,7 +38,7 @@ use gsw_specvol_coefficients::*;
 /// Note that the coefficients v(i,j,k) follow the convention in the original
 /// paper, which is different from the convention used in the C-library.
 ///
-fn gsw_specvol(sa: f64, ct: f64, p: f64) -> f64 {
+pub fn gsw_specvol(sa: f64, ct: f64, p: f64) -> f64 {
     /// sfac  =  1/(40*gsw_ups)
     const GSW_SFAC: f64 = 0.0248826675584615;
 
@@ -144,7 +144,7 @@ mod tests {
 ///
 /// version: 3.06.12
 ///
-fn gsw_specvol_sso_0(p: f64) -> f64 {
+pub fn gsw_specvol_sso_0(p: f64) -> f64 {
     let z = p * 1.0e-4;
 
     9.726_613_854_843_870e-4
@@ -165,11 +165,11 @@ fn gsw_specvol_sso_0(p: f64) -> f64 {
 ///
 /// specvol_anom : specific volume anomaly of seawater
 ///
-fn gsw_specvol_anom_standard(sa: f64, ct: f64, p: f64) -> f64 {
+pub fn gsw_specvol_anom_standard(sa: f64, ct: f64, p: f64) -> f64 {
     gsw_specvol(sa, ct, p) - gsw_specvol_sso_0(p)
 }
 
-fn gsw_enthalpy_sso_0(p: f64) -> f64 {
+pub fn gsw_enthalpy_sso_0(p: f64) -> f64 {
     const H006: f64 = -2.10787688100e-9;
     const H007: f64 = 2.80192913290e-10;
 
@@ -185,7 +185,7 @@ fn gsw_enthalpy_sso_0(p: f64) -> f64 {
     dynamic_enthalpy_sso_0_p * DB2PA * 1.0e4
 }
 
-fn gsw_specvol_alpha_beta(sa: f64, ct: f64, p: f64) -> (f64, f64, f64) {
+pub fn gsw_specvol_alpha_beta(sa: f64, ct: f64, p: f64) -> (f64, f64, f64) {
     // What to do with negative SA? Matlab does "SA(SA < 0) = 0;", but maybe we shouldn't guess and fail with assert.
     const GSW_SFAC: f64 = 0.0248826675584615;
     // deltaS = 24, offset = deltaS * gsw_sfac
@@ -278,7 +278,7 @@ fn gsw_specvol_alpha_beta(sa: f64, ct: f64, p: f64) -> (f64, f64, f64) {
 ///
 /// rho  [kg/m] : in-situ density
 ///
-fn gsw_rho(sa: f64, ct: f64, p: f64) -> f64 {
+pub fn gsw_rho(sa: f64, ct: f64, p: f64) -> f64 {
     1.0 / gsw_specvol(sa, ct, p)
 }
 
@@ -294,7 +294,7 @@ fn gsw_rho(sa: f64, ct: f64, p: f64) -> f64 {
 /// be zero (0) dbar.
 /// sea_surface_geopotential [m^2/s^2] : geopotential at zero sea pressure
 ///
-fn gsw_z_from_p(
+pub fn gsw_z_from_p(
     press: f64,
     lat: f64,
     geo_strf_dyn_height: f64,
