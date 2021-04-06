@@ -79,7 +79,7 @@ pub fn gsw_specvol(sa: f64, ct: f64, p: f64) -> f64 {
 #[cfg(test)]
 mod tests {
     use super::{
-        gsw_specvol, gsw_specvol_alpha_beta, gsw_specvol_anom_standard, gsw_specvol_sso_0, GSW_SFAC,
+        gsw_specvol, gsw_specvol_anom_standard, gsw_specvol_sso_0, specvol_alpha_beta, GSW_SFAC,
     };
 
     #[test]
@@ -119,12 +119,12 @@ mod tests {
     }
 
     #[test]
-    fn test_gsw_specvol_alpha_beta() {
+    fn test_specvol_alpha_beta() {
         let sa: f64 = 34.498125410468489;
         let ct: f64 = 27.993857244537214;
         let p: f64 = 10.;
         assert_eq!(
-            gsw_specvol_alpha_beta(sa, ct, p),
+            specvol_alpha_beta(sa, ct, p),
             (
                 0.0009785202606396445,
                 0.00031839471737905248,
@@ -185,7 +185,7 @@ pub fn gsw_enthalpy_sso_0(p: f64) -> f64 {
     dynamic_enthalpy_sso_0_p * DB2PA * 1.0e4
 }
 
-pub fn gsw_specvol_alpha_beta(sa: f64, ct: f64, p: f64) -> (f64, f64, f64) {
+pub fn specvol_alpha_beta(sa: f64, ct: f64, p: f64) -> (f64, f64, f64) {
     // What to do with negative SA? Matlab does "SA(SA < 0) = 0;", but maybe we shouldn't guess and fail with assert.
     const GSW_SFAC: f64 = 0.0248826675584615;
     // deltaS = 24, offset = deltaS * gsw_sfac
@@ -196,8 +196,8 @@ pub fn gsw_specvol_alpha_beta(sa: f64, ct: f64, p: f64) -> (f64, f64, f64) {
     let z: f64 = p * 1e-4;
 
     let specvol = gsw_specvol(sa, ct, p);
-    let alpha = gsw_alpha(sa, ct, p);
-    let beta = gsw_beta(sa, ct, p);
+    let alpha = alpha(sa, ct, p);
+    let beta = beta(sa, ct, p);
 
     (specvol, alpha, beta)
 }
@@ -214,7 +214,7 @@ pub fn gsw_specvol_alpha_beta(sa: f64, ct: f64, p: f64) -> (f64, f64, f64) {
 ///
 /// rho  [kg/m] : in-situ density
 ///
-pub fn gsw_rho(sa: f64, ct: f64, p: f64) -> f64 {
+pub fn rho(sa: f64, ct: f64, p: f64) -> f64 {
     1.0 / gsw_specvol(sa, ct, p)
 }
 
@@ -246,7 +246,7 @@ pub fn gsw_z_from_p(
     -2.0 * c / (b + libm::sqrt(b * b - 4.0 * a * c))
 }
 
-fn gsw_alpha(sa: f64, ct: f64, p: f64) -> f64 {
+fn alpha(sa: f64, ct: f64, p: f64) -> f64 {
     // What to do with negative SA? Matlab does "SA(SA < 0) = 0;", but maybe we shouldn't guess and fail with assert.
     /// sfac  =  1/(40*gsw_ups)
     const GSW_SFAC: f64 = 0.0248826675584615;
@@ -278,7 +278,7 @@ fn gsw_alpha(sa: f64, ct: f64, p: f64) -> f64 {
     0.025 * v_ct / gsw_specvol(sa, ct, p)
 }
 
-fn gsw_beta(sa: f64, ct: f64, p: f64) -> f64 {
+fn beta(sa: f64, ct: f64, p: f64) -> f64 {
     // What to do with negative SA? Matlab does "SA(SA < 0) = 0;", but maybe we shouldn't guess and fail with assert.
     /// sfac  =  1/(40*gsw_ups)
     const GSW_SFAC: f64 = 0.0248826675584615;
