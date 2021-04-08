@@ -1,5 +1,5 @@
 diff --git a/setup.py b/setup.py
-index 3850823..ee0750f 100644
+index 3850823..3002105 100644
 --- a/setup.py
 +++ b/setup.py
 @@ -6,6 +6,7 @@ Minimal setup.py for building gswc.
@@ -10,23 +10,30 @@ index 3850823..ee0750f 100644
  
  import pkg_resources
  from setuptools import Extension, setup
-@@ -22,6 +23,11 @@ def read(*parts):
+@@ -22,28 +23,27 @@ def read(*parts):
  class build_ext(_build_ext):
      # Extention builder from pandas without the cython stuff
      def build_extensions(self):
-+        cmd = ["cargo", "cbuild", "--release"]
-+        rv = subprocess.Popen(cmd, cwd="src/GSW-rs").wait()
++        cmd = ["cargo", "cinstall",
++               "--manifest-path", "src/GSW-rs/Cargo.toml",
++               f"--destdir={self.build_temp}",
++               f"--prefix=gsw",
++               f"--libdir=gsw"]
++        rv = subprocess.Popen(cmd).wait()
 +        if rv != 0:
 +            sys.exit(rv)
 +
++        gsw_obj = os.path.join(self.build_temp, "gsw", "libgsw.a")
          numpy_incl = pkg_resources.resource_filename('numpy', 'core/include')
  
          for ext in self.extensions:
-@@ -29,21 +35,7 @@ class build_ext(_build_ext):
+             if hasattr(ext, 'include_dirs') and not numpy_incl in ext.include_dirs:
                  ext.include_dirs.append(numpy_incl)
-         _build_ext.build_extensions(self)
- 
+-        _build_ext.build_extensions(self)
 -
++            if hasattr(ext, 'extra_objects') and not gsw_obj in ext.extra_objects:
++                ext.extra_objects.append(gsw_obj)
+ 
 -# MSVC can't handle C complex, and distutils doesn't seem to be able to
 -# let us force C++ compilation of .c files, so we use the following hack for
 -# Windows.
@@ -37,7 +44,8 @@ index 3850823..ee0750f 100644
 -    shutil.copy('src/c_gsw/gsw_saar.c', 'src/c_gsw/gsw_saar.cpp')
 -else:
 -    cext = 'c'
--
++        _build_ext.build_extensions(self)
+ 
 -ufunc_src_list = ['src/_ufuncs.c',
 -                  'src/c_gsw/gsw_oceanographic_toolbox.' + cext,
 -                  'src/c_gsw/gsw_saar.' + cext]
@@ -45,14 +53,11 @@ index 3850823..ee0750f 100644
  
  config = {
      "use_scm_version": {
-@@ -51,8 +43,9 @@ config = {
-         "write_to_template": '__version__ = "{version}"',
+@@ -52,7 +52,7 @@ config = {
          "tag_regex": r"^(?P<prefix>v)?(?P<version>[^\+]+)(?P<suffix>.*)?$",
      },
--    "ext_modules": [Extension('gsw._gsw_ufuncs', ufunc_src_list)],
+     "ext_modules": [Extension('gsw._gsw_ufuncs', ufunc_src_list)],
 -    "include_dirs": [os.path.join(rootpath, 'src', 'c_gsw')],
-+    "ext_modules": [Extension('gsw._gsw_ufuncs', ufunc_src_list,
-+                              extra_objects = ["src/GSW-rs/target/release/libgsw.a"])],
 +    "include_dirs": [os.path.join(rootpath, 'src', 'GSW-rs', 'assets')],
      "cmdclass": {"build_ext": build_ext},
  }

@@ -91,11 +91,11 @@ jobs:
             target
           key: ${{ runner.os }}-cargo-${{ steps.rust-version.outputs.version }}-cargo_c-0.8.0+cargo-0.51 }}
 
-      - uses: actions-rs/install@v0.1
+      - uses: actions-rs/cargo@v1
         if: steps.cache-cargo_c.outputs.cache-hit != 'true'
         with:
-          crate: cargo-c
-          version: "'0.8.0+cargo-0.51'"
+          command: install
+          args: --git https://github.com/lu-zero/cargo-c --tag v0.8.0
 
       - name: Build C API
         run: |
