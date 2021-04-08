@@ -39,12 +39,6 @@ use gsw_specvol_coefficients::*;
 /// paper, which is different from the convention used in the C-library.
 ///
 pub fn gsw_specvol(sa: f64, ct: f64, p: f64) -> f64 {
-    /// sfac  =  1/(40*gsw_ups)
-    const GSW_SFAC: f64 = 0.0248826675584615;
-
-    // deltaS = 24, offset = deltaS * gsw_sfac
-    const OFFSET: f64 = 5.971840214030754e-1;
-
     let xs: f64 = libm::sqrt(GSW_SFAC * sa + OFFSET);
     let ys: f64 = ct * 0.025;
     let z: f64 = p * 1e-4;
@@ -111,11 +105,10 @@ mod tests {
     }
 
     #[test]
+    #[cfg(feature = "truncated")]
+    // If not truncated, there is a residue of 1e-19
     fn test_gsw_specvol_anom_standard_at_standard() {
-        let sa: f64 = 35.16504;
-        let ct: f64 = 0.0;
-        let p: f64 = 1000.0;
-        assert_eq!(gsw_specvol_anom_standard(sa, ct, p), 0.0);
+        assert_eq!(gsw_specvol_anom_standard(35.16504, 0.0, 1000.0), 0.0);
     }
 
     #[test]
@@ -248,11 +241,6 @@ pub fn gsw_z_from_p(
 
 fn alpha(sa: f64, ct: f64, p: f64) -> f64 {
     // What to do with negative SA? Matlab does "SA(SA < 0) = 0;", but maybe we shouldn't guess and fail with assert.
-    /// sfac  =  1/(40*gsw_ups)
-    const GSW_SFAC: f64 = 0.0248826675584615;
-
-    // deltaS = 24, offset = deltaS * gsw_sfac
-    const OFFSET: f64 = 5.971840214030754e-1;
 
     let xs: f64 = libm::sqrt(GSW_SFAC * sa + OFFSET);
     let ys: f64 = ct * 0.025;
@@ -280,11 +268,6 @@ fn alpha(sa: f64, ct: f64, p: f64) -> f64 {
 
 fn beta(sa: f64, ct: f64, p: f64) -> f64 {
     // What to do with negative SA? Matlab does "SA(SA < 0) = 0;", but maybe we shouldn't guess and fail with assert.
-    /// sfac  =  1/(40*gsw_ups)
-    const GSW_SFAC: f64 = 0.0248826675584615;
-
-    // deltaS = 24, offset = deltaS * gsw_sfac
-    const OFFSET: f64 = 5.971840214030754e-1;
 
     let xs: f64 = libm::sqrt(GSW_SFAC * sa + OFFSET);
     let ys: f64 = ct * 0.025;

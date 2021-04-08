@@ -36,5 +36,7 @@ pub const GSW_SFAC: f64 = 0.0248826675584615;
 pub const GSW_SFAC: f64 = 1.0 / (40.0 * GSW_UPS);
 
 /// deltaS = 24, offset = deltaS*gsw_sfac = 5.971840214030754e-1
-// pub const OFFSET: f64 = 24.0 * GSW_SFAC;
+#[cfg(feature = "truncated")]
 pub const OFFSET: f64 = 5.971840214030754e-1;
+#[cfg(not(feature = "truncated"))]
+pub const OFFSET: f64 = 24.0 * GSW_SFAC;
