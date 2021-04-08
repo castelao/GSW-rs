@@ -95,7 +95,7 @@ jobs:
         if: steps.cache-cargo_c.outputs.cache-hit != 'true'
         with:
           crate: cargo-c
-          version: 0.8.0+cargo-0.51
+          version: "'0.8.0+cargo-0.51'"
 
       - name: Build C API
         run: |
