@@ -3,6 +3,14 @@
 #ifndef GSWTEOS_10_H
 #define GSWTEOS_10_H
 
+#define GSW_INVALID_VALUE 9e15
+
+#define GSW_ERROR_LIMIT 1e10
+
+#define INTERP_METHOD_LINEAR 1
+
+#define INTERP_METHOD_PCHIP 2
+
 #ifdef __cplusplus
 extern "C" {
 #endif // __cplusplus

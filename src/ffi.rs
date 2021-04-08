@@ -1,5 +1,12 @@
 extern crate std;
 
+/* error return from gsw_saar et al. */
+pub const GSW_INVALID_VALUE: f64 = 9e15;
+pub const GSW_ERROR_LIMIT: f64 = 1e10;
+
+pub const INTERP_METHOD_LINEAR: u8 = 1;
+pub const INTERP_METHOD_PCHIP: u8 = 2;
+
 #[no_mangle]
 pub unsafe extern "C" fn gsw_add_barrier(
     input_data: *mut f64,
