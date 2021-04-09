@@ -7,6 +7,19 @@ pub const GSW_ERROR_LIMIT: f64 = 1e10;
 pub const INTERP_METHOD_LINEAR: u8 = 1;
 pub const INTERP_METHOD_PCHIP: u8 = 2;
 
+/////////////////////////
+// Already implemented
+/////////////////////////
+
+#[no_mangle]
+pub unsafe extern "C" fn gsw_specvol(sa: f64, ct: f64, p: f64) -> f64 {
+    crate::gsw_specvol(sa, ct, p)
+}
+
+/////////////////////////
+// To be implemented
+/////////////////////////
+
 #[no_mangle]
 pub unsafe extern "C" fn gsw_add_barrier(
     input_data: *mut f64,
@@ -1059,11 +1072,6 @@ pub unsafe extern "C" fn gsw_specvol_alpha_beta(
 #[no_mangle]
 pub unsafe extern "C" fn gsw_specvol_anom_standard(sa: f64, ct: f64, p: f64) -> f64 {
     unimplemented!()
-}
-
-#[no_mangle]
-pub unsafe extern "C" fn gsw_specvol(sa: f64, ct: f64, p: f64) -> f64 {
-    crate::gsw_specvol(sa, ct, p)
 }
 
 #[no_mangle]
