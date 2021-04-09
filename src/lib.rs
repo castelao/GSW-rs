@@ -305,3 +305,7 @@ fn t90_from_t68(t68: f64) -> f64 {
 
     t90
 }
+
+fn abs_pressure_from_p(p: f64) -> f64 {
+    p * DB2PA + GSW_P0
+}

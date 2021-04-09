@@ -17,6 +17,9 @@ pub const GSW_CP0: f64 = 3991.86795711963;
 /// Conversion factor deciBar to Pascal
 pub const DB2PA: f64 = 1.0e4;
 
+/// One standard atmosphere [Pa]
+pub const GSW_P0: f64 = 101325.0;
+
 /// SSO: Standard Ocean Reference Salinity [ g/kg ].
 pub const GSW_SSO: f64 = 35.16504;
 pub const GSW_SQRTSSO: f64 = 5.930011804372737;
