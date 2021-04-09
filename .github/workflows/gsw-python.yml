@@ -1,4 +1,4 @@
-name: GSW-Python using GSW-rs
+name: Python tests using GSW-rs
 
 on:
   push:
