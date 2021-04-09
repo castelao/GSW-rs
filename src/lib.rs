@@ -73,7 +73,8 @@ pub fn gsw_specvol(sa: f64, ct: f64, p: f64) -> f64 {
 #[cfg(test)]
 mod tests {
     use super::{
-        gsw_specvol, gsw_specvol_anom_standard, gsw_specvol_sso_0, specvol_alpha_beta, GSW_SFAC,
+        alpha, beta, gsw_specvol, gsw_specvol_anom_standard, specvol_alpha_beta, specvol_sso_0,
+        GSW_SFAC,
     };
 
     #[test]
@@ -81,15 +82,19 @@ mod tests {
     // packages. Prescribed ends in 4615 while the here calculated ends in
     // 461472. Which is the correct one?
     fn test_const_sfac() {
-        // assert_eq!(GSW_SFAC, 0.0248826675584615);
+        #[cfg(feature = "truncated")]
+        assert_eq!(GSW_SFAC, 0.0248826675584615);
+        #[cfg(not(feature = "truncated"))]
         assert_eq!(GSW_SFAC, 0.024882667558461472);
     }
 
     #[test]
-    // gsw_specvol at SSO & CT=0 should be identical to gsw_specvol_sso_0
+    // gsw_specvol at SSO & CT=0 should be identical to specvol_sso_0
+    #[cfg(feature = "truncated")]
+    // There if not truncated there is a difference of 1e-19
     fn test_specvol_vs_specvol_sso_0() {
         let specvol = gsw_specvol(35.16504, 0., 1000.0);
-        let specvol_sso_0 = gsw_specvol_sso_0(1000.0);
+        let specvol_sso_0 = specvol_sso_0(1000.0);
         assert_eq!(specvol, specvol_sso_0);
     }
 
@@ -113,15 +118,14 @@ mod tests {
 
     #[test]
     fn test_specvol_alpha_beta() {
-        let sa: f64 = 34.498125410468489;
-        let ct: f64 = 27.993857244537214;
-        let p: f64 = 10.;
+        #[cfg(feature = "truncated")]
+        // Values from C implementation
         assert_eq!(
-            specvol_alpha_beta(sa, ct, p),
+            specvol_alpha_beta(34.537484086977358, 27.793319825682374, 50.),
             (
-                0.0009785202606396445,
-                0.00031839471737905248,
-                0.00071883253649447111
+                0.00097826888242888476,
+                0.00031741177706767163,
+                0.00071877529859646001
             )
         );
     }
@@ -137,7 +141,7 @@ mod tests {
 ///
 /// version: 3.06.12
 ///
-pub fn gsw_specvol_sso_0(p: f64) -> f64 {
+pub fn specvol_sso_0(p: f64) -> f64 {
     let z = p * 1.0e-4;
 
     9.726_613_854_843_87e-4
@@ -158,11 +162,11 @@ pub fn gsw_specvol_sso_0(p: f64) -> f64 {
 ///
 /// specvol_anom : specific volume anomaly of seawater
 ///
-pub fn gsw_specvol_anom_standard(sa: f64, ct: f64, p: f64) -> f64 {
-    gsw_specvol(sa, ct, p) - gsw_specvol_sso_0(p)
+pub fn specvol_anom_standard(sa: f64, ct: f64, p: f64) -> f64 {
+    gsw_specvol(sa, ct, p) - specvol_sso_0(p)
 }
 
-pub fn gsw_enthalpy_sso_0(p: f64) -> f64 {
+pub fn enthalpy_sso_0(p: f64) -> f64 {
     const H006: f64 = -2.10787688100e-9;
     const H007: f64 = 2.80192913290e-10;
 
@@ -216,7 +220,7 @@ pub fn rho(sa: f64, ct: f64, p: f64) -> f64 {
 /// be zero (0) dbar.
 /// sea_surface_geopotential [m^2/s^2] : geopotential at zero sea pressure
 ///
-pub fn gsw_z_from_p(
+pub fn z_from_p(
     press: f64,
     lat: f64,
     geo_strf_dyn_height: f64,
@@ -226,7 +230,7 @@ pub fn gsw_z_from_p(
     let sin2 = x * x;
     let b = 9.780327 * (1.0 + (5.2792e-3 + (2.32e-5 * sin2)) * sin2);
     let a = -0.5 * GAMMA * b;
-    let c = gsw_enthalpy_sso_0(press) - (geo_strf_dyn_height + sea_surface_geopotential);
+    let c = enthalpy_sso_0(press) - (geo_strf_dyn_height + sea_surface_geopotential);
 
     // Depth z
     -2.0 * c / (b + libm::sqrt(b * b - 4.0 * a * c))
