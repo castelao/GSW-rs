@@ -32,23 +32,38 @@ jobs:
         run: echo "::set-output name=version::$(cargo -V | head -n1 | awk '{print $2}')"
 
       - uses: actions/cache@v2
-        id: cache-cargo_c
         with:
           path: |
-            ~/.cargo/bin/cargo-capi
-            ~/.cargo/bin/cargo-cbuild
-            ~/.cargo/bin/cargo-cinstall
-            ~/.cargo/bin/cargo-ctest
             ~/.cargo/git
             ~/.cargo/registry
             target
-          key: ${{ runner.os }}-cargo-${{ steps.rust-version.outputs.version }}-cargo_c-0.8.0+cargo-0.51 }}
+          key: ${{ runner.os }}-cargo-${{ steps.rust-version.outputs.version }}
 
-      - uses: actions-rs/cargo@v1
-        if: steps.cache-cargo_c.outputs.cache-hit != 'true'
-        with:
-          command: install
-          args: --git https://github.com/lu-zero/cargo-c --tag v0.8.0
+      - name: Install cargo-c (linux)
+        if: startsWith(matrix.os, 'ubuntu')
+        env:
+          LINK: https://github.com/lu-zero/cargo-c/releases/download
+          CARGO_C_VERSION: 0.8.0
+        run: |
+          curl -L "$LINK/v$CARGO_C_VERSION/cargo-c-linux.tar.gz" |
+          tar xz -C $HOME/.cargo/bin
+
+      - name: Install cargo-c (macos)
+        if: startsWith(matrix.os, 'macos')
+        env:
+          LINK: https://github.com/lu-zero/cargo-c/releases/download
+          CARGO_C_VERSION: 0.8.0
+        run: |
+          curl -LO "$LINK/v$CARGO_C_VERSION/cargo-c-macos.zip"
+          7z e -y "cargo-c-macos.zip" -o$HOME/.cargo/bin
+
+      - name: Install cargo-c (win)
+        if: startsWith(matrix.os, 'windows')
+        run: |
+            $LINK = "https://github.com/lu-zero/cargo-c/releases/download/v0.8.0"
+            $CARGO_C_FILE = "cargo-c-windows-msvc"
+            curl -LO "$LINK/$CARGO_C_FILE.zip"
+            7z e -y "$CARGO_C_FILE.zip" -o"${env:USERPROFILE}\.cargo\bin"
 
       - name: Set up Python 3.9
         uses: actions/setup-python@v2
