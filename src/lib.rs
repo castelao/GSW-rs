@@ -291,3 +291,17 @@ fn beta(sa: f64, ct: f64, p: f64) -> f64 {
 
     -v_sa * 0.5 * GSW_SFAC / (gsw_specvol(sa, ct, p) * xs)
 }
+
+fn t90_from_t48(t48: f64) -> f64 {
+    (t48 - (4.4e-6) * t48 * (100. - t48)) / 1.00024
+}
+
+fn t90_from_t68(t68: f64) -> f64 {
+    #[cfg(feature = "truncated")]
+    let t90: f64 = t68 * 0.999760057586179;
+
+    #[cfg(not(feature = "truncated"))]
+    let t90: f64 = t68 / 1.00024;
+
+    t90
+}
