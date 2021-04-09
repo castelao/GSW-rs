@@ -180,13 +180,6 @@ pub fn gsw_enthalpy_sso_0(p: f64) -> f64 {
 
 pub fn specvol_alpha_beta(sa: f64, ct: f64, p: f64) -> (f64, f64, f64) {
     // What to do with negative SA? Matlab does "SA(SA < 0) = 0;", but maybe we shouldn't guess and fail with assert.
-    const GSW_SFAC: f64 = 0.0248826675584615;
-    // deltaS = 24, offset = deltaS * gsw_sfac
-    const OFFSET: f64 = 5.971840214030754e-1;
-
-    let xs: f64 = libm::sqrt(GSW_SFAC * sa + OFFSET);
-    let ys: f64 = ct * 0.025;
-    let z: f64 = p * 1e-4;
 
     let specvol = gsw_specvol(sa, ct, p);
     let alpha = alpha(sa, ct, p);
