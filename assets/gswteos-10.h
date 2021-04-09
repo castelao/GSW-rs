@@ -38,13 +38,13 @@ double gsw_alpha_wrt_t_exact(double sa, double t, double p);
 
 double gsw_alpha_wrt_t_ice(double t, double p);
 
-double gsw_beta_const_t_exact(double sa, double t, double p);
-
 double gsw_beta(double sa, double ct, double p);
 
-double gsw_cabbeling(double sa, double ct, double p);
+double gsw_beta_const_t_exact(double sa, double t, double p);
 
 double gsw_c_from_sp(double sp, double t, double p);
+
+double gsw_cabbeling(double sa, double ct, double p);
 
 double gsw_chem_potential_water_ice(double t, double p);
 
@@ -107,11 +107,13 @@ double gsw_dilution_coefficient_t_exact(double sa, double t, double p);
 
 double gsw_dynamic_enthalpy(double sa, double ct, double p);
 
+double gsw_enthalpy(double sa, double ct, double p);
+
 double gsw_enthalpy_ct_exact(double sa, double ct, double p);
 
 double gsw_enthalpy_diff(double sa, double ct, double p_shallow, double p_deep);
 
-double gsw_enthalpy(double sa, double ct, double p);
+void gsw_enthalpy_first_derivatives(double sa, double ct, double p, double *h_sa, double *h_ct);
 
 void gsw_enthalpy_first_derivatives_ct_exact(double sa,
                                              double ct,
@@ -119,16 +121,7 @@ void gsw_enthalpy_first_derivatives_ct_exact(double sa,
                                              double *h_sa,
                                              double *h_ct);
 
-void gsw_enthalpy_first_derivatives(double sa, double ct, double p, double *h_sa, double *h_ct);
-
 double gsw_enthalpy_ice(double t, double p);
-
-void gsw_enthalpy_second_derivatives_ct_exact(double sa,
-                                              double ct,
-                                              double p,
-                                              double *h_sa_sa,
-                                              double *h_sa_ct,
-                                              double *h_ct_ct);
 
 void gsw_enthalpy_second_derivatives(double sa,
                                      double ct,
@@ -136,6 +129,13 @@ void gsw_enthalpy_second_derivatives(double sa,
                                      double *h_sa_sa,
                                      double *h_sa_ct,
                                      double *h_ct_ct);
+
+void gsw_enthalpy_second_derivatives_ct_exact(double sa,
+                                              double ct,
+                                              double p,
+                                              double *h_sa_sa,
+                                              double *h_sa_ct,
+                                              double *h_ct_ct);
 
 double gsw_enthalpy_sso_0(double p);
 
@@ -221,6 +221,8 @@ double *gsw_geo_strf_dyn_height_pc(double *sa,
                                    double *geo_strf_dyn_height_pc,
                                    double *p_mid);
 
+double gsw_gibbs(int ns, int nt, int np, double sa, double t, double p);
+
 double gsw_gibbs_ice(int nt, int np, double t, double p);
 
 double gsw_gibbs_ice_part_t(double t, double p);
@@ -228,8 +230,6 @@ double gsw_gibbs_ice_part_t(double t, double p);
 double gsw_gibbs_ice_pt0(double pt0);
 
 double gsw_gibbs_ice_pt0_pt0(double pt0);
-
-double gsw_gibbs(int ns, int nt, int np, double sa, double t, double p);
 
 double gsw_gibbs_pt0_pt0(double sa, double pt0);
 
@@ -259,9 +259,9 @@ void gsw_ipv_vs_fnsquared_ratio(double *sa,
                                 double *ipv_vs_fnsquared_ratio,
                                 double *p_mid);
 
-double gsw_kappa_const_t_ice(double t, double p);
-
 double gsw_kappa(double sa, double ct, double p);
+
+double gsw_kappa_const_t_ice(double t, double p);
 
 double gsw_kappa_ice(double t, double p);
 
@@ -336,6 +336,11 @@ double gsw_o2sol(double sa, double ct, double p, double lon, double lat);
 
 double gsw_o2sol_sp_pt(double sp, double pt);
 
+double gsw_p_from_z(double z,
+                    double lat,
+                    double geo_strf_dyn_height,
+                    double sea_surface_geopotential);
+
 double gsw_pot_enthalpy_from_pt_ice(double pt0_ice);
 
 double gsw_pot_enthalpy_from_pt_ice_poly(double pt0_ice);
@@ -374,9 +379,9 @@ double gsw_pt_from_entropy(double sa, double entropy);
 
 double gsw_pt_from_pot_enthalpy_ice(double pot_enthalpy_ice);
 
-double gsw_pt_from_pot_enthalpy_ice_poly_dh(double pot_enthalpy_ice);
-
 double gsw_pt_from_pot_enthalpy_ice_poly(double pot_enthalpy_ice);
+
+double gsw_pt_from_pot_enthalpy_ice_poly_dh(double pot_enthalpy_ice);
 
 double gsw_pt_from_t(double sa, double t, double p, double p_ref);
 
@@ -388,9 +393,9 @@ void gsw_pt_second_derivatives(double sa,
                                double *pt_sa_ct,
                                double *pt_ct_ct);
 
-void gsw_rho_alpha_beta(double sa, double ct, double p, double *rho, double *alpha, double *beta);
-
 double gsw_rho(double sa, double ct, double p);
+
+void gsw_rho_alpha_beta(double sa, double ct, double p, double *rho, double *alpha, double *beta);
 
 void gsw_rho_first_derivatives(double sa,
                                double ct,
@@ -434,8 +439,6 @@ void gsw_rr68_interp_sa_ct(double *sa,
                            double *sa_i,
                            double *ct_i);
 
-double gsw_saar(double p, double lon, double lat);
-
 double gsw_sa_freezing_estimate(double p, double saturation_fraction, double *ct, double *t);
 
 double gsw_sa_freezing_from_ct(double ct, double p, double saturation_fraction);
@@ -448,13 +451,15 @@ double gsw_sa_freezing_from_t_poly(double t, double p, double saturation_fractio
 
 double gsw_sa_from_rho(double rho, double ct, double p);
 
-double gsw_sa_from_sp_baltic(double sp, double lon, double lat);
-
 double gsw_sa_from_sp(double sp, double p, double lon, double lat);
+
+double gsw_sa_from_sp_baltic(double sp, double lon, double lat);
 
 double gsw_sa_from_sstar(double sstar, double p, double lon, double lat);
 
 int gsw_sa_p_inrange(double sa, double p);
+
+double gsw_saar(double p, double lon, double lat);
 
 void gsw_seaice_fraction_to_freeze_seawater(double sa,
                                             double ct,
@@ -481,6 +486,22 @@ double gsw_sound_speed_ice(double t, double p);
 
 double gsw_sound_speed_t_exact(double sa, double t, double p);
 
+double gsw_sp_from_c(double c, double t, double p);
+
+double gsw_sp_from_sa(double sa, double p, double lon, double lat);
+
+double gsw_sp_from_sa_baltic(double sa, double lon, double lat);
+
+double gsw_sp_from_sk(double sk);
+
+double gsw_sp_from_sr(double sr);
+
+double gsw_sp_from_sstar(double sstar, double p, double lon, double lat);
+
+double gsw_sp_salinometer(double rt, double t);
+
+double gsw_specvol(double sa, double ct, double p);
+
 void gsw_specvol_alpha_beta(double sa,
                             double ct,
                             double p,
@@ -489,8 +510,6 @@ void gsw_specvol_alpha_beta(double sa,
                             double *beta);
 
 double gsw_specvol_anom_standard(double sa, double ct, double p);
-
-double gsw_specvol(double sa, double ct, double p);
 
 void gsw_specvol_first_derivatives(double sa,
                                    double ct,
@@ -527,20 +546,6 @@ double gsw_specvol_sso_0(double p);
 
 double gsw_specvol_t_exact(double sa, double t, double p);
 
-double gsw_sp_from_c(double c, double t, double p);
-
-double gsw_sp_from_sa_baltic(double sa, double lon, double lat);
-
-double gsw_sp_from_sa(double sa, double p, double lon, double lat);
-
-double gsw_sp_from_sk(double sk);
-
-double gsw_sp_from_sr(double sr);
-
-double gsw_sp_from_sstar(double sstar, double p, double lon, double lat);
-
-double gsw_sp_salinometer(double rt, double t);
-
 double gsw_spiciness0(double sa, double ct);
 
 double gsw_spiciness1(double sa, double ct);
@@ -557,17 +562,17 @@ double gsw_t_deriv_chem_potential_water_t_exact(double sa, double t, double p);
 
 double gsw_t_freezing(double sa, double p, double saturation_fraction);
 
-void gsw_t_freezing_first_derivatives_poly(double sa,
-                                           double p,
-                                           double saturation_fraction,
-                                           double *tfreezing_sa,
-                                           double *tfreezing_p);
-
 void gsw_t_freezing_first_derivatives(double sa,
                                       double p,
                                       double saturation_fraction,
                                       double *tfreezing_sa,
                                       double *tfreezing_p);
+
+void gsw_t_freezing_first_derivatives_poly(double sa,
+                                           double p,
+                                           double saturation_fraction,
+                                           double *tfreezing_sa,
+                                           double *tfreezing_p);
 
 double gsw_t_freezing_poly(double sa, double p, double saturation_fraction);
 
@@ -597,18 +602,13 @@ double *gsw_util_linear_interp(int nx,
                                double *x_i,
                                double *y_i);
 
+int gsw_util_pchip_interp(double *x, double *y, int n, double *xi, double *yi, int ni);
+
 void gsw_util_sort_real(double *rarray, int nx, int *iarray);
 
 double gsw_util_xinterp1(double *x, double *y, int n, double x0);
 
-int gsw_util_pchip_interp(double *x, double *y, int n, double *xi, double *yi, int ni);
-
 double gsw_z_from_p(double p,
-                    double lat,
-                    double geo_strf_dyn_height,
-                    double sea_surface_geopotential);
-
-double gsw_p_from_z(double z,
                     double lat,
                     double geo_strf_dyn_height,
                     double sea_surface_geopotential);
