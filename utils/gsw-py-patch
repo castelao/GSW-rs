@@ -1,5 +1,5 @@
 diff --git a/setup.py b/setup.py
-index 3850823..4bbfe97 100644
+index 3850823..8ed4bbf 100644
 --- a/setup.py
 +++ b/setup.py
 @@ -6,6 +6,7 @@ Minimal setup.py for building gswc.
@@ -10,7 +10,7 @@ index 3850823..4bbfe97 100644
  
  import pkg_resources
  from setuptools import Extension, setup
-@@ -22,28 +23,32 @@ def read(*parts):
+@@ -22,28 +23,37 @@ def read(*parts):
  class build_ext(_build_ext):
      # Extention builder from pandas without the cython stuff
      def build_extensions(self):
@@ -29,16 +29,20 @@ index 3850823..4bbfe97 100644
 +        else:
 +            gsw_obj = os.path.join(gsw_obj, "libgsw.a")
 +
++        # private libs to link on windows
++        windows_libs = ["advapi32.lib", "ws2_32.lib", "userenv.lib", "msvcrt.lib"]
++
          numpy_incl = pkg_resources.resource_filename('numpy', 'core/include')
  
          for ext in self.extensions:
              if hasattr(ext, 'include_dirs') and not numpy_incl in ext.include_dirs:
                  ext.include_dirs.append(numpy_incl)
 -        _build_ext.build_extensions(self)
+-
 +            if hasattr(ext, 'extra_objects') and not gsw_obj in ext.extra_objects:
 +                ext.extra_objects.append(gsw_obj)
- 
-+        _build_ext.build_extensions(self)
++                if sys.platform == "win32":
++                    ext.extra_objects += windows_libs
  
 -# MSVC can't handle C complex, and distutils doesn't seem to be able to
 -# let us force C++ compilation of .c files, so we use the following hack for
@@ -50,7 +54,8 @@ index 3850823..4bbfe97 100644
 -    shutil.copy('src/c_gsw/gsw_saar.c', 'src/c_gsw/gsw_saar.cpp')
 -else:
 -    cext = 'c'
--
++        _build_ext.build_extensions(self)
+ 
 -ufunc_src_list = ['src/_ufuncs.c',
 -                  'src/c_gsw/gsw_oceanographic_toolbox.' + cext,
 -                  'src/c_gsw/gsw_saar.' + cext]
@@ -58,7 +63,7 @@ index 3850823..4bbfe97 100644
  
  config = {
      "use_scm_version": {
-@@ -52,7 +57,7 @@ config = {
+@@ -52,7 +62,7 @@ config = {
          "tag_regex": r"^(?P<prefix>v)?(?P<version>[^\+]+)(?P<suffix>.*)?$",
      },
      "ext_modules": [Extension('gsw._gsw_ufuncs', ufunc_src_list)],
