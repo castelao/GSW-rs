@@ -1,3 +1,5 @@
+#![allow(unused)]
+
 extern crate std;
 
 /* error return from gsw_saar et al. */
