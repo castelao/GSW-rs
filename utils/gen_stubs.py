@@ -15,7 +15,7 @@ class Type(Enum):
     Double = auto()
     DoublePointer = auto()
 
-    def to_rust(self):
+    def to_rust(self) -> str:
         if self == Type.Void:
             return "()"
         elif self == Type.Double:
@@ -26,6 +26,8 @@ class Type(Enum):
             return "::libc::c_int"
         elif self == Type.IntPointer:
             return "*mut ::libc::c_int"
+        else:
+            raise ValueError("Type not supported")
 
 @dataclass
 class Arg:
@@ -37,23 +39,23 @@ class Arg:
         inp = inp.strip()
         type_, name = inp.split()
         if type_ == "double":
-            type_ = Type.Double
+            final_type = Type.Double
         elif type_ == "void":
-            type_ = Type.Void
+            final_type = Type.Void
         elif type_ == "int":
-            type_ = Type.Int
+            final_type = Type.Int
         else:
             raise NotImplementedError(f"Type not supported: {type_}")
 
         if name.startswith("*"):
-            if type_ == Type.Double:
-                type_ = Type.DoublePointer
-            elif type_ == Type.Int:
-                type_ = Type.IntPointer
+            if final_type == Type.Double:
+                final_type = Type.DoublePointer
+            elif final_type == Type.Int:
+                final_type = Type.IntPointer
             name = name[1:]
-        return Arg(name, type_)
+        return Arg(name, final_type)
 
-    def to_rust(self):
+    def to_rust(self) -> str:
         return f"{self.name}: {self.type_.to_rust()}"
 
 
@@ -65,29 +67,28 @@ class Function:
 
     @staticmethod
     def from_decl(full_decl: str) -> Function:
-        decl, params = full_decl.split("(")
-        decl = Arg.from_str(decl)
-        params = [Arg.from_str(p) for p in params.split(")")[0].split(",")]
+        decl_string, params_string = full_decl.split("(")
+        decl = Arg.from_str(decl_string)
+        params = [Arg.from_str(p) for p in params_string.split(")")[0].split(",")]
         return Function(decl.name, decl.type_, params)
 
+    def to_rust(self) -> str:
+        params = ",".join(arg.to_rust() for arg in self.args)
+        return_type = ""
+        if self.return_type != Type.Void:
+            return_type = f"-> {self.return_type.to_rust()}"
 
-def generate_rust(func: Function) -> str:
-    params = ",".join(arg.to_rust() for arg in func.args)
-    return_type = ""
-    if func.return_type != Type.Void:
-        return_type = f"-> {func.return_type.to_rust()}"
-
-    return f"""
+        return f"""
 #[no_mangle]
-pub unsafe extern "C" fn {func.name}({params}) {return_type} {{
+pub unsafe extern "C" fn {self.name}({params}) {return_type} {{
     unimplemented!()
 }}
 """
 
-def main():
+def main() -> None:
     functions = []
     with open("gswteos-10.h", "r") as header:
-        current_line = []
+        current_line: List[str] = []
         for line in header:
             line = line.strip()
             if line.startswith("extern") and not 'extern "C"' in line:
@@ -106,7 +107,7 @@ def main():
             functions.append(Function.from_decl(full_decl))
 
     for func in functions:
-        print(generate_rust(func))
+        print(func.to_rust())
 
 if __name__ == "__main__":
     main()
