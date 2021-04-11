@@ -88,14 +88,15 @@ mod tests {
         assert_eq!(GSW_SFAC, 0.024882667558461472);
     }
 
+    /// specvol() at SSO & CT=0 should be identical to specvol_sso_0()
     #[test]
-    // gsw_specvol at SSO & CT=0 should be identical to specvol_sso_0
-    #[cfg(feature = "compat")]
-    // If not compat there is a difference of 1e-19
     fn test_specvol_vs_specvol_sso_0() {
-        let specvol = gsw_specvol(35.16504, 0., 1000.0);
-        let specvol_sso_0 = specvol_sso_0(1000.0);
-        assert_eq!(specvol, specvol_sso_0);
+        let p_to_test: [f64; 5] = [0., 10., 100., 1000., 5000.];
+        for p in p_to_test.iter().cloned() {
+            let specvol = gsw_specvol(GSW_SSO, 0., p);
+            let specvol_sso_0 = specvol_sso_0(p);
+            assert_eq!(specvol, specvol_sso_0);
+        }
     }
 
     #[test]
@@ -143,14 +144,41 @@ mod tests {
 ///
 /// version: 3.06.12
 ///
+/// If using compat (truncated constants) there is a difference of O[1e-19],
+/// which is negligible but enough to fail the validation tests.
 pub fn specvol_sso_0(p: f64) -> f64 {
-    let z = p * 1.0e-4;
+    const VXX0: f64 = if cfg!(feature = "compat") {
+        9.726_613_854_843_87e-4
+    } else {
+        9.726_613_854_843_871e-4
+    };
 
-    9.726_613_854_843_87e-4
-        + z * (-4.505_913_211_160_929e-5
-            + z * (7.130_728_965_927_127e-6
-                + z * (-6.657_179_479_768_312e-7
-                    + z * (-2.994_054_447_232_88e-8 + z * (V005 + V006 * z)))))
+    const VXX1: f64 = if cfg!(feature = "compat") {
+        -4.505_913_211_160_929e-5
+    } else {
+        -4.505_913_211_160_931e-5
+    };
+
+    const VXX2: f64 = if cfg!(feature = "compat") {
+        7.130_728_965_927_127e-6
+    } else {
+        7.130_728_965_927_128e-6
+    };
+
+    const VXX3: f64 = if cfg!(feature = "compat") {
+        -6.657_179_479_768_312e-7
+    } else {
+        -6.657_179_479_768_313e-7
+    };
+    const VXX4: f64 = if cfg!(feature = "compat") {
+        -2.994_054_447_232_88e-8
+    } else {
+        -2.994_054_447_232_877_6e-8
+    };
+
+    let p = p / GSW_PU;
+
+    VXX0 + p * (VXX1 + p * (VXX2 + p * (VXX3 + p * (VXX4 + p * (V005 + V006 * p)))))
 }
 
 /// Specific Volume Anomaly of Standard Ocean Salinity and CT=0
