@@ -22,7 +22,8 @@ cbindgen = { version = "0.18.0", optional = true }
 [features]
 default = []
 capi = ["libc"]
-truncated = []
+# Compatibility with Matlab implementation
+compat = []
 
 [lib]
 name = "gsw"

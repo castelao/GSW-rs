@@ -82,16 +82,16 @@ mod tests {
     // packages. Prescribed ends in 4615 while the here calculated ends in
     // 461472. Which is the correct one?
     fn test_const_sfac() {
-        #[cfg(feature = "truncated")]
+        #[cfg(feature = "compat")]
         assert_eq!(GSW_SFAC, 0.0248826675584615);
-        #[cfg(not(feature = "truncated"))]
+        #[cfg(not(feature = "compat"))]
         assert_eq!(GSW_SFAC, 0.024882667558461472);
     }
 
     #[test]
     // gsw_specvol at SSO & CT=0 should be identical to specvol_sso_0
-    #[cfg(feature = "truncated")]
-    // There if not truncated there is a difference of 1e-19
+    #[cfg(feature = "compat")]
+    // If not compat there is a difference of 1e-19
     fn test_specvol_vs_specvol_sso_0() {
         let specvol = gsw_specvol(35.16504, 0., 1000.0);
         let specvol_sso_0 = specvol_sso_0(1000.0);
@@ -102,25 +102,25 @@ mod tests {
     fn test_gsw_specvol() {
         // Test value from Roquet 2015
         //let specvol = gsw_specvol(30., 10., 1000.0);
-        //#[cfg(not(feature = "truncated"))]
+        //#[cfg(not(feature = "compat"))]
         //assert_eq!(specvol, 9.732819627722664e-4);
 
         // Test value from C library.
         let specvol = gsw_specvol(34.507499465692057, 27.994827331978655, 0.0);
-        #[cfg(feature = "truncated")]
+        #[cfg(feature = "compat")]
         assert_eq!(specvol, 0.00097855432330275953);
     }
 
     #[test]
-    #[cfg(feature = "truncated")]
-    // If not truncated, there is a residue of 1e-19
+    #[cfg(feature = "compat")]
+    // If not compat, there is a residue of 1e-19
     fn test_gsw_specvol_anom_standard_at_standard() {
         assert_eq!(gsw_specvol_anom_standard(35.16504, 0.0, 1000.0), 0.0);
     }
 
     #[test]
     fn test_specvol_alpha_beta() {
-        #[cfg(feature = "truncated")]
+        #[cfg(feature = "compat")]
         // Values from C implementation
         assert_eq!(
             specvol_alpha_beta(34.537484086977358, 27.793319825682374, 50.),
@@ -297,10 +297,10 @@ fn t90_from_t48(t48: f64) -> f64 {
 }
 
 fn t90_from_t68(t68: f64) -> f64 {
-    #[cfg(feature = "truncated")]
+    #[cfg(feature = "compat")]
     let t90: f64 = t68 * 0.999760057586179;
 
-    #[cfg(not(feature = "truncated"))]
+    #[cfg(not(feature = "compat"))]
     let t90: f64 = t68 / 1.00024;
 
     t90
