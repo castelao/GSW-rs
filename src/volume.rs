@@ -19,7 +19,7 @@ use crate::gsw_specvol_coefficients::*;
 pub fn specvol(sa: f64, ct: f64, p: f64) -> f64 {
     // Other implementations force negative SA to be 0. That is dangerous
     // since it can hide error by processing unrealistic inputs
-    let sa: f64 = if (sa > 0.0) {
+    let sa: f64 = if (sa >= 0.0) {
         sa
     } else if cfg!(feature = "compat") {
         0.0

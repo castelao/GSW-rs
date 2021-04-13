@@ -154,7 +154,7 @@ pub fn z_from_p(
 fn alpha(sa: f64, ct: f64, p: f64) -> f64 {
     // Other implementations force negative SA to be 0. That is dangerous
     // since it can hide error by processing unrealistic inputs
-    let sa: f64 = if (sa > 0.0) {
+    let sa: f64 = if (sa >= 0.0) {
         sa
     } else if cfg!(feature = "compat") {
         0.0
@@ -189,7 +189,7 @@ fn alpha(sa: f64, ct: f64, p: f64) -> f64 {
 fn beta(sa: f64, ct: f64, p: f64) -> f64 {
     // Other implementations force negative SA to be 0. That is dangerous
     // since it can hide error by processing unrealistic inputs
-    let sa: f64 = if (sa > 0.0) {
+    let sa: f64 = if (sa >= 0.0) {
         sa
     } else if cfg!(feature = "compat") {
         0.0
@@ -224,7 +224,7 @@ fn beta(sa: f64, ct: f64, p: f64) -> f64 {
 fn specvol_first_derivatives(sa: f64, ct: f64, p: f64) -> (f64, f64, f64) {
     // Other implementations force negative SA to be 0. That is dangerous
     // since it can hide error by processing unrealistic inputs
-    let sa: f64 = if (sa > 0.0) {
+    let sa: f64 = if (sa >= 0.0) {
         sa
     } else if cfg!(feature = "compat") {
         0.0
