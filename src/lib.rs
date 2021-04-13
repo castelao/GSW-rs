@@ -24,14 +24,12 @@ mod volume;
 
 use crate::gsw_internal_const::*;
 use crate::gsw_specvol_coefficients::*;
-pub use crate::volume::specvol;
+pub use crate::volume::{specvol, specvol_sso_0};
 
 #[cfg(test)]
 mod tests {
     use super::gsw_internal_const::*;
-    use super::{
-        alpha, beta, specvol, specvol_alpha_beta, specvol_anom_standard, specvol_sso_0, GSW_SFAC,
-    };
+    use super::{alpha, beta, specvol, specvol_alpha_beta, specvol_anom_standard, GSW_SFAC};
 
     #[test]
     // Calculated SFAC is slightly different than the prescribed SFAC in other
@@ -42,17 +40,6 @@ mod tests {
             assert_eq!(GSW_SFAC, 0.0248826675584615);
         } else {
             assert_eq!(GSW_SFAC, 0.024882667558461472);
-        }
-    }
-
-    /// specvol() at SSO & CT=0 should be identical to specvol_sso_0()
-    #[test]
-    fn test_specvol_vs_specvol_sso_0() {
-        let p_to_test: [f64; 5] = [0., 10., 100., 1000., 5000.];
-        for p in p_to_test.iter().cloned() {
-            let specvol = specvol(GSW_SSO, 0., p);
-            let specvol_sso_0 = specvol_sso_0(p);
-            assert_eq!(specvol, specvol_sso_0);
         }
     }
 
@@ -76,62 +63,6 @@ mod tests {
             )
         );
     }
-
-    #[test]
-    #[cfg(feature = "compat")]
-    // If feature compatible is activated, negative sa will be replaced by 0.0
-    fn test_negative_sa() {
-        assert_eq!(specvol(-20.0, 10., 0.), specvol(0.0, 10., 0.));
-        assert_eq!(alpha(-20.0, 10., 0.), alpha(0.0, 10., 0.));
-        assert_eq!(beta(-20.0, 10., 0.), beta(0.0, 10., 0.));
-    }
-}
-
-/// Specific Volume of Standard Ocean Salinity and CT=0
-///
-/// This function calculates specifc volume at the Standard Ocean Salinity,
-/// SSO, and at a Conservative Temperature of zero degrees C, as a function
-/// of pressure, p, in dbar, using a streamlined version of the 75-term CT
-/// version of specific volume, that is, a streamlined version of the code
-/// "specvol(SA,CT,p)".
-///
-/// version: 3.06.12
-///
-/// If using compat (truncated constants) there is a difference of O[1e-19],
-/// which is negligible but enough to fail the validation tests.
-pub fn specvol_sso_0(p: f64) -> f64 {
-    const VXX0: f64 = if cfg!(feature = "compat") {
-        9.726_613_854_843_87e-4
-    } else {
-        9.726_613_854_843_871e-4
-    };
-
-    const VXX1: f64 = if cfg!(feature = "compat") {
-        -4.505_913_211_160_929e-5
-    } else {
-        -4.505_913_211_160_931e-5
-    };
-
-    const VXX2: f64 = if cfg!(feature = "compat") {
-        7.130_728_965_927_127e-6
-    } else {
-        7.130_728_965_927_128e-6
-    };
-
-    const VXX3: f64 = if cfg!(feature = "compat") {
-        -6.657_179_479_768_312e-7
-    } else {
-        -6.657_179_479_768_313e-7
-    };
-    const VXX4: f64 = if cfg!(feature = "compat") {
-        -2.994_054_447_232_88e-8
-    } else {
-        -2.994_054_447_232_877_6e-8
-    };
-
-    let p = p / GSW_PU;
-
-    VXX0 + p * (VXX1 + p * (VXX2 + p * (VXX3 + p * (VXX4 + p * (V005 + V006 * p)))))
 }
 
 /// Specific Volume Anomaly of Standard Ocean Salinity and CT=0
