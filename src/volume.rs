@@ -105,6 +105,75 @@ pub fn specvol_sso_0(p: f64) -> f64 {
     VXX0 + p * (VXX1 + p * (VXX2 + p * (VXX3 + p * (VXX4 + p * (V005 + V006 * p)))))
 }
 
+fn specvol_first_derivatives_wrt_enthalpy(sa: f64, ct: f64, p: f64) -> (f64, f64) {
+    unimplemented!()
+}
+
+fn specvol_ice(t: f64, p: f64) {
+    unimplemented!()
+}
+
+fn specvol_second_derivatives(sa: f64, ct: f64, p: f64) -> (f64, f64, f64, f64, f64) {
+    unimplemented!()
+}
+
+fn specvol_second_derivatives_wrt_enthalpy(sa: f64, ct: f64, p: f64) -> (f64, f64, f64) {
+    unimplemented!()
+}
+
+fn specvol_t_exact(sa: f64, t: f64, p: f64) {
+    unimplemented!()
+}
+
+fn specvol_ct_exact(sa: f64, ct: f64, p: f64) {
+    unimplemented!()
+}
+fn specvol_alpha_beta_ct_exact() {
+    unimplemented!()
+}
+fn specvol_anom(sa: f64, ct: f64, p: f64) {
+    unimplemented!()
+}
+fn specvol_anom_ct_exact() {
+    unimplemented!()
+}
+fn specvol_anom_standard_ct_exact() {
+    unimplemented!()
+}
+fn specvol_diff() {
+    unimplemented!()
+}
+fn specvol_diff_ct_exact() {
+    unimplemented!()
+}
+fn specvol_first_derivatives_ct_exact() {
+    unimplemented!()
+}
+fn specvol_first_derivatives_wrt_enthalpy_ct_exact() {
+    unimplemented!()
+}
+fn specvol_from_pot_enthalpy_ice() {
+    unimplemented!()
+}
+fn specvol_from_pot_enthalpy_ice_poly() {
+    unimplemented!()
+}
+fn specvol_p_parts() {
+    unimplemented!()
+}
+fn specvol_second_derivatives_ct_exact() {
+    unimplemented!()
+}
+fn specvol_second_derivatives_wrt_enthalpy_ct_exact() {
+    unimplemented!()
+}
+fn specvol_anom_standard_t_exact() {
+    unimplemented!()
+}
+fn specvol_anom_t_exact() {
+    unimplemented!()
+}
+
 #[cfg(test)]
 mod tests {
     use super::{specvol, specvol_sso_0, GSW_SSO};
