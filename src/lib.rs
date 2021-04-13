@@ -38,7 +38,7 @@ use gsw_specvol_coefficients::*;
 /// Note that the coefficients v(i,j,k) follow the convention in the original
 /// paper, which is different from the convention used in the C-library.
 ///
-pub fn gsw_specvol(sa: f64, ct: f64, p: f64) -> f64 {
+pub fn specvol(sa: f64, ct: f64, p: f64) -> f64 {
     // Other implementations force negative SA to be 0. That is dangerous
     // since it can hide error by processing unrealistic inputs
     let sa: f64 = if cfg!(feature = "compat") && (sa < 0.0) {
@@ -82,8 +82,7 @@ pub fn gsw_specvol(sa: f64, ct: f64, p: f64) -> f64 {
 mod tests {
     use super::gsw_internal_const::*;
     use super::{
-        alpha, beta, gsw_specvol, gsw_specvol_anom_standard, specvol_alpha_beta, specvol_sso_0,
-        GSW_SFAC,
+        alpha, beta, specvol, specvol_alpha_beta, specvol_anom_standard, specvol_sso_0, GSW_SFAC,
     };
 
     #[test]
@@ -103,21 +102,21 @@ mod tests {
     fn test_specvol_vs_specvol_sso_0() {
         let p_to_test: [f64; 5] = [0., 10., 100., 1000., 5000.];
         for p in p_to_test.iter().cloned() {
-            let specvol = gsw_specvol(GSW_SSO, 0., p);
+            let specvol = specvol(GSW_SSO, 0., p);
             let specvol_sso_0 = specvol_sso_0(p);
             assert_eq!(specvol, specvol_sso_0);
         }
     }
 
     #[test]
-    fn test_gsw_specvol() {
+    fn test_specvol() {
         // Test value from Roquet 2015
-        //let specvol = gsw_specvol(30., 10., 1000.0);
+        //let specvol = specvol(30., 10., 1000.0);
         //#[cfg(not(feature = "compat"))]
         //assert_eq!(specvol, 9.732819627722664e-4);
 
         // Test value from C library.
-        let specvol = gsw_specvol(34.507499465692057, 27.994827331978655, 0.0);
+        let specvol = specvol(34.507499465692057, 27.994827331978655, 0.0);
         #[cfg(feature = "compat")]
         assert_eq!(specvol, 0.00097855432330275953);
     }
@@ -125,8 +124,8 @@ mod tests {
     #[test]
     #[cfg(feature = "compat")]
     // If not compat, there is a residue of 1e-19
-    fn test_gsw_specvol_anom_standard_at_standard() {
-        assert_eq!(gsw_specvol_anom_standard(35.16504, 0.0, 1000.0), 0.0);
+    fn test_specvol_anom_standard_at_standard() {
+        assert_eq!(specvol_anom_standard(35.16504, 0.0, 1000.0), 0.0);
     }
 
     #[test]
@@ -147,7 +146,7 @@ mod tests {
     #[cfg(feature = "compat")]
     // If feature compatible is activated, negative sa will be replaced by 0.0
     fn test_negative_sa() {
-        assert_eq!(gsw_specvol(-20.0, 10., 0.), gsw_specvol(0.0, 10., 0.));
+        assert_eq!(specvol(-20.0, 10., 0.), specvol(0.0, 10., 0.));
         assert_eq!(alpha(-20.0, 10., 0.), alpha(0.0, 10., 0.));
         assert_eq!(beta(-20.0, 10., 0.), beta(0.0, 10., 0.));
     }
@@ -159,7 +158,7 @@ mod tests {
 /// SSO, and at a Conservative Temperature of zero degrees C, as a function
 /// of pressure, p, in dbar, using a streamlined version of the 75-term CT
 /// version of specific volume, that is, a streamlined version of the code
-/// "gsw_specvol(SA,CT,p)".
+/// "specvol(SA,CT,p)".
 ///
 /// version: 3.06.12
 ///
@@ -212,7 +211,7 @@ pub fn specvol_sso_0(p: f64) -> f64 {
 /// specvol_anom : specific volume anomaly of seawater
 ///
 pub fn specvol_anom_standard(sa: f64, ct: f64, p: f64) -> f64 {
-    gsw_specvol(sa, ct, p) - specvol_sso_0(p)
+    specvol(sa, ct, p) - specvol_sso_0(p)
 }
 
 pub fn enthalpy_sso_0(p: f64) -> f64 {
@@ -234,7 +233,7 @@ pub fn enthalpy_sso_0(p: f64) -> f64 {
 pub fn specvol_alpha_beta(sa: f64, ct: f64, p: f64) -> (f64, f64, f64) {
     // What to do with negative SA? Matlab does "SA(SA < 0) = 0;", but maybe we shouldn't guess and fail with assert.
 
-    let specvol = gsw_specvol(sa, ct, p);
+    let specvol = specvol(sa, ct, p);
     let alpha = alpha(sa, ct, p);
     let beta = beta(sa, ct, p);
 
@@ -254,7 +253,7 @@ pub fn specvol_alpha_beta(sa: f64, ct: f64, p: f64) -> (f64, f64, f64) {
 /// rho  [kg/m] : in-situ density
 ///
 pub fn rho(sa: f64, ct: f64, p: f64) -> f64 {
-    1.0 / gsw_specvol(sa, ct, p)
+    1.0 / specvol(sa, ct, p)
 }
 
 /// Height from pressure
@@ -315,7 +314,7 @@ fn alpha(sa: f64, ct: f64, p: f64) -> f64 {
                 + ys * (A012 + xs * (A112 + A212 * xs) + ys * (A022 + A122 * xs + A032 * ys))
                 + z * (A003 + A103 * xs + A013 * ys + A004 * z)));
 
-    0.025 * v_ct / gsw_specvol(sa, ct, p)
+    0.025 * v_ct / specvol(sa, ct, p)
 }
 
 fn beta(sa: f64, ct: f64, p: f64) -> f64 {
@@ -348,7 +347,7 @@ fn beta(sa: f64, ct: f64, p: f64) -> f64 {
                 + ys * (B012 + xs * (B112 + B212 * xs) + ys * (B022 + B122 * xs + B032 * ys))
                 + z * (B003 + B103 * xs + B013 * ys + B004 * z)));
 
-    -v_sa * 0.5 * GSW_SFAC / (gsw_specvol(sa, ct, p) * xs)
+    -v_sa * 0.5 * GSW_SFAC / (specvol(sa, ct, p) * xs)
 }
 
 fn t90_from_t48(t48: f64) -> f64 {
