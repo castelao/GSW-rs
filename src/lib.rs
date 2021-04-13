@@ -431,6 +431,75 @@ fn specvol_first_derivatives(sa: f64, ct: f64, p: f64) -> (f64, f64, f64) {
     (v_sa, v_ct, v_p)
 }
 
+fn specvol_first_derivatives_wrt_enthalpy(sa: f64, ct: f64, p: f64) -> (f64, f64) {
+    unimplemented!()
+}
+
+fn specvol_ice(t: f64, p: f64) {
+    unimplemented!()
+}
+
+fn specvol_second_derivatives(sa: f64, ct: f64, p: f64) -> (f64, f64, f64, f64, f64) {
+    unimplemented!()
+}
+
+fn specvol_second_derivatives_wrt_enthalpy(sa: f64, ct: f64, p: f64) -> (f64, f64, f64) {
+    unimplemented!()
+}
+
+fn specvol_t_exact(sa: f64, t: f64, p: f64) {
+    unimplemented!()
+}
+
+fn specvol_ct_exact(sa: f64, ct: f64, p: f64) {
+    unimplemented!()
+}
+fn specvol_alpha_beta_ct_exact() {
+    unimplemented!()
+}
+fn specvol_anom(sa: f64, ct: f64, p: f64) {
+    unimplemented!()
+}
+fn specvol_anom_ct_exact() {
+    unimplemented!()
+}
+fn specvol_anom_standard_ct_exact() {
+    unimplemented!()
+}
+fn specvol_diff() {
+    unimplemented!()
+}
+fn specvol_diff_ct_exact() {
+    unimplemented!()
+}
+fn specvol_first_derivatives_ct_exact() {
+    unimplemented!()
+}
+fn specvol_first_derivatives_wrt_enthalpy_ct_exact() {
+    unimplemented!()
+}
+fn specvol_from_pot_enthalpy_ice() {
+    unimplemented!()
+}
+fn specvol_from_pot_enthalpy_ice_poly() {
+    unimplemented!()
+}
+fn specvol_p_parts() {
+    unimplemented!()
+}
+fn specvol_second_derivatives_ct_exact() {
+    unimplemented!()
+}
+fn specvol_second_derivatives_wrt_enthalpy_ct_exact() {
+    unimplemented!()
+}
+fn specvol_anom_standard_t_exact() {
+    unimplemented!()
+}
+fn specvol_anom_t_exact() {
+    unimplemented!()
+}
+
 fn t90_from_t48(t48: f64) -> f64 {
     (t48 - (4.4e-6) * t48 * (100. - t48)) / 1.00024
 }
