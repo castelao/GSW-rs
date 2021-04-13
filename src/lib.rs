@@ -294,7 +294,7 @@ fn alpha(sa: f64, ct: f64, p: f64) -> f64 {
     };
 
     let xs: f64 = libm::sqrt(GSW_SFAC * sa + OFFSET);
-    let ys: f64 = ct * 0.025;
+    let ys: f64 = ct / GSW_CTU;
     let z: f64 = p / GSW_PU;
 
     let v_ct: f64 = A000
@@ -327,7 +327,7 @@ fn beta(sa: f64, ct: f64, p: f64) -> f64 {
     };
 
     let xs: f64 = libm::sqrt(GSW_SFAC * sa + OFFSET);
-    let ys: f64 = ct * 0.025;
+    let ys: f64 = ct / GSW_CTU;
     let z: f64 = p / GSW_PU;
 
     let v_sa: f64 = B000
