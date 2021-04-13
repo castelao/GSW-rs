@@ -39,6 +39,14 @@ use gsw_specvol_coefficients::*;
 /// paper, which is different from the convention used in the C-library.
 ///
 pub fn gsw_specvol(sa: f64, ct: f64, p: f64) -> f64 {
+    // Other implementations force negative SA to be 0. That is dangerous
+    // since it can hide error by processing unrealistic inputs
+    let sa: f64 = if cfg!(feature = "compat") && (sa < 0.0) {
+        0.0
+    } else {
+        sa
+    };
+
     let xs: f64 = libm::sqrt(GSW_SFAC * sa + OFFSET);
     let ys: f64 = ct / GSW_CTU;
     let z: f64 = p / GSW_PU;
@@ -72,6 +80,7 @@ pub fn gsw_specvol(sa: f64, ct: f64, p: f64) -> f64 {
 
 #[cfg(test)]
 mod tests {
+    use super::gsw_internal_const::*;
     use super::{
         alpha, beta, gsw_specvol, gsw_specvol_anom_standard, specvol_alpha_beta, specvol_sso_0,
         GSW_SFAC,
@@ -132,6 +141,15 @@ mod tests {
                 0.00071877529859646001
             )
         );
+    }
+
+    #[test]
+    #[cfg(feature = "compat")]
+    // If feature compatible is activated, negative sa will be replaced by 0.0
+    fn test_negative_sa() {
+        assert_eq!(gsw_specvol(-20.0, 10., 0.), gsw_specvol(0.0, 10., 0.));
+        assert_eq!(alpha(-20.0, 10., 0.), alpha(0.0, 10., 0.));
+        assert_eq!(beta(-20.0, 10., 0.), beta(0.0, 10., 0.));
     }
 }
 
@@ -268,7 +286,13 @@ pub fn z_from_p(
 }
 
 fn alpha(sa: f64, ct: f64, p: f64) -> f64 {
-    // What to do with negative SA? Matlab does "SA(SA < 0) = 0;", but maybe we shouldn't guess and fail with assert.
+    // Other implementations force negative SA to be 0. That is dangerous
+    // since it can hide error by processing unrealistic inputs
+    let sa: f64 = if cfg!(feature = "compat") && (sa < 0.0) {
+        0.0
+    } else {
+        sa
+    };
 
     let xs: f64 = libm::sqrt(GSW_SFAC * sa + OFFSET);
     let ys: f64 = ct * 0.025;
@@ -295,7 +319,13 @@ fn alpha(sa: f64, ct: f64, p: f64) -> f64 {
 }
 
 fn beta(sa: f64, ct: f64, p: f64) -> f64 {
-    // What to do with negative SA? Matlab does "SA(SA < 0) = 0;", but maybe we shouldn't guess and fail with assert.
+    // Other implementations force negative SA to be 0. That is dangerous
+    // since it can hide error by processing unrealistic inputs
+    let sa: f64 = if cfg!(feature = "compat") && (sa < 0.0) {
+        0.0
+    } else {
+        sa
+    };
 
     let xs: f64 = libm::sqrt(GSW_SFAC * sa + OFFSET);
     let ys: f64 = ct * 0.025;
