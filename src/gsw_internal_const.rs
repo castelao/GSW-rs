@@ -25,9 +25,16 @@ pub const GSW_P0: f64 = 101325.0;
 pub const GSW_SSO: f64 = 35.16504;
 pub const GSW_SQRTSSO: f64 = 5.930011804372737;
 
-/// uPS: unit conversion factor for salinities [ g/kg ]
+/// uPS: unit conversion factor for salinities (Millero et al., 2008) [g/kg]
+/// Reference Salinity SR is uPS times Practical Salinity SP.
 pub const GSW_UPS: f64 = GSW_SSO / 35.0;
 
+pub const GSW_SAU: f64 = 40. * GSW_UPS;
+
+/// Convervative Temperature [degree Celsius] (Roquet, 2015 apud TEOS-10 p.131)
+pub const GSW_CTU: f64 = 40.;
+
+/// Scalling Pressure [dbar] (Roquet, 2015, apud TEOS-10 p.131)
 pub const GSW_PU: f64 = 1e4;
 
 #[cfg(feature = "compat")]

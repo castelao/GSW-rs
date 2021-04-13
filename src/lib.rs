@@ -40,8 +40,8 @@ use gsw_specvol_coefficients::*;
 ///
 pub fn gsw_specvol(sa: f64, ct: f64, p: f64) -> f64 {
     let xs: f64 = libm::sqrt(GSW_SFAC * sa + OFFSET);
-    let ys: f64 = ct * 0.025;
-    let z: f64 = p * 1e-4;
+    let ys: f64 = ct / GSW_CTU;
+    let z: f64 = p / GSW_PU;
 
     // Specific Volume
     V000 + xs * (V100 + xs * (V200 + xs * (V300 + xs * (V400 + xs * (V500 + xs * V600)))))
@@ -272,7 +272,7 @@ fn alpha(sa: f64, ct: f64, p: f64) -> f64 {
 
     let xs: f64 = libm::sqrt(GSW_SFAC * sa + OFFSET);
     let ys: f64 = ct * 0.025;
-    let z: f64 = p * 1e-4;
+    let z: f64 = p / GSW_PU;
 
     let v_ct: f64 = A000
         + xs * (A100 + xs * (A200 + xs * (A300 + xs * (A400 + A500 * xs))))
@@ -299,7 +299,7 @@ fn beta(sa: f64, ct: f64, p: f64) -> f64 {
 
     let xs: f64 = libm::sqrt(GSW_SFAC * sa + OFFSET);
     let ys: f64 = ct * 0.025;
-    let z: f64 = p * 1e-4;
+    let z: f64 = p / GSW_PU;
 
     let v_sa: f64 = B000
         + xs * (B100 + xs * (B200 + xs * (B300 + xs * (B400 + B500 * xs))))
