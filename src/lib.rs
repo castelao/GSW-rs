@@ -10,6 +10,7 @@
 
 // Do not depend on the standard library
 #![no_std]
+#![allow(unused)]
 
 /// cbindgen:ignore
 mod gsw_internal_const;
