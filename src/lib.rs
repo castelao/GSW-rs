@@ -356,6 +356,81 @@ fn beta(sa: f64, ct: f64, p: f64) -> f64 {
     -v_sa * 0.5 * GSW_SFAC / (specvol(sa, ct, p) * xs)
 }
 
+fn specvol_first_derivatives(sa: f64, ct: f64, p: f64) -> (f64, f64, f64) {
+    // Other implementations force negative SA to be 0. That is dangerous
+    // since it can hide error by processing unrealistic inputs
+    let sa: f64 = if (sa > 0.0) {
+        sa
+    } else if cfg!(feature = "compat") {
+        0.0
+    } else {
+        panic!("Negative SA");
+    };
+
+    let xs: f64 = libm::sqrt(GSW_SFAC * sa + OFFSET);
+    let ys: f64 = ct / GSW_CTU;
+    let z: f64 = p / GSW_PU;
+
+    let v_ct_part: f64 = A000
+        + xs * (A100 + xs * (A200 + xs * (A300 + xs * (A400 + A500 * xs))))
+        + ys * (A010
+            + xs * (A110 + xs * (A210 + xs * (A310 + A410 * xs)))
+            + ys * (A020
+                + xs * (A120 + xs * (A220 + A320 * xs))
+                + ys * (A030 + xs * (A130 + A230 * xs) + ys * (A040 + A140 * xs + A050 * ys))))
+        + z * (A001
+            + xs * (A101 + xs * (A201 + xs * (A301 + A401 * xs)))
+            + ys * (A011
+                + xs * (A111 + xs * (A211 + A311 * xs))
+                + ys * (A021 + xs * (A121 + A221 * xs) + ys * (A031 + A131 * xs + A041 * ys)))
+            + z * (A002
+                + xs * (A102 + xs * (A202 + A302 * xs))
+                + ys * (A012 + xs * (A112 + A212 * xs) + ys * (A022 + A122 * xs + A032 * ys))
+                + z * (A003 + A103 * xs + A013 * ys + A004 * z)));
+
+    let v_ct = 0.025 * v_ct_part;
+
+    let v_sa_part: f64 = B000
+        + xs * (B100 + xs * (B200 + xs * (B300 + xs * (B400 + B500 * xs))))
+        + ys * (B010
+            + xs * (B110 + xs * (B210 + xs * (B310 + B410 * xs)))
+            + ys * (B020
+                + xs * (B120 + xs * (B220 + B320 * xs))
+                + ys * (B030 + xs * (B130 + B230 * xs) + ys * (B040 + B140 * xs + B050 * ys))))
+        + z * (B001
+            + xs * (B101 + xs * (B201 + xs * (B301 + B401 * xs)))
+            + ys * (B011
+                + xs * (B111 + xs * (B211 + B311 * xs))
+                + ys * (B021 + xs * (B121 + B221 * xs) + ys * (B031 + B131 * xs + B041 * ys)))
+            + z * (B002
+                + xs * (B102 + xs * (B202 + B302 * xs))
+                + ys * (B012 + xs * (B112 + B212 * xs) + ys * (B022 + B122 * xs + B032 * ys))
+                + z * (B003 + B103 * xs + B013 * ys + B004 * z)));
+
+    let v_sa = 0.5 * GSW_SFAC * v_sa_part / xs;
+
+    let v_p_part = C000
+        + xs * (C100 + xs * (C200 + xs * (C300 + xs * (C400 + C500 * xs))))
+        + ys * (C010
+            + xs * (C110 + xs * (C210 + xs * (C310 + C410 * xs)))
+            + ys * (C020
+                + xs * (C120 + xs * (C220 + C320 * xs))
+                + ys * (C030 + xs * (C130 + C230 * xs) + ys * (C040 + C140 * xs + C050 * ys))))
+        + z * (C001
+            + xs * (C101 + xs * (C201 + xs * (C301 + C401 * xs)))
+            + ys * (C011
+                + xs * (C111 + xs * (C211 + C311 * xs))
+                + ys * (C021 + xs * (C121 + C221 * xs) + ys * (C031 + C131 * xs + C041 * ys)))
+            + z * (C002
+                + xs * (C102 + C202 * xs)
+                + ys * (C012 + C112 * xs + C022 * ys)
+                + z * (C003 + C103 * xs + C013 * ys + z * (C004 + C005 * z))));
+
+    let v_p = 1e-8 * v_p_part;
+
+    (v_sa, v_ct, v_p)
+}
+
 fn t90_from_t48(t48: f64) -> f64 {
     (t48 - (4.4e-6) * t48 * (100. - t48)) / 1.00024
 }
