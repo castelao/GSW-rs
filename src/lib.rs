@@ -82,10 +82,11 @@ mod tests {
     // packages. Prescribed ends in 4615 while the here calculated ends in
     // 461472. Which is the correct one?
     fn test_const_sfac() {
-        #[cfg(feature = "compat")]
-        assert_eq!(GSW_SFAC, 0.0248826675584615);
-        #[cfg(not(feature = "compat"))]
-        assert_eq!(GSW_SFAC, 0.024882667558461472);
+        if cfg!(feature = "compat") {
+            assert_eq!(GSW_SFAC, 0.0248826675584615);
+        } else {
+            assert_eq!(GSW_SFAC, 0.024882667558461472);
+        }
     }
 
     /// specvol() at SSO & CT=0 should be identical to specvol_sso_0()
