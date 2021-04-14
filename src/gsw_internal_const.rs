@@ -1,5 +1,4 @@
 /// ! GSW TEOS10 Constants
-use core;
 
 /// Pi
 pub const PI: f64 = 3.141592653589793;
