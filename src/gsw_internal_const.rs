@@ -47,8 +47,9 @@ pub const GSW_SFAC: f64 = if cfg!(feature = "compat") {
     1.0 / (40.0 * GSW_UPS)
 };
 
-/// deltaS = 24, offset = deltaS*gsw_sfac = 5.971840214030754e-1
-#[cfg(feature = "compat")]
-pub const OFFSET: f64 = 5.971840214030754e-1;
-#[cfg(not(feature = "compat"))]
-pub const OFFSET: f64 = 24.0 * GSW_SFAC;
+/// offset = deltaS*gsw_sfac = 5.971840214030754e-1, where deltaS = 24
+pub const OFFSET: f64 = if cfg!(feature = "compat") {
+    5.971840214030754e-1
+} else {
+    24.0 * GSW_SFAC
+};
