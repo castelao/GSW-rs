@@ -14,7 +14,7 @@ pub const INTERP_METHOD_PCHIP: u8 = 2;
 /////////////////////////
 
 #[no_mangle]
-pub unsafe extern "C" fn specvol(sa: f64, ct: f64, p: f64) -> f64 {
+pub unsafe extern "C" fn gsw_specvol(sa: f64, ct: f64, p: f64) -> f64 {
     crate::specvol(sa, ct, p)
 }
 
