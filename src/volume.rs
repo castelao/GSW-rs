@@ -374,4 +374,13 @@ mod tests {
             assert_eq!(specvol, specvol_sso_0);
         }
     }
+
+    #[test]
+    /// This anomaly should be zero for SSO & CT=0 at any depth
+    fn test_specvol_anom_standard_at_standard() {
+        let p_to_test: [f64; 5] = [0., 10., 100., 1000., 5000.];
+        for p in p_to_test.iter().cloned() {
+            assert_eq!(specvol_anom_standard(GSW_SSO, 0.0, p), 0.0);
+        }
+    }
 }

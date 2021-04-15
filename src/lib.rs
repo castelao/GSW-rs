@@ -25,12 +25,14 @@ mod volume;
 
 use crate::gsw_internal_const::*;
 use crate::gsw_specvol_coefficients::*;
-pub use crate::volume::{specvol, specvol_sso_0};
+pub use crate::volume::{
+    alpha, beta, specvol, specvol_alpha_beta, specvol_anom_standard, specvol_sso_0,
+};
 
 #[cfg(test)]
 mod tests {
     use super::gsw_internal_const::*;
-    use super::{alpha, beta, specvol, specvol_alpha_beta, specvol_anom_standard, GSW_SFAC};
+    use super::{alpha, beta, specvol, specvol_alpha_beta, GSW_SFAC};
 
     #[test]
     // Calculated SFAC is slightly different than the prescribed SFAC in other
@@ -42,13 +44,6 @@ mod tests {
         } else {
             assert_eq!(GSW_SFAC, 0.024882667558461472);
         }
-    }
-
-    #[test]
-    #[cfg(feature = "compat")]
-    // If not compat, there is a residue of 1e-19
-    fn test_specvol_anom_standard_at_standard() {
-        assert_eq!(specvol_anom_standard(35.16504, 0.0, 1000.0), 0.0);
     }
 
     #[test]
