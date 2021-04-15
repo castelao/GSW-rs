@@ -36,16 +36,16 @@ pub const GSW_CTU: f64 = 40.;
 /// Scalling Pressure [dbar] (Roquet, 2015, apud TEOS-10 p.131)
 pub const GSW_PU: f64 = 1e4;
 
-#[cfg(feature = "compat")]
-/// Other implementations hardcoded some constants truncating its values
-/// sfac  =  1/(40*gsw_ups) ~ 0.0248826675584615
-pub const GSW_SFAC: f64 = 0.0248826675584615;
-
-#[cfg(not(feature = "compat"))]
-/// sfac  =  1/(40*gsw_ups) = 0.024882667558461472
-/// Two extra digits on precision compared with other implementations. The
-/// difference should be negligible but it impacts the validation tests.
-pub const GSW_SFAC: f64 = 1.0 / (40.0 * GSW_UPS);
+/// sfac  =  1/(40*gsw_ups) ~ 0.024882667558461472
+pub const GSW_SFAC: f64 = if cfg!(feature = "compat") {
+    // Other implementations hardcoded some constants truncating its values on
+    // 1e-16.  The difference should be negligible but it impacts the
+    // validation tests.
+    0.0248826675584615
+} else {
+    // Two extra digits on precision compared with other implementations.
+    1.0 / (40.0 * GSW_UPS)
+};
 
 /// deltaS = 24, offset = deltaS*gsw_sfac = 5.971840214030754e-1
 #[cfg(feature = "compat")]
