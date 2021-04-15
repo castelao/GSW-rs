@@ -344,7 +344,9 @@ fn specvol_anom_t_exact() {
 
 #[cfg(test)]
 mod tests {
-    use super::{specvol, specvol_sso_0, GSW_SSO};
+    use super::{
+        alpha, beta, specvol, specvol_alpha_beta, specvol_anom_standard, specvol_sso_0, GSW_SSO,
+    };
 
     #[test]
     // Test value from Roquet 2015, Appendix C.3
@@ -382,5 +384,22 @@ mod tests {
         for p in p_to_test.iter().cloned() {
             assert_eq!(specvol_anom_standard(GSW_SSO, 0.0, p), 0.0);
         }
+    }
+
+    #[test]
+    // If feature compatible is activated, negative sa will be replaced by 0.0
+    fn test_negative_sa() {
+        if cfg!(feature = "compat") {
+            let p_to_test: [f64; 5] = [0., 10., 100., 1000., 5000.];
+            let ct_to_test: [f64; 5] = [0., 10., 20., 30., 40.];
+            for p in p_to_test.iter() {
+                for ct in ct_to_test.iter() {
+                    assert_eq!(specvol(-20.0, *ct, *p), specvol(0.0, *ct, *p));
+                    assert_eq!(alpha(-20.0, *ct, *p), alpha(0.0, *ct, *p));
+                    assert_eq!(beta(-20.0, *ct, *p), beta(0.0, *ct, *p));
+                }
+            }
+        }
+        // ToDo: It should return an error if not compat
     }
 }
