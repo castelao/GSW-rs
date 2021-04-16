@@ -1359,7 +1359,7 @@ mod test {
 
     #[test]
     fn test_specvol_c() {
-        let result: f64 = crate::gsw_specvol(1., 1., 1.);
+        let result: f64 = crate::specvol(1., 1., 1.);
         (assert_c! {
             #include <stdio.h>
             #include "gswteos-10.h"
