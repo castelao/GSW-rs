@@ -130,7 +130,7 @@ pub fn specvol(sa: f64, ct: f64, p: f64) -> f64 {
 
 /// Specific Volume of Standard Ocean Salinity and CT=0
 ///
-/// This function calculates specifc volume at the Standard Ocean Salinity,
+/// This function calculates specific volume at the Standard Ocean Salinity,
 /// SSO, and at a Conservative Temperature of zero degrees C, as a function
 /// of pressure, p, in dbar, using a streamlined version of the 75-term CT
 /// version of specific volume, that is, a streamlined version of the code
