@@ -55,7 +55,7 @@ pub unsafe extern "C" fn gsw_specvol_alpha_beta(
 
 #[no_mangle]
 pub unsafe extern "C" fn gsw_rho(sa: f64, ct: f64, p: f64) -> f64 {
-    crate::rho(sa, ct, p)
+    crate::volume::rho(sa, ct, p)
 }
 
 /////////////////////////
