@@ -1,9 +1,13 @@
 /// ! GSW TEOS10 Constants
 
 /// Pi
-pub const PI: f64 = 3.141592653589793;
+pub const PI: f64 = if cfg!(feature = "compat") {
+    3.141592653589793
+} else {
+    core::f64::consts::PI
+};
 
-pub const DEG2RAD: f64 = core::f64::consts::PI / 180.0;
+pub const DEG2RAD: f64 = PI / 180.0;
 
 /// If the graviational acceleration were to be regarded as being
 /// depth-independent, which is often the case in ocean models, then gamma
