@@ -15,7 +15,47 @@ pub const INTERP_METHOD_PCHIP: u8 = 2;
 
 #[no_mangle]
 pub unsafe extern "C" fn gsw_specvol(sa: f64, ct: f64, p: f64) -> f64 {
-    crate::gsw_specvol(sa, ct, p)
+    crate::specvol(sa, ct, p)
+}
+
+#[no_mangle]
+pub unsafe extern "C" fn gsw_alpha(sa: f64, ct: f64, p: f64) -> f64 {
+    crate::alpha(sa, ct, p)
+}
+
+#[no_mangle]
+pub unsafe extern "C" fn gsw_beta(sa: f64, ct: f64, p: f64) -> f64 {
+    crate::beta(sa, ct, p)
+}
+
+#[no_mangle]
+pub unsafe extern "C" fn gsw_specvol_sso_0(p: f64) -> f64 {
+    crate::specvol_sso_0(p)
+}
+
+#[no_mangle]
+pub unsafe extern "C" fn gsw_specvol_anom_standard(sa: f64, ct: f64, p: f64) -> f64 {
+    crate::specvol_anom_standard(sa, ct, p)
+}
+
+#[no_mangle]
+pub unsafe extern "C" fn gsw_specvol_alpha_beta(
+    sa: f64,
+    ct: f64,
+    p: f64,
+    specvol: *mut f64,
+    alpha: *mut f64,
+    beta: *mut f64,
+) {
+    result = crate::specvol_alpha_beta(sa, ct, p);
+    *specvol = result.0;
+    *alpha = result.1;
+    *beta = result.2;
+}
+
+#[no_mangle]
+pub unsafe extern "C" fn gsw_rho(sa: f64, ct: f64, p: f64) -> f64 {
+    crate::rho(sa, ct, p)
 }
 
 /////////////////////////
@@ -52,11 +92,6 @@ pub unsafe extern "C" fn gsw_adiabatic_lapse_rate_ice(t: f64, p: f64) -> f64 {
 }
 
 #[no_mangle]
-pub unsafe extern "C" fn gsw_alpha(sa: f64, ct: f64, p: f64) -> f64 {
-    unimplemented!()
-}
-
-#[no_mangle]
 pub unsafe extern "C" fn gsw_alpha_on_beta(sa: f64, ct: f64, p: f64) -> f64 {
     unimplemented!()
 }
@@ -73,11 +108,6 @@ pub unsafe extern "C" fn gsw_alpha_wrt_t_ice(t: f64, p: f64) -> f64 {
 
 #[no_mangle]
 pub unsafe extern "C" fn gsw_beta_const_t_exact(sa: f64, t: f64, p: f64) -> f64 {
-    unimplemented!()
-}
-
-#[no_mangle]
-pub unsafe extern "C" fn gsw_beta(sa: f64, ct: f64, p: f64) -> f64 {
     unimplemented!()
 }
 
@@ -860,11 +890,6 @@ pub unsafe extern "C" fn gsw_rho_alpha_beta(
 }
 
 #[no_mangle]
-pub unsafe extern "C" fn gsw_rho(sa: f64, ct: f64, p: f64) -> f64 {
-    unimplemented!()
-}
-
-#[no_mangle]
 pub unsafe extern "C" fn gsw_rho_first_derivatives(
     sa: f64,
     ct: f64,
@@ -1060,23 +1085,6 @@ pub unsafe extern "C" fn gsw_sound_speed_t_exact(sa: f64, t: f64, p: f64) -> f64
 }
 
 #[no_mangle]
-pub unsafe extern "C" fn gsw_specvol_alpha_beta(
-    sa: f64,
-    ct: f64,
-    p: f64,
-    specvol: *mut f64,
-    alpha: *mut f64,
-    beta: *mut f64,
-) {
-    unimplemented!()
-}
-
-#[no_mangle]
-pub unsafe extern "C" fn gsw_specvol_anom_standard(sa: f64, ct: f64, p: f64) -> f64 {
-    unimplemented!()
-}
-
-#[no_mangle]
 pub unsafe extern "C" fn gsw_specvol_first_derivatives(
     sa: f64,
     ct: f64,
@@ -1127,11 +1135,6 @@ pub unsafe extern "C" fn gsw_specvol_second_derivatives_wrt_enthalpy(
     v_sa_h: *mut f64,
     v_h_h: *mut f64,
 ) {
-    unimplemented!()
-}
-
-#[no_mangle]
-pub unsafe extern "C" fn gsw_specvol_sso_0(p: f64) -> f64 {
     unimplemented!()
 }
 
@@ -1359,7 +1362,7 @@ mod test {
 
     #[test]
     fn test_specvol_c() {
-        let result: f64 = crate::gsw_specvol(1., 1., 1.);
+        let result: f64 = crate::specvol(1., 1., 1.);
         (assert_c! {
             #include <stdio.h>
             #include "gswteos-10.h"
