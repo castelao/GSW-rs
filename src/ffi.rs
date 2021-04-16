@@ -1356,7 +1356,10 @@ pub unsafe extern "C" fn gsw_p_from_z(
 
 #[cfg(test)]
 mod test {
+    use super::std::env::{remove_var, set_var};
     use super::std::format;
+
+    use proptest::prelude::*;
 
     use inline_c::assert_c;
 
@@ -1437,7 +1440,6 @@ mod test {
 
             int main() {
                 printf("%.15f", gsw_specvol_anom_standard(1., 1., 1.));
-
                 return 0;
             }
         })
@@ -1482,5 +1484,36 @@ mod test {
         })
         .success()
         .stdout(format!("{:.15}", result));
+    }
+
+    proptest! {
+    #[test]
+    fn test_specvol_c_proptest(sa in (0.)..f64::MAX, ct in (0.)..f64::MAX, p in (0.)..f64::MAX) {
+        let result: f64 = crate::specvol(sa, ct, p);
+        set_var("INLINE_C_RS_SA", format!("{:.15}", sa));
+        set_var("INLINE_C_RS_CT", format!("{:.15}", ct));
+        set_var("INLINE_C_RS_P", format!("{:.15}", p));
+
+        (assert_c! {
+            #include <stdio.h>
+            #include <stdlib.h>
+            #include "gswteos-10.h"
+
+            int main() {
+                double sa = strtof(getenv("SA"), NULL);
+                double ct = strtof(getenv("CT"), NULL);
+                double p = strtof(getenv("P"), NULL);
+                printf("%.15f", gsw_specvol(sa, ct, p));
+
+                return 0;
+            }
+        })
+        .success()
+        .stdout(format!("{:.15}", result));
+
+        remove_var("INLINE_C_RS_SA");
+        remove_var("INLINE_C_RS_CT");
+        remove_var("INLINE_C_RS_P");
+    }
     }
 }
