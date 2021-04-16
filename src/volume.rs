@@ -190,7 +190,7 @@ pub fn specvol_anom_standard(sa: f64, ct: f64, p: f64) -> f64 {
     specvol(sa, ct, p) - specvol_sso_0(p)
 }
 
-fn specvol_first_derivatives(sa: f64, ct: f64, p: f64) -> (f64, f64, f64) {
+pub fn specvol_first_derivatives(sa: f64, ct: f64, p: f64) -> (f64, f64, f64) {
     // Other implementations force negative SA to be 0. That is dangerous
     // since it can hide error by processing unrealistic inputs
     let sa: f64 = if (sa >= 0.0) {
