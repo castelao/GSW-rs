@@ -342,6 +342,22 @@ fn specvol_anom_t_exact() {
     unimplemented!()
 }
 
+/// in-situ density
+///
+/// Calculates in-situ density from Absolute Salinity and Conservative
+/// Temperature, using the computationally-efficient expression for
+/// specific volume in terms of SA, CT and p (Roquet et al., 2014).
+///
+/// sa [g/kg] : Absolute Salinity
+/// ct [deg C] : Conservative Temperature (ITS-90)
+/// p [dbar] : sea pressure ( i.e. absolute pressure - 10.1325 dbar )
+///
+/// rho  [kg/m] : in-situ density
+///
+pub fn rho(sa: f64, ct: f64, p: f64) -> f64 {
+    1.0 / specvol(sa, ct, p)
+}
+
 #[cfg(test)]
 mod tests {
     use super::{
