@@ -55,7 +55,7 @@ pub unsafe extern "C" fn gsw_specvol_alpha_beta(
 
 #[no_mangle]
 pub unsafe extern "C" fn gsw_rho(sa: f64, ct: f64, p: f64) -> f64 {
-    crate::volume::rho(sa, ct, p)
+    crate::rho(sa, ct, p)
 }
 
 /////////////////////////
@@ -1440,6 +1440,7 @@ mod test {
 
             int main() {
                 printf("%.15f", gsw_specvol_anom_standard(1., 1., 1.));
+
                 return 0;
             }
         })
@@ -1497,13 +1498,20 @@ mod test {
         (assert_c! {
             #include <stdio.h>
             #include <stdlib.h>
+            #include <math.h>
             #include "gswteos-10.h"
 
             int main() {
                 double sa = strtof(getenv("SA"), NULL);
                 double ct = strtof(getenv("CT"), NULL);
                 double p = strtof(getenv("P"), NULL);
-                printf("%.15f", gsw_specvol(sa, ct, p));
+                double result = gsw_specvol(sa, ct, p);
+
+                if (isnan(result)) {
+                    printf("NaN");
+                } else {
+                    printf("%.15f", result);
+                }
 
                 return 0;
             }
