@@ -60,6 +60,94 @@ jobs:
           command: test
           args: --no-fail-fast
 
+  test_c_api:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [macos-latest, windows-latest, ubuntu-latest]
+    steps:
+      - uses: actions/checkout@v2
+
+      - uses: actions-rs/toolchain@v1
+        with:
+          toolchain: stable
+          override: true
+
+      - name: Get Rust Version
+        id: rust-version
+        run: echo "::set-output name=version::$(cargo -V | head -n1 | awk '{print $2}')"
+
+      - uses: actions/cache@v2
+        with:
+          path: |
+            ~/.cargo/git
+            ~/.cargo/registry
+            target
+          key: ${{ runner.os }}-cargo-${{ steps.rust-version.outputs.version }}
+
+      - name: Install cargo-c (linux)
+        if: startsWith(matrix.os, 'ubuntu')
+        env:
+          LINK: https://github.com/lu-zero/cargo-c/releases/download
+          CARGO_C_VERSION: 0.8.0
+        run: |
+          curl -L "$LINK/v$CARGO_C_VERSION/cargo-c-linux.tar.gz" |
+          tar xz -C $HOME/.cargo/bin
+
+      - name: Install cargo-c (macos)
+        if: startsWith(matrix.os, 'macos')
+        env:
+          LINK: https://github.com/lu-zero/cargo-c/releases/download
+          CARGO_C_VERSION: 0.8.0
+        run: |
+          curl -LO "$LINK/v$CARGO_C_VERSION/cargo-c-macos.zip"
+          7z e -y "cargo-c-macos.zip" -o$HOME/.cargo/bin
+
+      - name: Install cargo-c (win)
+        if: startsWith(matrix.os, 'windows')
+        run: |
+            $LINK = "https://github.com/lu-zero/cargo-c/releases/download/v0.8.0"
+            $CARGO_C_FILE = "cargo-c-windows-msvc"
+            curl -LO "$LINK/$CARGO_C_FILE.zip"
+            7z e -y "$CARGO_C_FILE.zip" -o"${env:USERPROFILE}\.cargo\bin"
+
+      - name: Build C API
+        run: |
+          cargo cbuild --verbose --release
+
+      - name: Run C API tests
+        run: |
+          cargo capi test --verbose --release
+
+      - name: Install into temporary location
+        if: startsWith(matrix.os, 'macos') || startsWith(matrix.os, 'ubuntu')
+        run: |
+          cargo cinstall --verbose --release --destdir=temp
+
+      - name: Copy installed files to /usr/local
+        if: startsWith(matrix.os, 'macos') || startsWith(matrix.os, 'ubuntu')
+        run: |
+          sudo cp -r temp/usr/local/* /usr/local/
+
+      - name: Test pkg-config
+        if: startsWith(matrix.os, 'macos') || startsWith(matrix.os, 'ubuntu')
+        run: |
+          set -x
+          test "$(pkg-config --cflags gsw)" = "-I/usr/local/include"
+          test "$(pkg-config --libs gsw)" = "-L/usr/local/lib -lgsw"
+
+      - name: Update dynamic linker cache
+        if: startsWith(matrix.os, 'ubuntu')
+        run: |
+          sudo ldconfig
+
+      - name: Test usage from C (using Makefile)
+        if: startsWith(matrix.os, 'macos') || startsWith(matrix.os, 'ubuntu')
+        working-directory: examples/usage-from-c
+        run: |
+          make
+
   cross_testing:
     runs-on: ubuntu-latest
     strategy:
@@ -96,15 +184,29 @@ jobs:
           toolchain: nightly
           override: true
 
-      - name: Install cargo-tarpaulin
-        uses: actions-rs/install@v0.1
+      - name: Get Rust Version
+        id: rust-version
+        run: echo "::set-output name=version::$(cargo -V | head -n1 | awk '{print $2}')"
+
+      - name: Get Tarpaulin Version
+        id: tarpaulin-version
+        run: echo "::set-output name=version::$(wget -qO- 'https://api.github.com/repos/xd009642/tarpaulin/releases/latest' | jq -r '.tag_name')"
+
+      - uses: actions/cache@v2
         with:
-          crate: cargo-tarpaulin
-          version: latest
-          use-tool-cache: true
+          path: |
+            ~/.cargo/bin/cargo-tarpaulin
+            ~/.cargo/git
+            ~/.cargo/registry
+            target
+          key: ${{ runner.os }}-cargo-${{ steps.rust-version.outputs.version }}-tarpaulin-${{ steps.tarpaulin-version.outputs.version }} }}
+
+      - name: Install Tarpaulin
+        run: |
+          test -e ~/.cargo/bin/cargo-tarpaulin || cargo install cargo-tarpaulin --version ${{ steps.tarpaulin-version.outputs.version }}
 
       - name: Run cargo-tarpaulin
-        run: cargo tarpaulin --all-features --timeout 600 --out Xml -- --test-threads 1
+        run: cargo tarpaulin --timeout 600 --out Xml -- --test-threads 1
 
       - name: Upload coverage to codecov
         uses: codecov/codecov-action@v1.0.3
@@ -155,7 +257,7 @@ jobs:
         run: |
           git update-index --refresh
           git diff
-          git diff-index --quiet HEAD -- include/gswteos-10.h || echo "::error file=include/gswteos-10.h::Header doesn't match committed file, did you forget to rerun cbindgen?"
+          git diff-index --quiet HEAD -- assets/gswteos-10.h || echo "::error file=assets/gswteos-10.h::Header doesn't match committed file, did you forget to rerun cbindgen?"
 
   minimum_rust_version:
     runs-on: ubuntu-latest
@@ -170,11 +272,10 @@ jobs:
           toolchain: 1.37.0
           override: true
 
-      - name: Run tests
+      - name: Check if it builds
         uses: actions-rs/cargo@v1
         with:
-          command: test
-          args: --no-fail-fast
+          command: build
 
   publish:
     name: Publish (dry-run)

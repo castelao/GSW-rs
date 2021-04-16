@@ -4,3 +4,6 @@ language = "C"
 no_includes = true
 cpp_compat = true
 #sys_includes = ["stdio", "stdlib", "string", "math", "errno"]
+
+[fn]
+sort_by = "Name"

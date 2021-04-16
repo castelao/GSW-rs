@@ -1,0 +1,99 @@
+name: Python tests using GSW-rs
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  test_py_api:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [macos-latest, windows-latest, ubuntu-latest]
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          repository: "TEOS-10/GSW-Python"
+          ref: 63a7747166f243f6eed844ae18c3ac2de54c399e
+
+      - uses: actions/checkout@v2
+        with:
+          path: 'src/GSW-rs'
+
+      - uses: actions-rs/toolchain@v1
+        with:
+          toolchain: stable
+          override: true
+
+      - name: Get Rust Version
+        id: rust-version
+        run: echo "::set-output name=version::$(cargo -V | head -n1 | awk '{print $2}')"
+
+      - uses: actions/cache@v2
+        with:
+          path: |
+            ~/.cargo/git
+            ~/.cargo/registry
+            target
+          key: ${{ runner.os }}-cargo-${{ steps.rust-version.outputs.version }}
+
+      - name: Install cargo-c (linux)
+        if: startsWith(matrix.os, 'ubuntu')
+        env:
+          LINK: https://github.com/lu-zero/cargo-c/releases/download
+          CARGO_C_VERSION: 0.8.0
+        run: |
+          curl -L "$LINK/v$CARGO_C_VERSION/cargo-c-linux.tar.gz" |
+          tar xz -C $HOME/.cargo/bin
+
+      - name: Install cargo-c (macos)
+        if: startsWith(matrix.os, 'macos')
+        env:
+          LINK: https://github.com/lu-zero/cargo-c/releases/download
+          CARGO_C_VERSION: 0.8.0
+        run: |
+          curl -LO "$LINK/v$CARGO_C_VERSION/cargo-c-macos.zip"
+          7z e -y "cargo-c-macos.zip" -o$HOME/.cargo/bin
+
+      - name: Install cargo-c (win)
+        if: startsWith(matrix.os, 'windows')
+        run: |
+            $LINK = "https://github.com/lu-zero/cargo-c/releases/download/v0.8.0"
+            $CARGO_C_FILE = "cargo-c-windows-msvc"
+            curl -LO "$LINK/$CARGO_C_FILE.zip"
+            7z e -y "$CARGO_C_FILE.zip" -o"${env:USERPROFILE}\.cargo\bin"
+
+      - name: Set up Python 3.9
+        uses: actions/setup-python@v2
+        with:
+          python-version: "3.9"
+
+      - name: Get pip cache dir
+        id: pip-cache
+        run: |
+          echo "::set-output name=dir::$(pip cache dir)"
+
+      - name: pip cache
+        uses: actions/cache@v2
+        with:
+          path: ${{ steps.pip-cache.outputs.dir }}
+          key: ${{ runner.os }}-pip-${{ hashFiles('**/setup.py') }}
+          restore-keys: |
+            ${{ runner.os }}-pip-
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install pytest
+
+      - name: Install patched GSW-Python
+        run: |
+          git apply src/GSW-rs/utils/gsw-py-patch
+          pip install .
+
+      - name: Run pytest
+        continue-on-error: true
+        run: |
+          pytest -s -rxs -v gsw/tests
