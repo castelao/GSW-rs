@@ -47,7 +47,7 @@ pub unsafe extern "C" fn gsw_specvol_alpha_beta(
     alpha: *mut f64,
     beta: *mut f64,
 ) {
-    result = crate::specvol_alpha_beta(sa, ct, p);
+    let result = crate::specvol_alpha_beta(sa, ct, p);
     *specvol = result.0;
     *alpha = result.1;
     *beta = result.2;
@@ -1369,6 +1369,113 @@ mod test {
 
             int main() {
                 printf("%.15f", gsw_specvol(1., 1., 1.));
+
+                return 0;
+            }
+        })
+        .success()
+        .stdout(format!("{:.15}", result));
+    }
+
+    #[test]
+    fn test_alpha_c() {
+        let result: f64 = crate::alpha(1., 1., 1.);
+        (assert_c! {
+            #include <stdio.h>
+            #include "gswteos-10.h"
+
+            int main() {
+                printf("%.15f", gsw_alpha(1., 1., 1.));
+
+                return 0;
+            }
+        })
+        .success()
+        .stdout(format!("{:.15}", result));
+    }
+
+    #[test]
+    fn test_beta_c() {
+        let result: f64 = crate::beta(1., 1., 1.);
+        (assert_c! {
+            #include <stdio.h>
+            #include "gswteos-10.h"
+
+            int main() {
+                printf("%.15f", gsw_beta(1., 1., 1.));
+
+                return 0;
+            }
+        })
+        .success()
+        .stdout(format!("{:.15}", result));
+    }
+
+    #[test]
+    fn test_specvol_sso_0_c() {
+        let result: f64 = crate::specvol_sso_0(1.);
+        (assert_c! {
+            #include <stdio.h>
+            #include "gswteos-10.h"
+
+            int main() {
+                printf("%.15f", gsw_specvol_sso_0(1.));
+
+                return 0;
+            }
+        })
+        .success()
+        .stdout(format!("{:.15}", result));
+    }
+
+    #[test]
+    fn test_specvol_anom_standard_c() {
+        let result: f64 = crate::specvol_anom_standard(1., 1., 1.);
+        (assert_c! {
+            #include <stdio.h>
+            #include "gswteos-10.h"
+
+            int main() {
+                printf("%.15f", gsw_specvol_anom_standard(1., 1., 1.));
+
+                return 0;
+            }
+        })
+        .success()
+        .stdout(format!("{:.15}", result));
+    }
+
+    #[test]
+    fn test_specvol_alpha_beta_c() {
+        let result = crate::specvol_alpha_beta(1., 1., 1.);
+        (assert_c! {
+            #include <stdio.h>
+            #include "gswteos-10.h"
+
+            int main() {
+                double specvol, alpha, beta;
+                gsw_specvol_alpha_beta(1., 1., 1., &specvol, &alpha, &beta);
+                printf("%.15f %.15f %.15f", specvol, alpha, beta);
+
+                return 0;
+            }
+        })
+        .success()
+        .stdout(format!(
+            "{:.15} {:.15} {:.15}",
+            result.0, result.1, result.2
+        ));
+    }
+
+    #[test]
+    fn test_rho_c() {
+        let result: f64 = crate::rho(1., 1., 1.);
+        (assert_c! {
+            #include <stdio.h>
+            #include "gswteos-10.h"
+
+            int main() {
+                printf("%.15f", gsw_rho(1., 1., 1.));
 
                 return 0;
             }
