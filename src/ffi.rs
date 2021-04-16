@@ -55,7 +55,7 @@ pub unsafe extern "C" fn gsw_specvol_alpha_beta(
 
 #[no_mangle]
 pub unsafe extern "C" fn gsw_rho(sa: f64, ct: f64, p: f64) -> f64 {
-    crate::volume::rho(sa, ct, p)
+    crate::rho(sa, ct, p)
 }
 
 /////////////////////////
@@ -1469,7 +1469,7 @@ mod test {
 
     #[test]
     fn test_rho_c() {
-        let result: f64 = crate::volume::rho(1., 1., 1.);
+        let result: f64 = crate::rho(1., 1., 1.);
         (assert_c! {
             #include <stdio.h>
             #include "gswteos-10.h"

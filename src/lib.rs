@@ -12,9 +12,11 @@
 #![no_std]
 
 /// cbindgen:ignore
+#[allow(unused)]
 mod gsw_internal_const;
 
 /// cbindgen:ignore
+#[allow(unused)]
 mod gsw_specvol_coefficients;
 
 #[cfg(feature = "capi")]
@@ -23,15 +25,13 @@ mod ffi;
 mod volume;
 
 use crate::gsw_internal_const::*;
-use crate::gsw_specvol_coefficients::*;
 pub use crate::volume::{
-    alpha, beta, specvol, specvol_alpha_beta, specvol_anom_standard, specvol_sso_0,
+    alpha, beta, rho, specvol, specvol_alpha_beta, specvol_anom_standard, specvol_sso_0,
 };
 
 #[cfg(test)]
 mod tests {
-    use super::gsw_internal_const::*;
-    use super::{alpha, beta, specvol, specvol_alpha_beta, GSW_SFAC};
+    use super::GSW_SFAC;
 
     #[test]
     // Calculated SFAC is slightly different than the prescribed SFAC in other
@@ -50,7 +50,7 @@ mod tests {
         #[cfg(feature = "compat")]
         // Values from C implementation
         assert_eq!(
-            specvol_alpha_beta(34.537484086977358, 27.793319825682374, 50.),
+            super::specvol_alpha_beta(34.537484086977358, 27.793319825682374, 50.),
             (
                 0.00097826888242888476,
                 0.00031741177706767163,
