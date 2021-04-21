@@ -22,7 +22,8 @@ mod gsw_specvol_coefficients;
 #[cfg(feature = "capi")]
 mod ffi;
 
-mod volume;
+pub mod conversions;
+pub mod volume;
 
 use crate::gsw_internal_const::*;
 pub use crate::volume::{
@@ -102,20 +103,6 @@ pub fn z_from_p(
 
     // Depth z
     -2.0 * c / (b + libm::sqrt(b * b - 4.0 * a * c))
-}
-
-fn t90_from_t48(t48: f64) -> f64 {
-    (t48 - (4.4e-6) * t48 * (100. - t48)) / 1.00024
-}
-
-fn t90_from_t68(t68: f64) -> f64 {
-    #[cfg(feature = "compat")]
-    let t90: f64 = t68 * 0.999760057586179;
-
-    #[cfg(not(feature = "compat"))]
-    let t90: f64 = t68 / 1.00024;
-
-    t90
 }
 
 fn abs_pressure_from_p(p: f64) -> f64 {
