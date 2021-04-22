@@ -13,8 +13,23 @@
   ],
   "related_identifiers": [
     {
+      "scheme": "isbn",
+      "identifier": "978-0-646-55621-5",
+      "relation": "cites"
+    },
+    {
       "scheme": "handle",
       "identifier": "http://hdl.handle.net/11329/286",
+      "relation": "cites"
+    },
+    {
+      "scheme": "doi",
+      "identifier": "10.1016/j.dsr.2007.10.001",
+      "relation": "cites"
+    },
+    {
+      "scheme": "doi",
+      "identifier": "10.1016/j.ocemod.2015.04.002",
       "relation": "cites"
     }
   ]
