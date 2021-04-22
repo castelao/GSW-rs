@@ -36,8 +36,35 @@ pub fn t90_from_t68(t68: f64) -> f64 {
     }
 }
 
+/// Height from pressure
+///
+/// Calculates the height z from pressure p
+///
+/// p [dbar] : sea pressure ( i.e. absolute pressure - 10.1325 dbar )
+/// lat [deg] : latitude
+/// geo_strf_dyn_height [m^2/s^2] : dynamic height anomaly
+///
+/// Note that the reference pressure, p_ref, of geo_strf_dyn_height must
+/// be zero (0) dbar.
+/// sea_surface_geopotential [m^2/s^2] : geopotential at zero sea pressure
+///
+pub fn z_from_p(
+    press: f64,
+    lat: f64,
+    geo_strf_dyn_height: f64,
+    sea_surface_geopotential: f64,
+) -> f64 {
+    let x = libm::sin(lat * DEG2RAD);
+    let sin2 = x * x;
+    let b = 9.780327 * (1.0 + (5.2792e-3 + (2.32e-5 * sin2)) * sin2);
+    let a = -0.5 * GAMMA * b;
+    let c = enthalpy_sso_0(press) - (geo_strf_dyn_height + sea_surface_geopotential);
+
+    // Depth z
+    -2.0 * c / (b + libm::sqrt(b * b - 4.0 * a * c))
+}
+
 /*
-gsw_z_from_p
 gsw_p_from_z
 gsw_z_from_depth
 gsw_depth_from_z
