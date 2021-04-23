@@ -76,7 +76,3 @@ pub fn enthalpy_sso_0(p: f64) -> f64 {
 
     dynamic_enthalpy_sso_0_p * DB2PA * 1.0e4
 }
-
-fn abs_pressure_from_p(p: f64) -> f64 {
-    p * DB2PA + GSW_P0
-}

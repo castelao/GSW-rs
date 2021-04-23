@@ -1,3 +1,5 @@
+use crate::gsw_internal_const::{DB2PA, GSW_P0};
+
 /// Conversions
 ///
 /// Other conversions between temperatures, salinities, entropy, pressure and height
@@ -68,7 +70,15 @@ pub fn z_from_p(
 gsw_p_from_z
 gsw_z_from_depth
 gsw_depth_from_z
-gsw_Abs_Pressure_from_p
+*/
+
+/// Absolute Pressure, P, from sea pressure, p
+///
+pub fn abs_pressure_from_p(p: f64) -> f64 {
+    p * DB2PA + GSW_P0
+}
+
+/*
 gsw_p_from_Abs_Pressure
 gsw_entropy_from_CT
 gsw_CT_from_entropy
