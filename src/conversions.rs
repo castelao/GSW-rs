@@ -30,6 +30,24 @@ pub fn t90_from_t48(t48: f64) -> f64 {
 
 /// ITS-90 temperature from IPTS-68 temperature
 ///
+/// Converts IPTS-68 temperature to International Temperature Scale 1990
+/// (ITS-90) temperature according to Saunders 1990 appud TEOS-10 manual
+/// (Appendix A.1.4).
+///
+/// # Arguments
+///
+/// * `t68` - Temperature IPTS-68 [deg C]
+///
+/// # Returns
+///
+/// * `t90` - Temperature ITS-90 [deg C]
+///
+/// # Examples
+/// ```
+/// use gsw::conversions::t90_from_t68;
+///
+/// let t90 = t90_from_t68(13.42);
+/// ```
 pub fn t90_from_t68(t68: f64) -> f64 {
     if cfg!(feature = "compat") {
         t68 * 0.999760057586179
