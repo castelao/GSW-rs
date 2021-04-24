@@ -1,4 +1,4 @@
-use crate::gsw_internal_const::{DB2PA, GSW_P0};
+use crate::gsw_internal_const::{DB2PA, DEG2RAD, GAMMA, GSW_P0};
 use crate::gsw_internal_funcs::enthalpy_sso_0;
 
 /// Conversions
