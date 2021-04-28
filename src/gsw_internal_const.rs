@@ -11,8 +11,12 @@ pub const DEG2RAD: f64 = PI / 180.0;
 
 /// If the graviational acceleration were to be regarded as being
 /// depth-independent, which is often the case in ocean models, then gamma
-/// would be set to be zero here, and the code below works perfectly well.
-pub const GAMMA: f64 = 2.26e-7;
+/// would be set to be zero.
+pub const GAMMA: f64 = if cfg!(feature = "nodgdz") {
+    0.0
+} else {
+    2.26e-7
+};
 
 /// Specific Heat [ J/(kg K) ]
 /// cp0: The "specific heat" for use with Conservative Temperature
