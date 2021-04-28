@@ -1,9 +1,10 @@
+//! Conversions
+//!
+//! Other conversions between temperatures, salinities, entropy, pressure
+//! and height.
+
 use crate::gsw_internal_const::{DB2PA, DEG2RAD, GAMMA, GSW_P0};
 use crate::gsw_internal_funcs::enthalpy_sso_0;
-
-/// Conversions
-///
-/// Other conversions between temperatures, salinities, entropy, pressure and height
 
 /*
 other conversions between temperatures, salinities, entropy, pressure and height
