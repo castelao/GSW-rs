@@ -1,5 +1,6 @@
 /// ! GSW TEOS10 Constants
 
+#[allow(clippy::approx_constant)]
 /// Pi
 pub const PI: f64 = if cfg!(feature = "compat") {
     3.141592653589793
