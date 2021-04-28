@@ -97,8 +97,16 @@ pub fn abs_pressure_from_p(p: f64) -> f64 {
     p * DB2PA + GSW_P0
 }
 
+/// Pressure from absolute pressure
+///
+/// # Arguments
+/// * absolute_pressure [Pa] - Absolute pressure
+///
+pub fn p_from_abs_pressure(absolute_pressure: f64) -> f64 {
+    (absolute_pressure - GSW_P0) / DB2PA
+}
+
 /*
-gsw_p_from_Abs_Pressure
 gsw_entropy_from_CT
 gsw_CT_from_entropy
 gsw_entropy_from_pt
