@@ -7,7 +7,6 @@ use crate::gsw_internal_const::{DB2PA, DEG2RAD, GAMMA, GSW_P0};
 use crate::gsw_internal_funcs::enthalpy_sso_0;
 
 /*
-other conversions between temperatures, salinities, entropy, pressure and height
 gsw_deltaSA_from_SP
 gsw_SA_Sstar_from_SP
 gsw_SR_from_SP
