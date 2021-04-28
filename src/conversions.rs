@@ -24,6 +24,7 @@ gsw_pt_from_t
 gsw_pt0_from_t
 gsw_t_from_pt0
 */
+
 /// ITS-90 temperature from IPTS-48 temperature
 ///
 pub fn t90_from_t48(t48: f64) -> f64 {
@@ -127,3 +128,23 @@ gsw_adiabatic_lapse_rate_from_t
 gsw_molality_from_SA
 gsw_ionic_strength_from_SA
 */
+
+#[cfg(test)]
+mod tests {
+    use super::{t90_from_t68, z_from_p};
+
+    #[test]
+    fn test_t90_from_t68() {
+        assert_eq!(0.0, t90_from_t68(0.0));
+        if cfg!(feature = "compat") {
+            assert_eq!(9.999999999999996, t90_from_t68(10.0024));
+        } else {
+            assert_eq!(10.0, t90_from_t68(10.0024));
+        }
+    }
+
+    #[test]
+    fn test_z_from_p() {
+        assert_eq!(0.0, z_from_p(0.0, 33.3482, 0.0, 0.0));
+    }
+}
