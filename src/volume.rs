@@ -276,6 +276,7 @@ pub fn specvol_alpha_beta(sa: f64, ct: f64, p: f64) -> (f64, f64, f64) {
     (specvol, alpha, beta)
 }
 
+/*
 fn specvol_first_derivatives_wrt_enthalpy(sa: f64, ct: f64, p: f64) -> (f64, f64) {
     unimplemented!()
 }
@@ -344,6 +345,7 @@ fn specvol_anom_standard_t_exact() {
 fn specvol_anom_t_exact() {
     unimplemented!()
 }
+*/
 
 /// in-situ density
 ///
