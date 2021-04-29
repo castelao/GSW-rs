@@ -24,6 +24,9 @@ default = []
 capi = ["libc"]
 # Compatibility with Matlab implementation
 compat = []
+# Depth-independent gravitational acceleration. Useful for numerical models
+# Maybe rename to constg?
+nodgdz = []
 
 [lib]
 name = "gsw"
