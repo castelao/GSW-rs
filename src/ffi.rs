@@ -15,7 +15,7 @@ pub const INTERP_METHOD_PCHIP: u8 = 2;
 
 #[no_mangle]
 pub unsafe extern "C" fn gsw_specvol(sa: f64, ct: f64, p: f64) -> f64 {
-    crate::specvol(sa, ct, p)
+    crate::specvol(sa, ct, p).unwrap()
 }
 
 #[no_mangle]
@@ -25,7 +25,7 @@ pub unsafe extern "C" fn gsw_alpha(sa: f64, ct: f64, p: f64) -> f64 {
 
 #[no_mangle]
 pub unsafe extern "C" fn gsw_beta(sa: f64, ct: f64, p: f64) -> f64 {
-    crate::beta(sa, ct, p)
+    crate::beta(sa, ct, p).unwrap()
 }
 
 #[no_mangle]
@@ -35,7 +35,7 @@ pub unsafe extern "C" fn gsw_specvol_sso_0(p: f64) -> f64 {
 
 #[no_mangle]
 pub unsafe extern "C" fn gsw_specvol_anom_standard(sa: f64, ct: f64, p: f64) -> f64 {
-    crate::specvol_anom_standard(sa, ct, p)
+    crate::specvol_anom_standard(sa, ct, p).unwrap()
 }
 
 #[no_mangle]
@@ -55,7 +55,7 @@ pub unsafe extern "C" fn gsw_specvol_alpha_beta(
 
 #[no_mangle]
 pub unsafe extern "C" fn gsw_rho(sa: f64, ct: f64, p: f64) -> f64 {
-    crate::rho(sa, ct, p)
+    crate::rho(sa, ct, p).unwrap()
 }
 
 /////////////////////////
