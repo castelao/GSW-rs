@@ -20,7 +20,7 @@ pub unsafe extern "C" fn gsw_specvol(sa: f64, ct: f64, p: f64) -> f64 {
 
 #[no_mangle]
 pub unsafe extern "C" fn gsw_alpha(sa: f64, ct: f64, p: f64) -> f64 {
-    crate::alpha(sa, ct, p)
+    crate::alpha(sa, ct, p).unwrap()
 }
 
 #[no_mangle]
@@ -47,7 +47,7 @@ pub unsafe extern "C" fn gsw_specvol_alpha_beta(
     alpha: *mut f64,
     beta: *mut f64,
 ) {
-    let result = crate::specvol_alpha_beta(sa, ct, p);
+    let result = crate::specvol_alpha_beta(sa, ct, p).unwrap();
     *specvol = result.0;
     *alpha = result.1;
     *beta = result.2;
@@ -1379,7 +1379,7 @@ mod test {
 
     #[test]
     fn test_alpha_c() {
-        let result: f64 = crate::alpha(1., 1., 1.);
+        let result: f64 = crate::alpha(1., 1., 1.).unwrap();
         (assert_c! {
             #include <stdio.h>
             #include "gswteos-10.h"
@@ -1447,7 +1447,7 @@ mod test {
 
     #[test]
     fn test_specvol_alpha_beta_c() {
-        let result = crate::specvol_alpha_beta(1., 1., 1.);
+        let result = crate::specvol_alpha_beta(1., 1., 1.).unwrap();
         (assert_c! {
             #include <stdio.h>
             #include "gswteos-10.h"
