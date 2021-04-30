@@ -407,19 +407,29 @@ mod tests {
     }
 
     #[test]
-    // If feature compatible is activated, negative sa will be replaced by 0.0
     fn test_negative_sa() {
-        if cfg!(feature = "compat") {
-            let p_to_test: [f64; 5] = [0., 10., 100., 1000., 5000.];
-            let ct_to_test: [f64; 5] = [0., 10., 20., 30., 40.];
-            for p in p_to_test.iter() {
-                for ct in ct_to_test.iter() {
+        let p_to_test: [f64; 5] = [0., 10., 100., 1000., 5000.];
+        let ct_to_test: [f64; 5] = [0., 10., 20., 30., 40.];
+        for p in p_to_test.iter() {
+            for ct in ct_to_test.iter() {
+                if cfg!(feature = "compat") {
+                    // If feature compatible is activated, negative sa will be replaced by 0.0
                     assert_eq!(specvol(-20.0, *ct, *p), specvol(0.0, *ct, *p));
-                    assert_eq!(alpha(-20.0, *ct, *p), alpha(0.0, *ct, *p));
+                    assert_eq!(alpha(-20.0, *ct, *p).unwrap(), alpha(0.0, *ct, *p).unwrap());
                     assert_eq!(beta(-20.0, *ct, *p), beta(0.0, *ct, *p));
+                } else {
+                    // It should return an error if not compat
+
+                    #[cfg(feature = "std")]
+                    assert!(matches!(
+                        alpha(-20.0, *ct, *p),
+                        Err(crate::Error::NegativeSalinity)
+                    ));
+
+                    #[cfg(not(feature = "std"))]
+                    assert!(matches!(alpha(-20.0, *ct, *p), Err("Negative SA")));
                 }
             }
         }
-        // ToDo: It should return an error if not compat
     }
 }
