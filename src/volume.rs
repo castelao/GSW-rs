@@ -4,7 +4,7 @@
 use crate::gsw_internal_const::*;
 use crate::gsw_specvol_coefficients::*;
 
-pub fn alpha(sa: f64, ct: f64, p: f64) -> f64 {
+pub fn alpha(sa: f64, ct: f64, p: f64) -> Result<f64, &'static str> {
     // Other implementations force negative SA to be 0. That is dangerous
     // since it can hide error by processing unrealistic inputs
     let sa: f64 = if sa >= 0.0 {
@@ -12,7 +12,7 @@ pub fn alpha(sa: f64, ct: f64, p: f64) -> f64 {
     } else if cfg!(feature = "compat") {
         0.0
     } else {
-        panic!("Negative SA");
+        return Err("Negative SA");
     };
 
     let xs: f64 = libm::sqrt(GSW_SFAC * sa + OFFSET);
@@ -36,7 +36,7 @@ pub fn alpha(sa: f64, ct: f64, p: f64) -> f64 {
                 + ys * (A012 + xs * (A112 + A212 * xs) + ys * (A022 + A122 * xs + A032 * ys))
                 + z * (A003 + A103 * xs + A013 * ys + A004 * z)));
 
-    0.025 * v_ct / specvol(sa, ct, p)
+    Ok(0.025 * v_ct / specvol(sa, ct, p))
 }
 
 pub fn beta(sa: f64, ct: f64, p: f64) -> f64 {
@@ -268,12 +268,12 @@ pub fn specvol_first_derivatives(sa: f64, ct: f64, p: f64) -> (f64, f64, f64) {
     (v_sa, v_ct, v_p)
 }
 
-pub fn specvol_alpha_beta(sa: f64, ct: f64, p: f64) -> (f64, f64, f64) {
+pub fn specvol_alpha_beta(sa: f64, ct: f64, p: f64) -> Result<(f64, f64, f64), &'static str> {
     let specvol = specvol(sa, ct, p);
-    let alpha = alpha(sa, ct, p);
+    let alpha = alpha(sa, ct, p)?;
     let beta = beta(sa, ct, p);
 
-    (specvol, alpha, beta)
+    Ok((specvol, alpha, beta))
 }
 
 /*
