@@ -3,8 +3,9 @@
 
 use crate::gsw_internal_const::*;
 use crate::gsw_specvol_coefficients::*;
+use crate::Result;
 
-pub fn alpha(sa: f64, ct: f64, p: f64) -> f64 {
+pub fn alpha(sa: f64, ct: f64, p: f64) -> Result<f64> {
     // Other implementations force negative SA to be 0. That is dangerous
     // since it can hide error by processing unrealistic inputs
     let sa: f64 = if sa >= 0.0 {
@@ -12,7 +13,7 @@ pub fn alpha(sa: f64, ct: f64, p: f64) -> f64 {
     } else if cfg!(feature = "compat") {
         0.0
     } else {
-        panic!("Negative SA");
+        return Err("Negative SA".into());
     };
 
     let xs: f64 = libm::sqrt(GSW_SFAC * sa + OFFSET);
@@ -36,10 +37,10 @@ pub fn alpha(sa: f64, ct: f64, p: f64) -> f64 {
                 + ys * (A012 + xs * (A112 + A212 * xs) + ys * (A022 + A122 * xs + A032 * ys))
                 + z * (A003 + A103 * xs + A013 * ys + A004 * z)));
 
-    0.025 * v_ct / specvol(sa, ct, p)
+    Ok(0.025 * v_ct / specvol(sa, ct, p)?)
 }
 
-pub fn beta(sa: f64, ct: f64, p: f64) -> f64 {
+pub fn beta(sa: f64, ct: f64, p: f64) -> Result<f64> {
     // Other implementations force negative SA to be 0. That is dangerous
     // since it can hide error by processing unrealistic inputs
     let sa: f64 = if sa >= 0.0 {
@@ -47,7 +48,7 @@ pub fn beta(sa: f64, ct: f64, p: f64) -> f64 {
     } else if cfg!(feature = "compat") {
         0.0
     } else {
-        panic!("Negative SA");
+        return Err("Negative SA".into());
     };
 
     let xs: f64 = libm::sqrt(GSW_SFAC * sa + OFFSET);
@@ -71,7 +72,7 @@ pub fn beta(sa: f64, ct: f64, p: f64) -> f64 {
                 + ys * (B012 + xs * (B112 + B212 * xs) + ys * (B022 + B122 * xs + B032 * ys))
                 + z * (B003 + B103 * xs + B013 * ys + B004 * z)));
 
-    -v_sa * 0.5 * GSW_SFAC / (specvol(sa, ct, p) * xs)
+    Ok(-v_sa * 0.5 * GSW_SFAC / (specvol(sa, ct, p)? * xs))
 }
 
 /// Calculates specific volume of sea water
@@ -89,7 +90,7 @@ pub fn beta(sa: f64, ct: f64, p: f64) -> f64 {
 /// Note that the coefficients v(i,j,k) follow the convention in the original
 /// paper, which is different from the convention used in the C-library.
 ///
-pub fn specvol(sa: f64, ct: f64, p: f64) -> f64 {
+pub fn specvol(sa: f64, ct: f64, p: f64) -> Result<f64> {
     // Other implementations force negative SA to be 0. That is dangerous
     // since it can hide error by processing unrealistic inputs
     let sa: f64 = if sa >= 0.0 {
@@ -97,7 +98,7 @@ pub fn specvol(sa: f64, ct: f64, p: f64) -> f64 {
     } else if cfg!(feature = "compat") {
         0.0
     } else {
-        panic!("Negative SA");
+        return Err("Negative SA".into());
     };
 
     let xs: f64 = libm::sqrt(GSW_SFAC * sa + OFFSET);
@@ -105,30 +106,37 @@ pub fn specvol(sa: f64, ct: f64, p: f64) -> f64 {
     let z: f64 = p / GSW_PU;
 
     // Specific Volume
-    V000 + xs * (V100 + xs * (V200 + xs * (V300 + xs * (V400 + xs * (V500 + xs * V600)))))
+    Ok(V000
+        + xs * (V100 + xs * (V200 + xs * (V300 + xs * (V400 + xs * (V500 + xs * V600)))))
         + ys * (V010
             + xs * (V110 + xs * (V210 + xs * (V310 + xs * (V410 + xs * V510))))
             + ys * (V020
                 + xs * (V120 + xs * (V220 + xs * (V320 + xs * V420)))
                 + ys * (V030
                     + xs * (V130 + xs * (V230 + xs * V330))
-                    + ys * (V040 + xs * (V140 + xs * V240) + ys * (V050 + xs * V150 + ys * V060)))))
+                    + ys * (V040
+                        + xs * (V140 + xs * V240)
+                        + ys * (V050 + xs * V150 + ys * V060)))))
         + z * (V001
             + xs * (V101 + xs * (V201 + xs * (V301 + xs * (V401 + xs * V501))))
             + ys * (V011
                 + xs * (V111 + xs * (V211 + xs * (V311 + xs * V411)))
                 + ys * (V021
                     + xs * (V121 + xs * (V221 + xs * V321))
-                    + ys * (V031 + xs * (V131 + xs * V231) + ys * (V041 + xs * V141 + ys * V051))))
+                    + ys * (V031
+                        + xs * (V131 + xs * V231)
+                        + ys * (V041 + xs * V141 + ys * V051))))
             + z * (V002
                 + xs * (V102 + xs * (V202 + xs * (V302 + xs * V402)))
                 + ys * (V012
                     + xs * (V112 + xs * (V212 + xs * V312))
-                    + ys * (V022 + xs * (V122 + xs * V222) + ys * (V032 + xs * V132 + ys * V042)))
+                    + ys * (V022
+                        + xs * (V122 + xs * V222)
+                        + ys * (V032 + xs * V132 + ys * V042)))
                 + z * (V003
                     + xs * (V103 + xs * V203)
                     + ys * (V013 + xs * V113 + ys * V023)
-                    + z * (V004 + xs * V104 + ys * V014 + z * (V005 + z * V006)))))
+                    + z * (V004 + xs * V104 + ys * V014 + z * (V005 + z * V006))))))
 }
 
 /// Specific Volume of Standard Ocean Salinity and CT=0
@@ -189,11 +197,11 @@ pub fn specvol_sso_0(p: f64) -> f64 {
 ///
 /// specvol_anom : specific volume anomaly of seawater
 ///
-pub fn specvol_anom_standard(sa: f64, ct: f64, p: f64) -> f64 {
-    specvol(sa, ct, p) - specvol_sso_0(p)
+pub fn specvol_anom_standard(sa: f64, ct: f64, p: f64) -> Result<f64> {
+    Ok(specvol(sa, ct, p)? - specvol_sso_0(p))
 }
 
-pub fn specvol_first_derivatives(sa: f64, ct: f64, p: f64) -> (f64, f64, f64) {
+pub fn specvol_first_derivatives(sa: f64, ct: f64, p: f64) -> Result<(f64, f64, f64)> {
     // Other implementations force negative SA to be 0. That is dangerous
     // since it can hide error by processing unrealistic inputs
     let sa: f64 = if sa >= 0.0 {
@@ -201,7 +209,7 @@ pub fn specvol_first_derivatives(sa: f64, ct: f64, p: f64) -> (f64, f64, f64) {
     } else if cfg!(feature = "compat") {
         0.0
     } else {
-        panic!("Negative SA");
+        return Err("Negative SA".into());
     };
 
     let xs: f64 = libm::sqrt(GSW_SFAC * sa + OFFSET);
@@ -265,15 +273,15 @@ pub fn specvol_first_derivatives(sa: f64, ct: f64, p: f64) -> (f64, f64, f64) {
 
     let v_p = 1e-8 * v_p_part;
 
-    (v_sa, v_ct, v_p)
+    Ok((v_sa, v_ct, v_p))
 }
 
-pub fn specvol_alpha_beta(sa: f64, ct: f64, p: f64) -> (f64, f64, f64) {
-    let specvol = specvol(sa, ct, p);
-    let alpha = alpha(sa, ct, p);
-    let beta = beta(sa, ct, p);
+pub fn specvol_alpha_beta(sa: f64, ct: f64, p: f64) -> Result<(f64, f64, f64)> {
+    let specvol = specvol(sa, ct, p)?;
+    let alpha = alpha(sa, ct, p)?;
+    let beta = beta(sa, ct, p)?;
 
-    (specvol, alpha, beta)
+    Ok((specvol, alpha, beta))
 }
 
 /*
@@ -359,8 +367,8 @@ fn specvol_anom_t_exact() {
 ///
 /// rho  [kg/m] : in-situ density
 ///
-pub fn rho(sa: f64, ct: f64, p: f64) -> f64 {
-    1.0 / specvol(sa, ct, p)
+pub fn rho(sa: f64, ct: f64, p: f64) -> Result<f64> {
+    Ok(1.0 / specvol(sa, ct, p)?)
 }
 
 #[cfg(test)]
@@ -371,16 +379,19 @@ mod tests {
     // Test value from Roquet 2015, Appendix C.3
     // rounded to 9.732819628e-04
     fn test_specvol_roquet2015() {
-        assert!((specvol(30., 10., 1000.0) - 9.732819628e-04).abs() <= 5e-14);
+        assert!((specvol(30., 10., 1000.0).unwrap() - 9.732819628e-04).abs() <= 5e-14);
     }
 
+    #[allow(clippy::excessive_precision)]
     #[test]
     fn test_specvol() {
         if cfg!(feature = "compat") {
             // Test value from C library.
-            assert_eq!(
-                specvol(34.507499465692057, 27.994827331978655, 0.0),
-                0.00097855432330275953
+            assert!(
+                (specvol(34.507499465692057, 27.994827331978655, 0.0).unwrap()
+                    - 0.00097855432330275953)
+                    .abs()
+                    < f64::EPSILON
             );
         }
     }
@@ -390,9 +401,9 @@ mod tests {
     fn test_specvol_vs_specvol_sso_0() {
         let p_to_test: [f64; 5] = [0., 10., 100., 1000., 5000.];
         for p in p_to_test.iter().cloned() {
-            let specvol = specvol(GSW_SSO, 0., p);
+            let specvol = specvol(GSW_SSO, 0., p).unwrap();
             let specvol_sso_0 = specvol_sso_0(p);
-            assert_eq!(specvol, specvol_sso_0);
+            assert!((specvol - specvol_sso_0).abs() < f64::EPSILON);
         }
     }
 
@@ -401,24 +412,43 @@ mod tests {
     fn test_specvol_anom_standard_at_standard() {
         let p_to_test: [f64; 5] = [0., 10., 100., 1000., 5000.];
         for p in p_to_test.iter().cloned() {
-            assert_eq!(specvol_anom_standard(GSW_SSO, 0.0, p), 0.0);
+            assert!((specvol_anom_standard(GSW_SSO, 0.0, p).unwrap() - 0.0).abs() < f64::EPSILON);
         }
     }
 
     #[test]
-    // If feature compatible is activated, negative sa will be replaced by 0.0
     fn test_negative_sa() {
-        if cfg!(feature = "compat") {
-            let p_to_test: [f64; 5] = [0., 10., 100., 1000., 5000.];
-            let ct_to_test: [f64; 5] = [0., 10., 20., 30., 40.];
-            for p in p_to_test.iter() {
-                for ct in ct_to_test.iter() {
-                    assert_eq!(specvol(-20.0, *ct, *p), specvol(0.0, *ct, *p));
-                    assert_eq!(alpha(-20.0, *ct, *p), alpha(0.0, *ct, *p));
-                    assert_eq!(beta(-20.0, *ct, *p), beta(0.0, *ct, *p));
+        let p_to_test: [f64; 5] = [0., 10., 100., 1000., 5000.];
+        let ct_to_test: [f64; 5] = [0., 10., 20., 30., 40.];
+        for p in p_to_test.iter() {
+            for ct in ct_to_test.iter() {
+                if cfg!(feature = "compat") {
+                    // If feature compatible is activated, negative sa will be replaced by 0.0
+                    assert!(
+                        (specvol(-20.0, *ct, *p).unwrap() - specvol(0.0, *ct, *p).unwrap()).abs()
+                            < f64::EPSILON
+                    );
+                    assert!(
+                        (alpha(-20.0, *ct, *p).unwrap() - alpha(0.0, *ct, *p).unwrap()).abs()
+                            < f64::EPSILON
+                    );
+                    assert!(
+                        (beta(-20.0, *ct, *p).unwrap() - beta(0.0, *ct, *p).unwrap()).abs()
+                            < f64::EPSILON
+                    );
+                } else {
+                    // It should return an error if not compat
+
+                    #[cfg(feature = "std")]
+                    assert!(matches!(
+                        alpha(-20.0, *ct, *p),
+                        Err(crate::Error::NegativeSalinity)
+                    ));
+
+                    #[cfg(not(feature = "std"))]
+                    assert!(matches!(alpha(-20.0, *ct, *p), Err("Negative SA")));
                 }
             }
         }
-        // ToDo: It should return an error if not compat
     }
 }

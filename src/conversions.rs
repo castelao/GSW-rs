@@ -139,16 +139,16 @@ mod tests {
 
     #[test]
     fn test_t90_from_t68() {
-        assert_eq!(0.0, t90_from_t68(0.0));
+        assert!((0.0 - t90_from_t68(0.0)).abs() < f64::EPSILON);
         if cfg!(feature = "compat") {
-            assert_eq!(9.999999999999996, t90_from_t68(10.0024));
+            assert!((9.999999999999996 - t90_from_t68(10.0024)).abs() < f64::EPSILON);
         } else {
-            assert_eq!(10.0, t90_from_t68(10.0024));
+            assert!((10.0 - t90_from_t68(10.0024)).abs() < f64::EPSILON);
         }
     }
 
     #[test]
     fn test_z_from_p() {
-        assert_eq!(0.0, z_from_p(0.0, 33.3482, 0.0, 0.0));
+        assert!((0.0 - z_from_p(0.0, 33.3482, 0.0, 0.0)).abs() < f64::EPSILON);
     }
 }
