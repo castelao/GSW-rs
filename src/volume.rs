@@ -382,13 +382,16 @@ mod tests {
         assert!((specvol(30., 10., 1000.0).unwrap() - 9.732819628e-04).abs() <= 5e-14);
     }
 
+    #[allow(clippy::excessive_precision)]
     #[test]
     fn test_specvol() {
         if cfg!(feature = "compat") {
             // Test value from C library.
-            assert_eq!(
-                specvol(34.507499465692057, 27.994827331978655, 0.0).unwrap(),
-                0.00097855432330275953
+            assert!(
+                (specvol(34.507499465692057, 27.994827331978655, 0.0).unwrap()
+                    - 0.00097855432330275953)
+                    .abs()
+                    < f64::EPSILON
             );
         }
     }
@@ -400,7 +403,7 @@ mod tests {
         for p in p_to_test.iter().cloned() {
             let specvol = specvol(GSW_SSO, 0., p).unwrap();
             let specvol_sso_0 = specvol_sso_0(p);
-            assert_eq!(specvol, specvol_sso_0);
+            assert!((specvol - specvol_sso_0).abs() < f64::EPSILON);
         }
     }
 
@@ -409,7 +412,7 @@ mod tests {
     fn test_specvol_anom_standard_at_standard() {
         let p_to_test: [f64; 5] = [0., 10., 100., 1000., 5000.];
         for p in p_to_test.iter().cloned() {
-            assert_eq!(specvol_anom_standard(GSW_SSO, 0.0, p).unwrap(), 0.0);
+            assert!((specvol_anom_standard(GSW_SSO, 0.0, p).unwrap() - 0.0).abs() < f64::EPSILON);
         }
     }
 
@@ -421,12 +424,18 @@ mod tests {
             for ct in ct_to_test.iter() {
                 if cfg!(feature = "compat") {
                     // If feature compatible is activated, negative sa will be replaced by 0.0
-                    assert_eq!(
-                        specvol(-20.0, *ct, *p).unwrap(),
-                        specvol(0.0, *ct, *p).unwrap()
+                    assert!(
+                        (specvol(-20.0, *ct, *p).unwrap() - specvol(0.0, *ct, *p).unwrap()).abs()
+                            < f64::EPSILON
                     );
-                    assert_eq!(alpha(-20.0, *ct, *p).unwrap(), alpha(0.0, *ct, *p).unwrap());
-                    assert_eq!(beta(-20.0, *ct, *p).unwrap(), beta(0.0, *ct, *p).unwrap());
+                    assert!(
+                        (alpha(-20.0, *ct, *p).unwrap() - alpha(0.0, *ct, *p).unwrap()).abs()
+                            < f64::EPSILON
+                    );
+                    assert!(
+                        (beta(-20.0, *ct, *p).unwrap() - beta(0.0, *ct, *p).unwrap()).abs()
+                            < f64::EPSILON
+                    );
                 } else {
                     // It should return an error if not compat
 
