@@ -15,17 +15,26 @@ pub const INTERP_METHOD_PCHIP: u8 = 2;
 
 #[no_mangle]
 pub unsafe extern "C" fn gsw_specvol(sa: f64, ct: f64, p: f64) -> f64 {
-    crate::specvol(sa, ct, p).unwrap()
+    match crate::specvol(sa, ct, p) {
+        Ok(v) => v,
+        Err(_) => GSW_INVALID_VALUE,
+    }
 }
 
 #[no_mangle]
 pub unsafe extern "C" fn gsw_alpha(sa: f64, ct: f64, p: f64) -> f64 {
-    crate::alpha(sa, ct, p).unwrap()
+    match crate::alpha(sa, ct, p) {
+        Ok(v) => v,
+        Err(_) => GSW_INVALID_VALUE,
+    }
 }
 
 #[no_mangle]
 pub unsafe extern "C" fn gsw_beta(sa: f64, ct: f64, p: f64) -> f64 {
-    crate::beta(sa, ct, p).unwrap()
+    match crate::beta(sa, ct, p) {
+        Ok(v) => v,
+        Err(_) => GSW_INVALID_VALUE,
+    }
 }
 
 #[no_mangle]
@@ -35,7 +44,10 @@ pub unsafe extern "C" fn gsw_specvol_sso_0(p: f64) -> f64 {
 
 #[no_mangle]
 pub unsafe extern "C" fn gsw_specvol_anom_standard(sa: f64, ct: f64, p: f64) -> f64 {
-    crate::specvol_anom_standard(sa, ct, p).unwrap()
+    match crate::specvol_anom_standard(sa, ct, p) {
+        Ok(v) => v,
+        Err(_) => GSW_INVALID_VALUE,
+    }
 }
 
 #[no_mangle]
@@ -47,7 +59,11 @@ pub unsafe extern "C" fn gsw_specvol_alpha_beta(
     alpha: *mut f64,
     beta: *mut f64,
 ) {
-    let result = crate::specvol_alpha_beta(sa, ct, p).unwrap();
+    let result = match crate::specvol_alpha_beta(sa, ct, p) {
+        Ok(v) => v,
+        Err(_) => (GSW_INVALID_VALUE, GSW_INVALID_VALUE, GSW_INVALID_VALUE),
+    };
+
     *specvol = result.0;
     *alpha = result.1;
     *beta = result.2;
@@ -55,7 +71,10 @@ pub unsafe extern "C" fn gsw_specvol_alpha_beta(
 
 #[no_mangle]
 pub unsafe extern "C" fn gsw_rho(sa: f64, ct: f64, p: f64) -> f64 {
-    crate::rho(sa, ct, p).unwrap()
+    match crate::rho(sa, ct, p) {
+        Ok(v) => v,
+        Err(_) => GSW_INVALID_VALUE,
+    }
 }
 
 /////////////////////////
