@@ -379,7 +379,7 @@ mod tests {
     // Test value from Roquet 2015, Appendix C.3
     // rounded to 9.732819628e-04
     fn test_specvol_roquet2015() {
-        assert!((specvol(30., 10., 1000.0) - 9.732819628e-04).abs() <= 5e-14);
+        assert!((specvol(30., 10., 1000.0).unwrap() - 9.732819628e-04).abs() <= 5e-14);
     }
 
     #[test]
@@ -387,7 +387,7 @@ mod tests {
         if cfg!(feature = "compat") {
             // Test value from C library.
             assert_eq!(
-                specvol(34.507499465692057, 27.994827331978655, 0.0),
+                specvol(34.507499465692057, 27.994827331978655, 0.0).unwrap(),
                 0.00097855432330275953
             );
         }
@@ -398,7 +398,7 @@ mod tests {
     fn test_specvol_vs_specvol_sso_0() {
         let p_to_test: [f64; 5] = [0., 10., 100., 1000., 5000.];
         for p in p_to_test.iter().cloned() {
-            let specvol = specvol(GSW_SSO, 0., p);
+            let specvol = specvol(GSW_SSO, 0., p).unwrap();
             let specvol_sso_0 = specvol_sso_0(p);
             assert_eq!(specvol, specvol_sso_0);
         }
@@ -409,7 +409,7 @@ mod tests {
     fn test_specvol_anom_standard_at_standard() {
         let p_to_test: [f64; 5] = [0., 10., 100., 1000., 5000.];
         for p in p_to_test.iter().cloned() {
-            assert_eq!(specvol_anom_standard(GSW_SSO, 0.0, p), 0.0);
+            assert_eq!(specvol_anom_standard(GSW_SSO, 0.0, p).unwrap(), 0.0);
         }
     }
 
@@ -421,9 +421,12 @@ mod tests {
             for ct in ct_to_test.iter() {
                 if cfg!(feature = "compat") {
                     // If feature compatible is activated, negative sa will be replaced by 0.0
-                    assert_eq!(specvol(-20.0, *ct, *p), specvol(0.0, *ct, *p));
+                    assert_eq!(
+                        specvol(-20.0, *ct, *p).unwrap(),
+                        specvol(0.0, *ct, *p).unwrap()
+                    );
                     assert_eq!(alpha(-20.0, *ct, *p).unwrap(), alpha(0.0, *ct, *p).unwrap());
-                    assert_eq!(beta(-20.0, *ct, *p), beta(0.0, *ct, *p));
+                    assert_eq!(beta(-20.0, *ct, *p).unwrap(), beta(0.0, *ct, *p).unwrap());
                 } else {
                     // It should return an error if not compat
 
