@@ -3,7 +3,7 @@
 
 use crate::gsw_internal_const::*;
 use crate::gsw_specvol_coefficients::*;
-use crate::Result;
+use crate::{Error, Result};
 
 pub fn alpha(sa: f64, ct: f64, p: f64) -> Result<f64> {
     // Other implementations force negative SA to be 0. That is dangerous
@@ -13,7 +13,7 @@ pub fn alpha(sa: f64, ct: f64, p: f64) -> Result<f64> {
     } else if cfg!(feature = "compat") {
         0.0
     } else {
-        return Err("Negative SA".into());
+        return Err(Error::NegativeSalinity);
     };
 
     let xs: f64 = libm::sqrt(GSW_SFAC * sa + OFFSET);
@@ -48,7 +48,7 @@ pub fn beta(sa: f64, ct: f64, p: f64) -> Result<f64> {
     } else if cfg!(feature = "compat") {
         0.0
     } else {
-        return Err("Negative SA".into());
+        return Err(Error::NegativeSalinity);
     };
 
     let xs: f64 = libm::sqrt(GSW_SFAC * sa + OFFSET);
@@ -98,7 +98,7 @@ pub fn specvol(sa: f64, ct: f64, p: f64) -> Result<f64> {
     } else if cfg!(feature = "compat") {
         0.0
     } else {
-        return Err("Negative SA".into());
+        return Err(Error::NegativeSalinity);
     };
 
     let xs: f64 = libm::sqrt(GSW_SFAC * sa + OFFSET);
@@ -209,7 +209,7 @@ pub fn specvol_first_derivatives(sa: f64, ct: f64, p: f64) -> Result<(f64, f64, 
     } else if cfg!(feature = "compat") {
         0.0
     } else {
-        return Err("Negative SA".into());
+        return Err(Error::NegativeSalinity);
     };
 
     let xs: f64 = libm::sqrt(GSW_SFAC * sa + OFFSET);
@@ -439,14 +439,10 @@ mod tests {
                 } else {
                     // It should return an error if not compat
 
-                    #[cfg(feature = "std")]
                     assert!(matches!(
                         alpha(-20.0, *ct, *p),
                         Err(crate::Error::NegativeSalinity)
                     ));
-
-                    #[cfg(not(feature = "std"))]
-                    assert!(matches!(alpha(-20.0, *ct, *p), Err("Negative SA")));
                 }
             }
         }
