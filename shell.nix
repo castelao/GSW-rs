@@ -18,6 +18,11 @@ in
       cargo-asm
       gdb
       (python39.withPackages(ps: with ps; [ virtualenv setuptools mypy ]))
+
+      # convenience tools
+      tree
+      bat
+      ripgrep
     ];
 
     shellHook = ''

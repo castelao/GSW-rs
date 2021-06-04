@@ -1,56 +1,7 @@
-[package]
-name = "gsw"
-version = "0.0.2"
-authors = ["Guilherme Castelão <guilherme@castelao.net>", "Luiz Irber <luiz.irber@gmail.com >"]
-edition = "2018"
-license = "BSD-3-Clause"
-description = "TEOS-10 v3.06.12 GSW Oceanographic Toolbox in Rust"
-repository = "https://github.com/castelao/GSW-rs"
+[workspace]
+members = [ "gsw" ]
 
-# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+default-members = [ "gsw" ]
 
-[dependencies]
-libm = "0.2.1"
-libc = { version = "0.2", optional = true }
-thiserror = { version = "1.0.24", optional = true }
-
-[dev-dependencies]
-inline-c = "0.1"
-
-[build-dependencies]
-cbindgen = { version = "0.18.0", optional = true }
-
-[features]
-default = []
-capi = ["libc", "std"]
-# Compatibility with Matlab implementation
-compat = []
-# Depth-independent gravitational acceleration. Useful for numerical models
-# Maybe rename to constg?
-nodgdz = []
-std = ["thiserror"]
-
-[lib]
-name = "gsw"
-
-[profile.dev]
-panic = "abort"
-
-[package.metadata.capi]
-# Configures the minimum required cargo-c version. Trying to run with an
-# older version causes an error.
-min_version = "0.7.3"
-
-[package.metadata.capi.header]
-# Used as header file name. By default this is equal to the crate name.
-# The name can be with or without the header filename extension `.h`
-name = "gswteos-10.h"
-# Install the header into a subdirectory with the name of the crate. This
-# is enabled by default
-subdirectory = false
-# Generate the header file with `cbindgen`, or copy a pre-generated header
-# from the `assets` subdirectory. By default a header is generated.
-generation = false
-# Can be use to disable header generation completely.
-# This can be used when generating dynamic modules instead of an actual library.
-enabled = true
+#[profile.dev]
+#panic = "abort"

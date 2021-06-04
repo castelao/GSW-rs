@@ -9,7 +9,7 @@ fn main() {
 fn generate_c_bindings(crate_dir: &str) {
     cbindgen::generate(crate_dir)
         .expect("Unable to generate bindings")
-        .write_to_file("assets/gswteos-10.h");
+        .write_to_file("../assets/gswteos-10.h");
 }
 
 #[cfg(not(feature = "cbindgen"))]
