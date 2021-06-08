@@ -113,6 +113,7 @@ jobs:
             7z e -y "$CARGO_C_FILE.zip" -o"${env:USERPROFILE}\.cargo\bin"
 
       - name: Build C API
+        working-directory: gsw
         run: |
           cargo cbuild --verbose --release
 
