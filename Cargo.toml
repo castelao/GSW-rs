@@ -9,6 +9,8 @@ repository = "https://github.com/castelao/GSW-rs"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
+[workspace]
+
 [dependencies]
 libm = "0.2.1"
 libc = { version = "0.2", optional = true }
