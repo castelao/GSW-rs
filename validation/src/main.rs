@@ -1,6 +1,27 @@
 use std::collections::HashMap;
 
+/*
+{
+  "p_ref": [1,2,3, 4],
+  "lat_ref": [ 20, 30 m40]
+  "lon_ref": [180, 90, 34],
+  "specvol": [
+    [1, 2, 3, 4],
+    [10, 20, 30, 40],
+    [100, 200, NaN, NaN]
+    ]
+}
+*/
+
+struct Data {
+    p_ref: Vec<f64>,
+    specvol: Vec<Vec<f64>>,
+}
+
 fn main() {
+    let data: Data = serde_json::from_reader(file);
+    let pdata: Vec<u8> = postcard::to_vec(&data);
+
     let mut dataset = HashMap::new();
 
     let p: Vec<Vec<f64>> = vec![vec![
