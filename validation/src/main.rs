@@ -2,7 +2,9 @@
 use heapless::{FnvIndexMap, String, Vec};
 use postcard::{from_bytes, to_vec};
 use serde::{Deserialize, Serialize};
-use std::collections::HashMap;
+use std::fs::File;
+use std::io::{BufWriter, Write};
+use std::ops::Deref;
 
 fn main() {
     #[derive(Serialize, Deserialize, Debug)]
@@ -60,8 +62,9 @@ fn main() {
         data,
     };
 
-    let test: Vec<u8, 300> = to_vec(&dataset).expect("Failed to vectorize dataset");
+    let stream: Vec<u8, 300> = to_vec(&dataset).expect("Failed to vectorize dataset");
 
-    dbg!("{:?}", test.len());
-    dbg!("{:?}", test);
+    let f = File::create("gsw_validation.bin").expect("Unable to create file");
+    let mut f = BufWriter::new(f);
+    f.write_all(stream.deref()).expect("Unable to write data");
 }
