@@ -17,7 +17,14 @@ fn main() {
     data.insert(String::from("p"), p).unwrap();
 
     let sa: Vec<f64, 8> = Vec::from_slice(&[
-        34.4682, 34.4981, 34.5066, 34.5387, 34.5398, 34.5375, 34.7361, 34.9891,
+        34.468236430490606,
+        34.498127066969268,
+        34.506638187758568,
+        34.53868101623447,
+        34.539777830353195,
+        34.537494144119954,
+        34.73609471241204,
+        34.989117262929604,
     ])
     .unwrap();
     data.insert(String::from("sa"), sa).unwrap();
@@ -53,7 +60,8 @@ fn main() {
         data,
     };
 
-    dbg!("{:?}", dataset);
+    let test: Vec<u8, 300> = to_vec(&dataset).expect("Failed to vectorize dataset");
 
-    // let test: Vec<u8, 64> = to_vec(&dataset).expect("Failed to vectorize dataset");
+    dbg!("{:?}", test.len());
+    dbg!("{:?}", test);
 }
