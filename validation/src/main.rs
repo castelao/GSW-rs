@@ -17,62 +17,55 @@ struct DataRef {
 }
 
 fn main() {
-    #[derive(Serialize, Deserialize, Debug)]
-    struct DataRef {
-        version: String<8>,
-        data: FnvIndexMap<String<8>, Vec<f64, 8>, 4>,
+    let file = std::fs::File::open("data/gsw_data_v3_0.chck_cast.mat").unwrap();
+    let mat_file = matfile::MatFile::parse(file).unwrap();
+
+    let mut data_x = FnvIndexMap::<heapless::String<16>, _, 4>::new();
+    let mut data2d = FnvIndexMap::<heapless::String<16>, _, 16>::new();
+
+    for variable in mat_file.arrays() {
+        // dbg!(variable.name());
+        // dbg!(variable.size());
+        if let Some(array) = mat_file.find_by_name(variable.name()) {
+            if let matfile::NumericData::Double { real, imag: _ } = array.data() {
+                let varname: String<16> = String::from(variable.name());
+                match array.size()[..] {
+                    [1, 3] => {
+                        // dbg!(array.name());
+                        let values: Vec<f64, 3> = Vec::from_slice(&real).unwrap();
+                        data_x.insert(varname, values).unwrap();
+                    }
+                    [45, 3] => {
+                        // dbg!(array.name());
+                        let stripe: Vec<f64, 45> = Vec::from_slice(&real[..45]).unwrap();
+                        let stripe2: Vec<f64, 45> = Vec::from_slice(&real[45..90]).unwrap();
+                        let stripe3: Vec<f64, 45> = Vec::from_slice(&real[90..135]).unwrap();
+                        let values: Vec<_, 3> =
+                            Vec::from_slice(&[stripe, stripe2, stripe3]).unwrap();
+
+                        data2d.insert(varname, values).unwrap();
+                    }
+                    _ => {
+                        dbg!("MISSING");
+                        dbg!(varname);
+                        ()
+                    }
+                };
+            };
+        }
     }
-
-    let mut data = FnvIndexMap::<_, _, 4>::new();
-
-    let p: Vec<f64, 8> = Vec::from_slice(&[0.0, 10., 20., 30., 40., 50., 76., 101.]).unwrap();
-    data.insert(String::from("p"), p).unwrap();
-
-    let sa: Vec<f64, 8> = Vec::from_slice(&[
-        34.468236430490606,
-        34.498127066969268,
-        34.506638187758568,
-        34.53868101623447,
-        34.539777830353195,
-        34.537494144119954,
-        34.73609471241204,
-        34.989117262929604,
-    ])
-    .unwrap();
-    data.insert(String::from("sa"), sa).unwrap();
-
-    let ct: Vec<f64, 8> = Vec::from_slice(&[
-        27.996436412058223,
-        27.993857176639093,
-        27.944017615967987,
-        27.948372399994330,
-        27.883806497845711,
-        27.793319415508925,
-        26.947345421342511,
-        25.464306249345810,
-    ])
-    .unwrap();
-    data.insert(String::from("ct"), ct).unwrap();
-
-    let specvol: Vec<f64, 8> = Vec::from_slice(&[
-        0.000978582446643,
-        0.000978520259453,
-        0.000978458407133,
-        0.000978396896780,
-        0.000978335707723,
-        0.000978268875230,
-        0.000977764021427,
-        0.000977040353397,
-    ])
-    .unwrap();
-    data.insert(String::from("specvol"), specvol).unwrap();
 
     let dataset = DataRef {
         version: String::from("3.06.12"),
-        data,
+        src: String::from("gsw_data_v3_0.mat"),
+        src_md5: String::from("f9b65955407a8ed00246de4871ef0505"),
+        data_x,
+        data2d,
     };
 
-    let stream: Vec<u8, 300> = to_vec(&dataset).expect("Failed to vectorize dataset");
+    // dbg!("{:?}", &dataset);
+
+    let stream: Vec<u8, 100_000> = to_vec(&dataset).expect("Failed to vectorize dataset");
 
     let f = File::create("gsw_validation.bin").expect("Unable to create file");
     let mut f = BufWriter::new(f);
