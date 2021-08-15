@@ -6,6 +6,16 @@ use std::fs::File;
 use std::io::{BufWriter, Write};
 use std::ops::Deref;
 
+// Structure of the validation dataset
+#[derive(Serialize, Deserialize, Debug)]
+struct DataRef {
+    version: String<8>,
+    src: String<32>,
+    src_md5: String<32>,
+    data_x: FnvIndexMap<String<16>, Vec<f64, 3>, 4>,
+    data2d: FnvIndexMap<String<16>, Vec<Vec<f64, 45>, 3>, 16>,
+}
+
 fn main() {
     #[derive(Serialize, Deserialize, Debug)]
     struct DataRef {
