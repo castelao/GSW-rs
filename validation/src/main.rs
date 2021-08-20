@@ -37,11 +37,10 @@ fn main() {
                     }
                     [45, 3] => {
                         // dbg!(array.name());
-                        let stripe: Vec<f64, 45> = Vec::from_slice(&real[..45]).unwrap();
-                        let stripe2: Vec<f64, 45> = Vec::from_slice(&real[45..90]).unwrap();
-                        let stripe3: Vec<f64, 45> = Vec::from_slice(&real[90..135]).unwrap();
-                        let values: Vec<_, 3> =
-                            Vec::from_slice(&[stripe, stripe2, stripe3]).unwrap();
+                        let values: Vec<_, 3> = real
+                            .chunks(45)
+                            .map(|x| Vec::<f64, 45>::from_slice(x).unwrap())
+                            .collect();
 
                         data2d.insert(varname, values).unwrap();
                     }
