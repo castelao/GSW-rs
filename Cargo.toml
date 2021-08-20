@@ -10,7 +10,7 @@ repository = "https://github.com/castelao/GSW-rs"
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [workspace]
-members = ["validation"]
+members = ["convert_refdata"]
 
 [dependencies]
 libm = "0.2.1"

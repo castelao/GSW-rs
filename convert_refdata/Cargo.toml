@@ -1,5 +1,5 @@
 [package]
-name = "gsw-validation"
+name = "gsw-refdata"
 version = "0.0.1"
 authors = ["Guilherme Castelão <guilherme@castelao.net>", "Luiz Irber <luiz.irber@gmail.com >"]
 edition = "2018"
