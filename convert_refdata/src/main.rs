@@ -12,23 +12,23 @@ struct DataRef {
     version: String<8>,
     src: String<32>,
     src_md5: String<32>,
-    data_x: FnvIndexMap<String<16>, Vec<f64, 3>, 4>,
-    data2d: FnvIndexMap<String<16>, Vec<Vec<f64, 45>, 3>, 16>,
+    data_x: FnvIndexMap<String<24>, Vec<f64, 3>, 4>,
+    data2d: FnvIndexMap<String<24>, Vec<Vec<f64, 45>, 3>, 32>,
 }
 
 fn main() {
     let file = std::fs::File::open("data/gsw_data_v3_0.chck_cast.mat").unwrap();
     let mat_file = matfile::MatFile::parse(file).unwrap();
 
-    let mut data_x = FnvIndexMap::<heapless::String<16>, _, 4>::new();
-    let mut data2d = FnvIndexMap::<heapless::String<16>, _, 16>::new();
+    let mut data_x = FnvIndexMap::<heapless::String<24>, _, 4>::new();
+    let mut data2d = FnvIndexMap::<heapless::String<24>, _, 32>::new();
 
     for variable in mat_file.arrays() {
         // dbg!(variable.name());
         // dbg!(variable.size());
         if let Some(array) = mat_file.find_by_name(variable.name()) {
             if let matfile::NumericData::Double { real, imag: _ } = array.data() {
-                let varname: String<16> = String::from(variable.name());
+                let varname: String<24> = String::from(variable.name());
                 match array.size()[..] {
                     [1, 3] => {
                         // dbg!(array.name());
