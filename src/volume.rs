@@ -331,6 +331,82 @@ pub fn rho(sa: f64, ct: f64, p: f64) -> Result<f64> {
     Ok(1.0 / specvol(sa, ct, p)?)
 }
 
+/// Symbol: c
+/// m s-1
+///
+/// c = g_P \sqrt(g_TT / (g^2_{TP} - g_{TT}g_{PP}))
+pub fn sound_speed(sa: f64, ct: f64, p: f64) -> Result<f64> {
+    // Other implementations force negative SA to be 0. That is dangerous
+    // since it can hide error by processing unrealistic inputs
+    let sa: f64 = if sa >= 0.0 {
+        sa
+    } else if cfg!(feature = "compat") {
+        0.0
+    } else {
+        return Err(Error::NegativeSalinity);
+    };
+
+    let xs: f64 = libm::sqrt(GSW_SFAC * sa + OFFSET);
+    let ys: f64 = ct / GSW_CTU;
+    let z: f64 = if cfg!(feature = "compat") {
+        p * 1e-4
+    } else {
+        p / GSW_PU
+    };
+
+    // Specific Volume
+    let v = V000
+        + xs * (V100 + xs * (V200 + xs * (V300 + xs * (V400 + xs * (V500 + xs * V600)))))
+        + ys * (V010
+            + xs * (V110 + xs * (V210 + xs * (V310 + xs * (V410 + xs * V510))))
+            + ys * (V020
+                + xs * (V120 + xs * (V220 + xs * (V320 + xs * V420)))
+                + ys * (V030
+                    + xs * (V130 + xs * (V230 + xs * V330))
+                    + ys * (V040
+                        + xs * (V140 + xs * V240)
+                        + ys * (V050 + xs * V150 + ys * V060)))))
+        + z * (V001
+            + xs * (V101 + xs * (V201 + xs * (V301 + xs * (V401 + xs * V501))))
+            + ys * (V011
+                + xs * (V111 + xs * (V211 + xs * (V311 + xs * V411)))
+                + ys * (V021
+                    + xs * (V121 + xs * (V221 + xs * V321))
+                    + ys * (V031
+                        + xs * (V131 + xs * V231)
+                        + ys * (V041 + xs * V141 + ys * V051))))
+            + z * (V002
+                + xs * (V102 + xs * (V202 + xs * (V302 + xs * V402)))
+                + ys * (V012
+                    + xs * (V112 + xs * (V212 + xs * V312))
+                    + ys * (V022
+                        + xs * (V122 + xs * V222)
+                        + ys * (V032 + xs * V132 + ys * V042)))
+                + z * (V003
+                    + xs * (V103 + xs * V203)
+                    + ys * (V013 + xs * V113 + ys * V023)
+                    + z * (V004 + xs * V104 + ys * V014 + z * (V005 + z * V006)))));
+
+    let v_p = C000
+        + xs * (C100 + xs * (C200 + xs * (C300 + xs * (C400 + C500 * xs))))
+        + ys * (C010
+            + xs * (C110 + xs * (C210 + xs * (C310 + C410 * xs)))
+            + ys * (C020
+                + xs * (C120 + xs * (C220 + C320 * xs))
+                + ys * (C030 + xs * (C130 + C230 * xs) + ys * (C040 + C140 * xs + C050 * ys))))
+        + z * (C001
+            + xs * (C101 + xs * (C201 + xs * (C301 + C401 * xs)))
+            + ys * (C011
+                + xs * (C111 + xs * (C211 + C311 * xs))
+                + ys * (C021 + xs * (C121 + C221 * xs) + ys * (C031 + C131 * xs + C041 * ys)))
+            + z * (C002
+                + xs * (C102 + C202 * xs)
+                + ys * (C012 + C112 * xs + C022 * ys)
+                + z * (C003 + C103 * xs + C013 * ys + z * (C004 + C005 * z))));
+
+    Ok(10_000.0 * libm::sqrt(-v * v / v_p))
+}
+
 #[cfg(test)]
 mod tests {
     use super::{alpha, beta, specvol, specvol_anom_standard, specvol_sso_0, GSW_SSO};
