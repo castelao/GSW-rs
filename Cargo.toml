@@ -4,7 +4,7 @@ version = "0.0.2"
 authors = ["Guilherme Castelão <guilherme@castelao.net>", "Luiz Irber <luiz.irber@gmail.com>"]
 edition = "2018"
 license = "BSD-3-Clause"
-description = "TEOS-10 v3.06.12 GSW Oceanographic Toolbox in Rust"
+description = "TEOS-10 v3.06.12 Gibbs Seawater Oceanographic Toolbox in Rust"
 repository = "https://github.com/castelao/GSW-rs"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
