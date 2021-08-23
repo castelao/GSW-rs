@@ -1,7 +1,7 @@
 [package]
 name = "gsw"
 version = "0.0.2"
-authors = ["Guilherme Castelão <guilherme@castelao.net>", "Luiz Irber <luiz.irber@gmail.com >"]
+authors = ["Guilherme Castelão <guilherme@castelao.net>", "Luiz Irber <luiz.irber@gmail.com>"]
 edition = "2018"
 license = "BSD-3-Clause"
 description = "TEOS-10 v3.06.12 GSW Oceanographic Toolbox in Rust"
