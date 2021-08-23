@@ -123,3 +123,36 @@ fn specvol() {
         }
     }
 }
+
+#[test]
+fn sound_speed() {
+    let mut input = File::open("tests/data/gsw_validation.bin").expect("Unable to open file");
+    let mut contents = vec![];
+    input
+        .read_to_end(&mut contents)
+        .expect("Failed to read content");
+
+    let out: DataRef = from_bytes(&contents).unwrap();
+
+    let p = out.data2d.get(&String::from("p_chck_cast")).unwrap();
+    let sa = out.data2d.get(&String::from("SA_chck_cast")).unwrap();
+    let ct = out.data2d.get(&String::from("CT_chck_cast")).unwrap();
+    let sound_speed = out.data2d.get(&String::from("sound_speed")).unwrap();
+    let tol = if cfg!(feature = "compat") || (f64::EPSILON > 1e-12) {
+        f64::EPSILON
+    } else {
+        1e-12
+    };
+    for i in 0..3 {
+        for j in 0..45 {
+            if !sound_speed[i][j].is_nan() {
+                assert!(
+                    (gsw::volume::sound_speed(sa[i][j], ct[i][j], p[i][j]).unwrap()
+                        - sound_speed[i][j])
+                        .abs()
+                        <= tol
+                );
+            }
+        }
+    }
+}
