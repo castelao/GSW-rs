@@ -1,4 +1,4 @@
-//! Specific volume, density, and enthalpy
+//! Specific volume, density, and enthalpy (75-term polynomial approximation)
 //!
 
 use crate::gsw_internal_const::*;
