@@ -331,10 +331,39 @@ pub fn rho(sa: f64, ct: f64, p: f64) -> Result<f64> {
     Ok(1.0 / specvol(sa, ct, p)?)
 }
 
-/// Symbol: c
-/// m s-1
+/// Sound speed in seawater (75-term polynomial approximation)
 ///
-/// c = g_P \sqrt(g_TT / (g^2_{TP} - g_{TT}g_{PP}))
+/// # Arguments
+///
+/// * sa: Absolute Salinity \[g kg-1\]
+/// * ct: Conservative Temperature (ITS-90) \[deg C\]
+/// * p: sea pressure \[dbar\] (i.e. absolute pressure - 10.1325 dbar)
+///
+/// # Returns
+///
+/// * c: Sound speed \[m s-1\]
+///
+/// # Notes
+///
+/// * Pressure is implicitly converted to Pa to obtain speed in m s-1;
+///
+/// # References
+///
+/// * IOC, SCOR and IAPSO, 2010: The international thermodynamic equation of
+///   seawater - 2010: Calculation and use of thermodynamic properties.
+///   Intergovernmental Oceanographic Commission, Manuals and Guides No. 56,
+///   UNESCO (English), 196 pp.  Available from http://www.TEOS-10.org
+///   See Appendix K of this TEOS-10 Manual.
+///
+/// * McDougall, T.J., D.R. Jackett, D.G. Wright and R. Feistel, 2003:
+///   Accurate and computationally efficient algorithms for potential
+///   temperature and density of seawater.  J. Atmosph. Ocean. Tech., 20,
+///   pp. 730-741.
+///
+/// * Roquet, F., G. Madec, T.J. McDougall, P.M. Barker, 2015: Accurate
+///   polynomial expressions for the density and specifc volume of seawater
+///   using the TEOS-10 standard. Ocean Modelling., 90, pp. 29-43.
+///
 pub fn sound_speed(sa: f64, ct: f64, p: f64) -> Result<f64> {
     // Other implementations force negative SA to be 0. That is dangerous
     // since it can hide error by processing unrealistic inputs
