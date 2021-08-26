@@ -447,6 +447,52 @@ pub fn sound_speed(sa: f64, ct: f64, p: f64) -> Result<f64> {
     Ok(10_000.0 * libm::sqrt(-v * v / v_p))
 }
 
+fn sigma0(sa: f64, ct: f64) -> Result<f64> {
+    // Other implementations force negative SA to be 0. That is dangerous
+    // since it can hide error by processing unrealistic inputs
+    let sa: f64 = if sa >= 0.0 {
+        sa
+    } else if cfg!(feature = "compat") {
+        0.0
+    } else {
+        return Err(Error::NegativeSalinity);
+    };
+
+    let xs: f64 = libm::sqrt(GSW_SFAC * sa + OFFSET);
+    let ys: f64 = ct / GSW_CTU;
+
+    // Specific Volume
+    let v = V000
+        + xs * (V100 + xs * (V200 + xs * (V300 + xs * (V400 + xs * (V500 + xs * V600)))))
+        + ys * (V010
+            + xs * (V110 + xs * (V210 + xs * (V310 + xs * (V410 + xs * V510))))
+            + ys * (V020
+                + xs * (V120 + xs * (V220 + xs * (V320 + xs * V420)))
+                + ys * (V030
+                    + xs * (V130 + xs * (V230 + xs * V330))
+                    + ys * (V040
+                        + xs * (V140 + xs * V240)
+                        + ys * (V050 + xs * V150 + ys * V060)))));
+
+    Ok(1.0 / v - 1000.0)
+}
+
+fn sigma1(sa: f64, ct: f64) -> Result<f64> {
+    Ok(rho(sa, ct, 1000.0)? - 1000.0)
+}
+
+fn sigma2(sa: f64, ct: f64) -> Result<f64> {
+    Ok(rho(sa, ct, 2000.0)? - 1000.0)
+}
+
+fn sigma3(sa: f64, ct: f64) -> Result<f64> {
+    Ok(rho(sa, ct, 3000.0)? - 1000.0)
+}
+
+fn sigma4(sa: f64, ct: f64) -> Result<f64> {
+    Ok(rho(sa, ct, 4000.0)? - 1000.0)
+}
+
 #[cfg(test)]
 mod tests {
     use super::{alpha, beta, specvol, specvol_anom_standard, specvol_sso_0, GSW_SSO};
