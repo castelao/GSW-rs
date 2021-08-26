@@ -81,11 +81,15 @@ pub fn beta(sa: f64, ct: f64, p: f64) -> Result<f64> {
 /// Temperature and pressure, using the computationally-efficient
 /// polynomial expression for specific volume (Roquet et al., 2014).
 ///
-/// sa [g/kg] : Absolute Salinity
-/// ct [deg C] : Conservative Temperature (ITS-90)
-/// p [dbar] : sea pressure ( i.e. absolute pressure - 10.1325 dbar )
+/// # Arguments
 ///
-/// specvol [m^3/kg] : specific volume
+/// * `sa`: Absolute Salinity \[g kg-1\]
+/// * `ct`: Conservative Temperature (ITS-90) \[deg C\]
+/// * `p`: sea pressure \[dbar\] (i.e. absolute pressure - 10.1325 dbar)
+///
+/// # Returns
+///
+/// * `specvol`: specific volume \[m3 kg-1\]
 ///
 /// Note that the coefficients v(i,j,k) follow the convention in the original
 /// paper, which is different from the convention used in the C-library.
@@ -190,12 +194,15 @@ pub fn specvol_sso_0(p: f64) -> f64 {
 ///
 /// Specific volume anomaly with reference of SA = SSO & CT = 0 (75-term equation)
 ///
+/// # Arguments
 ///
-/// sa [g/kg] : Absolute Salinity
-/// ct [deg C] : Conservative Temperature (ITS-90)
-/// p [dbar] : sea pressure ( i.e. absolute pressure - 10.1325 dbar )
+/// * `sa`: Absolute Salinity \[g kg-1\]
+/// * `ct`: Conservative Temperature (ITS-90) \[deg C\]
+/// * `p`: sea pressure \[dbar\] (i.e. absolute pressure - 10.1325 dbar)
 ///
-/// specvol_anom : specific volume anomaly of seawater
+/// # Returns
+///
+/// * `specvol_anom`: specific volume anomaly of seawater [m3 kg-1]
 ///
 pub fn specvol_anom_standard(sa: f64, ct: f64, p: f64) -> Result<f64> {
     Ok(specvol(sa, ct, p)? - specvol_sso_0(p))
@@ -321,11 +328,15 @@ fn specvol_p_parts() {
 /// Temperature, using the computationally-efficient expression for
 /// specific volume in terms of SA, CT and p (Roquet et al., 2014).
 ///
-/// sa [g/kg] : Absolute Salinity
-/// ct [deg C] : Conservative Temperature (ITS-90)
-/// p [dbar] : sea pressure ( i.e. absolute pressure - 10.1325 dbar )
+/// # Arguments
 ///
-/// rho  [kg/m] : in-situ density
+/// * `sa`: Absolute Salinity \[g kg-1\]
+/// * `ct`: Conservative Temperature (ITS-90) \[deg C\]
+/// * `p`: sea pressure \[dbar\] (i.e. absolute pressure - 10.1325 dbar)
+///
+/// # Returns
+///
+/// * `rho`: in-situ density \[kg m-3\]
 ///
 pub fn rho(sa: f64, ct: f64, p: f64) -> Result<f64> {
     Ok(1.0 / specvol(sa, ct, p)?)
@@ -335,13 +346,13 @@ pub fn rho(sa: f64, ct: f64, p: f64) -> Result<f64> {
 ///
 /// # Arguments
 ///
-/// * sa: Absolute Salinity \[g kg-1\]
-/// * ct: Conservative Temperature (ITS-90) \[deg C\]
-/// * p: sea pressure \[dbar\] (i.e. absolute pressure - 10.1325 dbar)
+/// * `sa`: Absolute Salinity \[g kg-1\]
+/// * `ct`: Conservative Temperature (ITS-90) \[deg C\]
+/// * `p`: sea pressure \[dbar\] (i.e. absolute pressure - 10.1325 dbar)
 ///
 /// # Returns
 ///
-/// * c: Sound speed \[m s-1\]
+/// * `c`: Sound speed \[m s-1\]
 ///
 /// # Notes
 ///
