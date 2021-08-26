@@ -75,7 +75,7 @@ pub fn beta(sa: f64, ct: f64, p: f64) -> Result<f64> {
     Ok(-v_sa * 0.5 * GSW_SFAC / (specvol(sa, ct, p)? * xs))
 }
 
-/// Calculates specific volume of sea water
+/// Specific volume of sea water (75-term polynomial approximation)
 ///
 /// Calculates specific volume from Absolute Salinity, Conservative
 /// Temperature and pressure, using the computationally-efficient
