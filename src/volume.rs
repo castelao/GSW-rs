@@ -447,7 +447,9 @@ pub fn sound_speed(sa: f64, ct: f64, p: f64) -> Result<f64> {
     Ok(10_000.0 * libm::sqrt(-v * v / v_p))
 }
 
-fn sigma0(sa: f64, ct: f64) -> Result<f64> {
+/// Potential density anomaly with reference to sea pressure of 0 dbar
+/// (75-term polynomial approximation)
+pub fn sigma0(sa: f64, ct: f64) -> Result<f64> {
     // Other implementations force negative SA to be 0. That is dangerous
     // since it can hide error by processing unrealistic inputs
     let sa: f64 = if sa >= 0.0 {
@@ -477,19 +479,27 @@ fn sigma0(sa: f64, ct: f64) -> Result<f64> {
     Ok(1.0 / v - 1000.0)
 }
 
-fn sigma1(sa: f64, ct: f64) -> Result<f64> {
+/// Potential density anomaly with reference to sea pressure of 1000 dbar
+/// (75-term polynomial approximation)
+pub fn sigma1(sa: f64, ct: f64) -> Result<f64> {
     Ok(rho(sa, ct, 1000.0)? - 1000.0)
 }
 
-fn sigma2(sa: f64, ct: f64) -> Result<f64> {
+/// Potential density anomaly with reference to sea pressure of 2000 dbar
+/// (75-term polynomial approximation)
+pub fn sigma2(sa: f64, ct: f64) -> Result<f64> {
     Ok(rho(sa, ct, 2000.0)? - 1000.0)
 }
 
-fn sigma3(sa: f64, ct: f64) -> Result<f64> {
+/// Potential density anomaly with reference to sea pressure of 3000 dbar
+/// (75-term polynomial approximation)
+pub fn sigma3(sa: f64, ct: f64) -> Result<f64> {
     Ok(rho(sa, ct, 3000.0)? - 1000.0)
 }
 
-fn sigma4(sa: f64, ct: f64) -> Result<f64> {
+/// Potential density anomaly with reference to sea pressure of 4000 dbar
+/// (75-term polynomial approximation)
+pub fn sigma4(sa: f64, ct: f64) -> Result<f64> {
     Ok(rho(sa, ct, 4000.0)? - 1000.0)
 }
 
