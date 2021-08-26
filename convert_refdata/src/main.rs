@@ -13,7 +13,7 @@ struct DataRef {
     src: String<32>,
     src_md5: String<32>,
     data_x: FnvIndexMap<String<24>, Vec<f64, 3>, 4>,
-    data2d: FnvIndexMap<String<24>, Vec<Vec<f64, 45>, 3>, 32>,
+    data2d: FnvIndexMap<String<24>, Vec<Vec<f64, 45>, 3>, 64>,
 }
 
 fn main() {
@@ -21,7 +21,7 @@ fn main() {
     let mat_file = matfile::MatFile::parse(file).unwrap();
 
     let mut data_x = FnvIndexMap::<heapless::String<24>, _, 4>::new();
-    let mut data2d = FnvIndexMap::<heapless::String<24>, _, 32>::new();
+    let mut data2d = FnvIndexMap::<heapless::String<24>, _, 64>::new();
 
     for variable in mat_file.arrays() {
         // dbg!(variable.name());

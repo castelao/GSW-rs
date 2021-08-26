@@ -11,7 +11,7 @@ struct DataRef {
     src: String<32>,
     src_md5: String<32>,
     data_x: FnvIndexMap<String<24>, Vec<f64, 3>, 4>,
-    data2d: FnvIndexMap<String<24>, Vec<Vec<f64, 45>, 3>, 32>,
+    data2d: FnvIndexMap<String<24>, Vec<Vec<f64, 45>, 3>, 64>,
 }
 
 #[test]
