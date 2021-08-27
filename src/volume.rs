@@ -6,7 +6,7 @@ use crate::gsw_specvol_coefficients::*;
 use crate::{Error, Result};
 
 #[inline]
-fn non_dimensional_salinity(sa: f64) -> Result<f64> {
+fn non_dimensional_sa(sa: f64) -> Result<f64> {
     // Other implementations force negative SA to be 0. That is dangerous
     // since it can hide error by processing unrealistic inputs
     let sa: f64 = if sa >= 0.0 {
@@ -52,7 +52,7 @@ fn non_dimensional_salinity(sa: f64) -> Result<f64> {
 /// let p = 3812;
 /// assert!((3812.0 * 1e-4) > (3812.0 / 1e4))
 /// ```
-fn non_dimensional_pressure(p: f64) -> f64 {
+fn non_dimensional_p(p: f64) -> f64 {
     if cfg!(feature = "compat") {
         p * 1e-4
     } else {
@@ -61,9 +61,9 @@ fn non_dimensional_pressure(p: f64) -> f64 {
 }
 
 pub fn alpha(sa: f64, ct: f64, p: f64) -> Result<f64> {
-    let xs: f64 = non_dimensional_salinity(sa)?;
+    let xs: f64 = non_dimensional_sa(sa)?;
     let ys: f64 = ct / GSW_CTU;
-    let z: f64 = non_dimensional_pressure(p);
+    let z: f64 = non_dimensional_p(p);
 
     let v_ct: f64 = A000
         + xs * (A100 + xs * (A200 + xs * (A300 + xs * (A400 + A500 * xs))))
@@ -86,9 +86,9 @@ pub fn alpha(sa: f64, ct: f64, p: f64) -> Result<f64> {
 }
 
 pub fn beta(sa: f64, ct: f64, p: f64) -> Result<f64> {
-    let xs: f64 = non_dimensional_salinity(sa)?;
+    let xs: f64 = non_dimensional_sa(sa)?;
     let ys: f64 = ct / GSW_CTU;
-    let z: f64 = non_dimensional_pressure(p);
+    let z: f64 = non_dimensional_p(p);
 
     let v_sa: f64 = B000
         + xs * (B100 + xs * (B200 + xs * (B300 + xs * (B400 + B500 * xs))))
@@ -130,9 +130,9 @@ pub fn beta(sa: f64, ct: f64, p: f64) -> Result<f64> {
 /// paper, which is different from the convention used in the C-library.
 ///
 pub fn specvol(sa: f64, ct: f64, p: f64) -> Result<f64> {
-    let xs: f64 = non_dimensional_salinity(sa)?;
+    let xs: f64 = non_dimensional_sa(sa)?;
     let ys: f64 = ct / GSW_CTU;
-    let z: f64 = non_dimensional_pressure(p);
+    let z: f64 = non_dimensional_p(p);
 
     // Specific Volume
     Ok(V000
@@ -210,7 +210,7 @@ pub fn specvol_sso_0(p: f64) -> f64 {
         -2.994_054_447_232_877_6e-8
     };
 
-    let p = non_dimensional_pressure(p);
+    let p = non_dimensional_p(p);
 
     VXX0 + p * (VXX1 + p * (VXX2 + p * (VXX3 + p * (VXX4 + p * (V005 + V006 * p)))))
 }
@@ -234,9 +234,9 @@ pub fn specvol_anom_standard(sa: f64, ct: f64, p: f64) -> Result<f64> {
 }
 
 pub fn specvol_first_derivatives(sa: f64, ct: f64, p: f64) -> Result<(f64, f64, f64)> {
-    let xs: f64 = non_dimensional_salinity(sa)?;
+    let xs: f64 = non_dimensional_sa(sa)?;
     let ys: f64 = ct / GSW_CTU;
-    let z: f64 = non_dimensional_pressure(p);
+    let z: f64 = non_dimensional_p(p);
 
     let v_ct_part: f64 = A000
         + xs * (A100 + xs * (A200 + xs * (A300 + xs * (A400 + A500 * xs))))
@@ -391,10 +391,10 @@ pub fn rho(sa: f64, ct: f64, p: f64) -> Result<f64> {
 ///   using the TEOS-10 standard. Ocean Modelling., 90, pp. 29-43.
 ///
 pub fn sound_speed(sa: f64, ct: f64, p: f64) -> Result<f64> {
-    let xs: f64 = non_dimensional_salinity(sa)?;
+    let xs: f64 = non_dimensional_sa(sa)?;
     let ys: f64 = ct / GSW_CTU;
     //
-    let z: f64 = non_dimensional_pressure(p);
+    let z: f64 = non_dimensional_p(p);
 
     // Specific Volume
     let v = V000
@@ -452,7 +452,7 @@ pub fn sound_speed(sa: f64, ct: f64, p: f64) -> Result<f64> {
 /// Potential density anomaly with reference to sea pressure of 0 dbar
 /// (75-term polynomial approximation)
 pub fn sigma0(sa: f64, ct: f64) -> Result<f64> {
-    let xs: f64 = non_dimensional_salinity(sa)?;
+    let xs: f64 = non_dimensional_sa(sa)?;
     let ys: f64 = ct / GSW_CTU;
 
     // Specific Volume
