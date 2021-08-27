@@ -38,11 +38,11 @@ pub fn t90_from_t48(t48: f64) -> f64 {
 ///
 /// # Arguments
 ///
-/// * `t68` - Temperature IPTS-68 [deg C]
+/// * `t68`: Temperature IPTS-68 \[deg C\]
 ///
 /// # Returns
 ///
-/// * `t90` - Temperature ITS-90 [deg C]
+/// * `t90`: Temperature ITS-90 \[deg C\]
 ///
 /// # Examples
 /// ```
@@ -63,15 +63,15 @@ pub fn t90_from_t68(t68: f64) -> f64 {
 /// Calculates the height z from pressure p
 ///
 /// # Arguments
-/// * `pressure` [dbar] - Sea Pressure, i.e. absolute pressure - 10.1325 dbar.
-/// * `lat` [deg] - Latitude.
-/// * `geo_strf_dyn_height` [m^2 s^-2] - Dynamic height anomaly.
-/// * `sea_surface_geopotential` [m^2 s^-2] - Geopotential at zero sea pressure.
+/// * `pressure`: Sea Pressure \[dbar\], i.e. absolute pressure - 10.1325 dbar.
+/// * `lat`: Latitude \[deg\]
+/// * `geo_strf_dyn_height`: Dynamic height anomaly \[m2 s-2\]
+/// * `sea_surface_geopotential`: Geopotential at zero sea pressure \[m2 s-2\]
 ///
 /// # Returns
 ///
-/// * `z` [m] - Height, where z points upward and is zero at the sea level,
-///   thus it is negative in the ocean.
+/// * `z`: Height \[m\], where z points upward and is zero at the sea level,
+///        thus it is negative in the ocean.
 ///
 /// # Notes
 /// If geo_strf_dyn_height was obtained from geo_strf_dyn_height(), reference
@@ -114,8 +114,7 @@ pub fn abs_pressure_from_p(p: f64) -> f64 {
 /// Pressure from absolute pressure
 ///
 /// # Arguments
-/// * absolute_pressure [Pa] - Absolute pressure
-///
+/// * absolute_pressure: Absolute pressure \[Pa\]
 pub fn p_from_abs_pressure(absolute_pressure: f64) -> f64 {
     (absolute_pressure - GSW_P0) / DB2PA
 }
