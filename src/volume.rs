@@ -6,6 +6,21 @@ use crate::gsw_specvol_coefficients::*;
 use crate::{Error, Result};
 
 #[inline]
+fn non_dimensional_salinity(sa: f64) -> Result<f64> {
+    // Other implementations force negative SA to be 0. That is dangerous
+    // since it can hide error by processing unrealistic inputs
+    let sa: f64 = if sa >= 0.0 {
+        sa
+    } else if cfg!(feature = "compat") {
+        0.0
+    } else {
+        return Err(Error::NegativeSalinity);
+    };
+
+    Ok(libm::sqrt(GSW_SFAC * sa + OFFSET))
+}
+
+#[inline]
 /// Non-dimensional pressure
 ///
 /// The polynomial approximation solutions proposed by Roquet (2015) are based
@@ -46,17 +61,7 @@ fn non_dimensional_pressure(p: f64) -> f64 {
 }
 
 pub fn alpha(sa: f64, ct: f64, p: f64) -> Result<f64> {
-    // Other implementations force negative SA to be 0. That is dangerous
-    // since it can hide error by processing unrealistic inputs
-    let sa: f64 = if sa >= 0.0 {
-        sa
-    } else if cfg!(feature = "compat") {
-        0.0
-    } else {
-        return Err(Error::NegativeSalinity);
-    };
-
-    let xs: f64 = libm::sqrt(GSW_SFAC * sa + OFFSET);
+    let xs: f64 = non_dimensional_salinity(sa)?;
     let ys: f64 = ct / GSW_CTU;
     let z: f64 = non_dimensional_pressure(p);
 
@@ -81,17 +86,7 @@ pub fn alpha(sa: f64, ct: f64, p: f64) -> Result<f64> {
 }
 
 pub fn beta(sa: f64, ct: f64, p: f64) -> Result<f64> {
-    // Other implementations force negative SA to be 0. That is dangerous
-    // since it can hide error by processing unrealistic inputs
-    let sa: f64 = if sa >= 0.0 {
-        sa
-    } else if cfg!(feature = "compat") {
-        0.0
-    } else {
-        return Err(Error::NegativeSalinity);
-    };
-
-    let xs: f64 = libm::sqrt(GSW_SFAC * sa + OFFSET);
+    let xs: f64 = non_dimensional_salinity(sa)?;
     let ys: f64 = ct / GSW_CTU;
     let z: f64 = non_dimensional_pressure(p);
 
@@ -135,17 +130,7 @@ pub fn beta(sa: f64, ct: f64, p: f64) -> Result<f64> {
 /// paper, which is different from the convention used in the C-library.
 ///
 pub fn specvol(sa: f64, ct: f64, p: f64) -> Result<f64> {
-    // Other implementations force negative SA to be 0. That is dangerous
-    // since it can hide error by processing unrealistic inputs
-    let sa: f64 = if sa >= 0.0 {
-        sa
-    } else if cfg!(feature = "compat") {
-        0.0
-    } else {
-        return Err(Error::NegativeSalinity);
-    };
-
-    let xs: f64 = libm::sqrt(GSW_SFAC * sa + OFFSET);
+    let xs: f64 = non_dimensional_salinity(sa)?;
     let ys: f64 = ct / GSW_CTU;
     let z: f64 = non_dimensional_pressure(p);
 
@@ -249,17 +234,7 @@ pub fn specvol_anom_standard(sa: f64, ct: f64, p: f64) -> Result<f64> {
 }
 
 pub fn specvol_first_derivatives(sa: f64, ct: f64, p: f64) -> Result<(f64, f64, f64)> {
-    // Other implementations force negative SA to be 0. That is dangerous
-    // since it can hide error by processing unrealistic inputs
-    let sa: f64 = if sa >= 0.0 {
-        sa
-    } else if cfg!(feature = "compat") {
-        0.0
-    } else {
-        return Err(Error::NegativeSalinity);
-    };
-
-    let xs: f64 = libm::sqrt(GSW_SFAC * sa + OFFSET);
+    let xs: f64 = non_dimensional_salinity(sa)?;
     let ys: f64 = ct / GSW_CTU;
     let z: f64 = non_dimensional_pressure(p);
 
@@ -416,17 +391,7 @@ pub fn rho(sa: f64, ct: f64, p: f64) -> Result<f64> {
 ///   using the TEOS-10 standard. Ocean Modelling., 90, pp. 29-43.
 ///
 pub fn sound_speed(sa: f64, ct: f64, p: f64) -> Result<f64> {
-    // Other implementations force negative SA to be 0. That is dangerous
-    // since it can hide error by processing unrealistic inputs
-    let sa: f64 = if sa >= 0.0 {
-        sa
-    } else if cfg!(feature = "compat") {
-        0.0
-    } else {
-        return Err(Error::NegativeSalinity);
-    };
-
-    let xs: f64 = libm::sqrt(GSW_SFAC * sa + OFFSET);
+    let xs: f64 = non_dimensional_salinity(sa)?;
     let ys: f64 = ct / GSW_CTU;
     //
     let z: f64 = non_dimensional_pressure(p);
@@ -487,17 +452,7 @@ pub fn sound_speed(sa: f64, ct: f64, p: f64) -> Result<f64> {
 /// Potential density anomaly with reference to sea pressure of 0 dbar
 /// (75-term polynomial approximation)
 pub fn sigma0(sa: f64, ct: f64) -> Result<f64> {
-    // Other implementations force negative SA to be 0. That is dangerous
-    // since it can hide error by processing unrealistic inputs
-    let sa: f64 = if sa >= 0.0 {
-        sa
-    } else if cfg!(feature = "compat") {
-        0.0
-    } else {
-        return Err(Error::NegativeSalinity);
-    };
-
-    let xs: f64 = libm::sqrt(GSW_SFAC * sa + OFFSET);
+    let xs: f64 = non_dimensional_salinity(sa)?;
     let ys: f64 = ct / GSW_CTU;
 
     // Specific Volume
