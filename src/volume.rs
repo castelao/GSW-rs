@@ -5,6 +5,46 @@ use crate::gsw_internal_const::*;
 use crate::gsw_specvol_coefficients::*;
 use crate::{Error, Result};
 
+#[inline]
+/// Non-dimensional pressure
+///
+/// The polynomial approximation solutions proposed by Roquet (2015) are based
+/// on non-dimensional salinity, temperature, and pressure. Here we scale
+/// pressure by p_u (1e4 [dbar]) to obtain the non-dimensional quantity \pi
+/// (TEOS-10 Manual appendix K, or \zeta on Roquet (2015)).
+///
+/// # Argument
+///
+/// * `p`: sea pressure \[dbar\] (i.e. absolute pressure - 10.1325 dbar)
+///
+/// # Returns
+///
+/// * `\pi`: Non-dimensional pressure
+///
+/// # Notes
+///
+/// * The original formulation is a scaling of p by p_u. The MatLab and C
+///   implementations of GSW operate as the product with 1e-4, which does make
+///   sense since it is a lighter operation than a division is for computers.
+///   The issue here is on the inhability of f64 to fully represent certain
+///   fractions. For instance, while 3812.0 can be perfectly represented,
+///   0.3812 is rounded to 0.381200000000000038813. Simmilarly 1e4 is fine but
+///   1e-4 on f64 is rounded to 0.000100000000000000004792, thus 3812/1e4 is
+///   diffrent than 3812*1e-4.
+///
+/// # Example
+/// ```
+/// let p = 3812;
+/// assert!((3812.0 * 1e-4) > (3812.0 / 1e4))
+/// ```
+fn non_dimensional_pressure(p: f64) -> f64 {
+    if cfg!(feature = "compat") {
+        p * 1e-4
+    } else {
+        p / GSW_PU
+    }
+}
+
 pub fn alpha(sa: f64, ct: f64, p: f64) -> Result<f64> {
     // Other implementations force negative SA to be 0. That is dangerous
     // since it can hide error by processing unrealistic inputs
@@ -18,7 +58,7 @@ pub fn alpha(sa: f64, ct: f64, p: f64) -> Result<f64> {
 
     let xs: f64 = libm::sqrt(GSW_SFAC * sa + OFFSET);
     let ys: f64 = ct / GSW_CTU;
-    let z: f64 = p / GSW_PU;
+    let z: f64 = non_dimensional_pressure(p);
 
     let v_ct: f64 = A000
         + xs * (A100 + xs * (A200 + xs * (A300 + xs * (A400 + A500 * xs))))
@@ -53,7 +93,7 @@ pub fn beta(sa: f64, ct: f64, p: f64) -> Result<f64> {
 
     let xs: f64 = libm::sqrt(GSW_SFAC * sa + OFFSET);
     let ys: f64 = ct / GSW_CTU;
-    let z: f64 = p / GSW_PU;
+    let z: f64 = non_dimensional_pressure(p);
 
     let v_sa: f64 = B000
         + xs * (B100 + xs * (B200 + xs * (B300 + xs * (B400 + B500 * xs))))
@@ -107,7 +147,7 @@ pub fn specvol(sa: f64, ct: f64, p: f64) -> Result<f64> {
 
     let xs: f64 = libm::sqrt(GSW_SFAC * sa + OFFSET);
     let ys: f64 = ct / GSW_CTU;
-    let z: f64 = p / GSW_PU;
+    let z: f64 = non_dimensional_pressure(p);
 
     // Specific Volume
     Ok(V000
@@ -185,7 +225,7 @@ pub fn specvol_sso_0(p: f64) -> f64 {
         -2.994_054_447_232_877_6e-8
     };
 
-    let p = p / GSW_PU;
+    let p = non_dimensional_pressure(p);
 
     VXX0 + p * (VXX1 + p * (VXX2 + p * (VXX3 + p * (VXX4 + p * (V005 + V006 * p)))))
 }
@@ -221,7 +261,7 @@ pub fn specvol_first_derivatives(sa: f64, ct: f64, p: f64) -> Result<(f64, f64, 
 
     let xs: f64 = libm::sqrt(GSW_SFAC * sa + OFFSET);
     let ys: f64 = ct / GSW_CTU;
-    let z: f64 = p / GSW_PU;
+    let z: f64 = non_dimensional_pressure(p);
 
     let v_ct_part: f64 = A000
         + xs * (A100 + xs * (A200 + xs * (A300 + xs * (A400 + A500 * xs))))
@@ -388,11 +428,8 @@ pub fn sound_speed(sa: f64, ct: f64, p: f64) -> Result<f64> {
 
     let xs: f64 = libm::sqrt(GSW_SFAC * sa + OFFSET);
     let ys: f64 = ct / GSW_CTU;
-    let z: f64 = if cfg!(feature = "compat") {
-        p * 1e-4
-    } else {
-        p / GSW_PU
-    };
+    //
+    let z: f64 = non_dimensional_pressure(p);
 
     // Specific Volume
     let v = V000
