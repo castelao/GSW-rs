@@ -6,6 +6,7 @@ use crate::gsw_specvol_coefficients::*;
 use crate::{Error, Result};
 
 #[inline]
+/// Non-dimensional salinity
 fn non_dimensional_sa(sa: f64) -> Result<f64> {
     // Other implementations force negative SA to be 0. That is dangerous
     // since it can hide error by processing unrealistic inputs
@@ -60,6 +61,8 @@ fn non_dimensional_p(p: f64) -> f64 {
     }
 }
 
+/// Thermal expansion coefficient with respect to Conservative Temperature
+/// (75-term polynomial approximation)
 pub fn alpha(sa: f64, ct: f64, p: f64) -> Result<f64> {
     let xs: f64 = non_dimensional_sa(sa)?;
     let ys: f64 = ct / GSW_CTU;
@@ -85,6 +88,8 @@ pub fn alpha(sa: f64, ct: f64, p: f64) -> Result<f64> {
     Ok(0.025 * v_ct / specvol(sa, ct, p)?)
 }
 
+/// Saline contraction coefficient at constant Conservative Temperature
+/// (75-term polynomial approximation)
 pub fn beta(sa: f64, ct: f64, p: f64) -> Result<f64> {
     let xs: f64 = non_dimensional_sa(sa)?;
     let ys: f64 = ct / GSW_CTU;
