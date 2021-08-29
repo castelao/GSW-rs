@@ -6,6 +6,7 @@ edition = "2018"
 license = "MIT OR Apache-2.0"
 description = "TEOS-10 v3.06.12 Gibbs Seawater Oceanographic Toolbox in Rust"
 repository = "https://github.com/castelao/GSW-rs"
+keywords = ["oceanography", "seawater"]
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
