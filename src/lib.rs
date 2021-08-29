@@ -28,3 +28,7 @@ pub mod volume;
 
 mod error;
 pub use crate::error::{Error, Result};
+
+pub use crate::volume::{
+    alpha, beta, rho, specvol, specvol_alpha_beta, specvol_anom_standard, specvol_sso_0,
+};
