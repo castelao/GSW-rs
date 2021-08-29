@@ -15,6 +15,7 @@ struct DataRef {
 }
 
 #[test]
+#[cfg(not(windows))]
 fn alpha() {
     let mut input = File::open("tests/data/gsw_validation.bin").expect("Unable to open file");
     let mut contents = vec![];
@@ -41,6 +42,7 @@ fn alpha() {
 }
 
 #[test]
+#[cfg(not(windows))]
 fn beta() {
     let mut input = File::open("tests/data/gsw_validation.bin").expect("Unable to open file");
     let mut contents = vec![];
@@ -67,6 +69,7 @@ fn beta() {
 }
 
 #[test]
+#[cfg(not(windows))]
 fn rho() {
     let mut input = File::open("tests/data/gsw_validation.bin").expect("Unable to open file");
     let mut contents = vec![];
@@ -98,6 +101,7 @@ fn rho() {
 }
 
 #[test]
+#[cfg(not(windows))]
 fn specvol() {
     let mut input = File::open("tests/data/gsw_validation.bin").expect("Unable to open file");
     let mut contents = vec![];
@@ -125,6 +129,7 @@ fn specvol() {
 }
 
 #[test]
+#[cfg(not(windows))]
 fn sound_speed() {
     let mut input = File::open("tests/data/gsw_validation.bin").expect("Unable to open file");
     let mut contents = vec![];
