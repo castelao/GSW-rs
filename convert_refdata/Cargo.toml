@@ -1,0 +1,16 @@
+[package]
+name = "gsw-refdata"
+version = "0.0.1"
+authors = ["Guilherme Castelão <guilherme@castelao.net>", "Luiz Irber <luiz.irber@gmail.com >"]
+edition = "2018"
+license = "BSD-3-Clause"
+description = "Validation dataset for TEOS-10 v3.06.12 GSW Oceanographic Toolbox. Intended to be an internal auxiliary package."
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+heapless = "0.7"
+matfile = { version = "0.3", features = ["ndarray"] }
+ndarray = "0.15"
+postcard = "0.7.0"
+serde = "1.0.126"

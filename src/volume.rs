@@ -1,11 +1,13 @@
-//! Specific volume, density, and enthalpy
+//! Specific volume, density, and enthalpy (75-term polynomial approximation)
 //!
 
 use crate::gsw_internal_const::*;
 use crate::gsw_specvol_coefficients::*;
 use crate::{Error, Result};
 
-pub fn alpha(sa: f64, ct: f64, p: f64) -> Result<f64> {
+#[inline]
+/// Non-dimensional salinity
+fn non_dimensional_sa(sa: f64) -> Result<f64> {
     // Other implementations force negative SA to be 0. That is dangerous
     // since it can hide error by processing unrealistic inputs
     let sa: f64 = if sa >= 0.0 {
@@ -16,9 +18,55 @@ pub fn alpha(sa: f64, ct: f64, p: f64) -> Result<f64> {
         return Err(Error::NegativeSalinity);
     };
 
-    let xs: f64 = libm::sqrt(GSW_SFAC * sa + OFFSET);
+    Ok(libm::sqrt(GSW_SFAC * sa + OFFSET))
+}
+
+#[inline]
+/// Non-dimensional pressure
+///
+/// The polynomial approximation solutions proposed by Roquet (2015) are based
+/// on non-dimensional salinity, temperature, and pressure. Here we scale
+/// pressure by p_u (1e4 [dbar]) to obtain the non-dimensional quantity \pi
+/// (TEOS-10 Manual appendix K, or \zeta on Roquet (2015)).
+///
+/// # Argument
+///
+/// * `p`: sea pressure \[dbar\] (i.e. absolute pressure - 10.1325 dbar)
+///
+/// # Returns
+///
+/// * `\pi`: Non-dimensional pressure
+///
+/// # Notes
+///
+/// * The original formulation is a scaling of p by p_u. The MatLab and C
+///   implementations of GSW operate as the product with 1e-4, which does make
+///   sense since it is a lighter operation than a division is for computers.
+///   The issue here is on the inhability of f64 to fully represent certain
+///   fractions. For instance, while 3812.0 can be perfectly represented,
+///   0.3812 is rounded to 0.381200000000000038813. Simmilarly 1e4 is fine but
+///   1e-4 on f64 is rounded to 0.000100000000000000004792, thus 3812/1e4 is
+///   diffrent than 3812*1e-4.
+///
+/// # Example
+/// ```
+/// let p = 3812;
+/// assert!((3812.0 * 1e-4) > (3812.0 / 1e4))
+/// ```
+fn non_dimensional_p(p: f64) -> f64 {
+    if cfg!(feature = "compat") {
+        p * 1e-4
+    } else {
+        p / GSW_PU
+    }
+}
+
+/// Thermal expansion coefficient with respect to Conservative Temperature
+/// (75-term polynomial approximation)
+pub fn alpha(sa: f64, ct: f64, p: f64) -> Result<f64> {
+    let xs: f64 = non_dimensional_sa(sa)?;
     let ys: f64 = ct / GSW_CTU;
-    let z: f64 = p / GSW_PU;
+    let z: f64 = non_dimensional_p(p);
 
     let v_ct: f64 = A000
         + xs * (A100 + xs * (A200 + xs * (A300 + xs * (A400 + A500 * xs))))
@@ -40,20 +88,12 @@ pub fn alpha(sa: f64, ct: f64, p: f64) -> Result<f64> {
     Ok(0.025 * v_ct / specvol(sa, ct, p)?)
 }
 
+/// Saline contraction coefficient at constant Conservative Temperature
+/// (75-term polynomial approximation)
 pub fn beta(sa: f64, ct: f64, p: f64) -> Result<f64> {
-    // Other implementations force negative SA to be 0. That is dangerous
-    // since it can hide error by processing unrealistic inputs
-    let sa: f64 = if sa >= 0.0 {
-        sa
-    } else if cfg!(feature = "compat") {
-        0.0
-    } else {
-        return Err(Error::NegativeSalinity);
-    };
-
-    let xs: f64 = libm::sqrt(GSW_SFAC * sa + OFFSET);
+    let xs: f64 = non_dimensional_sa(sa)?;
     let ys: f64 = ct / GSW_CTU;
-    let z: f64 = p / GSW_PU;
+    let z: f64 = non_dimensional_p(p);
 
     let v_sa: f64 = B000
         + xs * (B100 + xs * (B200 + xs * (B300 + xs * (B400 + B500 * xs))))
@@ -75,35 +115,29 @@ pub fn beta(sa: f64, ct: f64, p: f64) -> Result<f64> {
     Ok(-v_sa * 0.5 * GSW_SFAC / (specvol(sa, ct, p)? * xs))
 }
 
-/// Calculates specific volume of sea water
+/// Specific volume of sea water (75-term polynomial approximation)
 ///
 /// Calculates specific volume from Absolute Salinity, Conservative
 /// Temperature and pressure, using the computationally-efficient
 /// polynomial expression for specific volume (Roquet et al., 2014).
 ///
-/// sa [g/kg] : Absolute Salinity
-/// ct [deg C] : Conservative Temperature (ITS-90)
-/// p [dbar] : sea pressure ( i.e. absolute pressure - 10.1325 dbar )
+/// # Arguments
 ///
-/// specvol [m^3/kg] : specific volume
+/// * `sa`: Absolute Salinity \[g kg-1\]
+/// * `ct`: Conservative Temperature (ITS-90) \[deg C\]
+/// * `p`: sea pressure \[dbar\] (i.e. absolute pressure - 10.1325 dbar)
+///
+/// # Returns
+///
+/// * `specvol`: specific volume \[m3 kg-1\]
 ///
 /// Note that the coefficients v(i,j,k) follow the convention in the original
 /// paper, which is different from the convention used in the C-library.
 ///
 pub fn specvol(sa: f64, ct: f64, p: f64) -> Result<f64> {
-    // Other implementations force negative SA to be 0. That is dangerous
-    // since it can hide error by processing unrealistic inputs
-    let sa: f64 = if sa >= 0.0 {
-        sa
-    } else if cfg!(feature = "compat") {
-        0.0
-    } else {
-        return Err(Error::NegativeSalinity);
-    };
-
-    let xs: f64 = libm::sqrt(GSW_SFAC * sa + OFFSET);
+    let xs: f64 = non_dimensional_sa(sa)?;
     let ys: f64 = ct / GSW_CTU;
-    let z: f64 = p / GSW_PU;
+    let z: f64 = non_dimensional_p(p);
 
     // Specific Volume
     Ok(V000
@@ -181,7 +215,7 @@ pub fn specvol_sso_0(p: f64) -> f64 {
         -2.994_054_447_232_877_6e-8
     };
 
-    let p = p / GSW_PU;
+    let p = non_dimensional_p(p);
 
     VXX0 + p * (VXX1 + p * (VXX2 + p * (VXX3 + p * (VXX4 + p * (V005 + V006 * p)))))
 }
@@ -190,31 +224,24 @@ pub fn specvol_sso_0(p: f64) -> f64 {
 ///
 /// Specific volume anomaly with reference of SA = SSO & CT = 0 (75-term equation)
 ///
+/// # Arguments
 ///
-/// sa [g/kg] : Absolute Salinity
-/// ct [deg C] : Conservative Temperature (ITS-90)
-/// p [dbar] : sea pressure ( i.e. absolute pressure - 10.1325 dbar )
+/// * `sa`: Absolute Salinity \[g kg-1\]
+/// * `ct`: Conservative Temperature (ITS-90) \[deg C\]
+/// * `p`: sea pressure \[dbar\] (i.e. absolute pressure - 10.1325 dbar)
 ///
-/// specvol_anom : specific volume anomaly of seawater
+/// # Returns
+///
+/// * `specvol_anom`: specific volume anomaly of seawater [m3 kg-1]
 ///
 pub fn specvol_anom_standard(sa: f64, ct: f64, p: f64) -> Result<f64> {
     Ok(specvol(sa, ct, p)? - specvol_sso_0(p))
 }
 
 pub fn specvol_first_derivatives(sa: f64, ct: f64, p: f64) -> Result<(f64, f64, f64)> {
-    // Other implementations force negative SA to be 0. That is dangerous
-    // since it can hide error by processing unrealistic inputs
-    let sa: f64 = if sa >= 0.0 {
-        sa
-    } else if cfg!(feature = "compat") {
-        0.0
-    } else {
-        return Err(Error::NegativeSalinity);
-    };
-
-    let xs: f64 = libm::sqrt(GSW_SFAC * sa + OFFSET);
+    let xs: f64 = non_dimensional_sa(sa)?;
     let ys: f64 = ct / GSW_CTU;
-    let z: f64 = p / GSW_PU;
+    let z: f64 = non_dimensional_p(p);
 
     let v_ct_part: f64 = A000
         + xs * (A100 + xs * (A200 + xs * (A300 + xs * (A400 + A500 * xs))))
@@ -301,35 +328,7 @@ fn specvol_second_derivatives_wrt_enthalpy(sa: f64, ct: f64, p: f64) -> (f64, f6
     unimplemented!()
 }
 
-fn specvol_t_exact(sa: f64, t: f64, p: f64) {
-    unimplemented!()
-}
-
-fn specvol_ct_exact(sa: f64, ct: f64, p: f64) {
-    unimplemented!()
-}
-fn specvol_alpha_beta_ct_exact() {
-    unimplemented!()
-}
-fn specvol_anom(sa: f64, ct: f64, p: f64) {
-    unimplemented!()
-}
-fn specvol_anom_ct_exact() {
-    unimplemented!()
-}
-fn specvol_anom_standard_ct_exact() {
-    unimplemented!()
-}
 fn specvol_diff() {
-    unimplemented!()
-}
-fn specvol_diff_ct_exact() {
-    unimplemented!()
-}
-fn specvol_first_derivatives_ct_exact() {
-    unimplemented!()
-}
-fn specvol_first_derivatives_wrt_enthalpy_ct_exact() {
     unimplemented!()
 }
 fn specvol_from_pot_enthalpy_ice() {
@@ -341,18 +340,6 @@ fn specvol_from_pot_enthalpy_ice_poly() {
 fn specvol_p_parts() {
     unimplemented!()
 }
-fn specvol_second_derivatives_ct_exact() {
-    unimplemented!()
-}
-fn specvol_second_derivatives_wrt_enthalpy_ct_exact() {
-    unimplemented!()
-}
-fn specvol_anom_standard_t_exact() {
-    unimplemented!()
-}
-fn specvol_anom_t_exact() {
-    unimplemented!()
-}
 */
 
 /// in-situ density
@@ -361,14 +348,156 @@ fn specvol_anom_t_exact() {
 /// Temperature, using the computationally-efficient expression for
 /// specific volume in terms of SA, CT and p (Roquet et al., 2014).
 ///
-/// sa [g/kg] : Absolute Salinity
-/// ct [deg C] : Conservative Temperature (ITS-90)
-/// p [dbar] : sea pressure ( i.e. absolute pressure - 10.1325 dbar )
+/// # Arguments
 ///
-/// rho  [kg/m] : in-situ density
+/// * `sa`: Absolute Salinity \[g kg-1\]
+/// * `ct`: Conservative Temperature (ITS-90) \[deg C\]
+/// * `p`: sea pressure \[dbar\] (i.e. absolute pressure - 10.1325 dbar)
+///
+/// # Returns
+///
+/// * `rho`: in-situ density \[kg m-3\]
 ///
 pub fn rho(sa: f64, ct: f64, p: f64) -> Result<f64> {
     Ok(1.0 / specvol(sa, ct, p)?)
+}
+
+/// Sound speed in seawater (75-term polynomial approximation)
+///
+/// # Arguments
+///
+/// * `sa`: Absolute Salinity \[g kg-1\]
+/// * `ct`: Conservative Temperature (ITS-90) \[deg C\]
+/// * `p`: sea pressure \[dbar\] (i.e. absolute pressure - 10.1325 dbar)
+///
+/// # Returns
+///
+/// * `c`: Sound speed \[m s-1\]
+///
+/// # Notes
+///
+/// * Pressure is implicitly converted to Pa to obtain speed in m s-1;
+///
+/// # References
+///
+/// * IOC, SCOR and IAPSO, 2010: The international thermodynamic equation of
+///   seawater - 2010: Calculation and use of thermodynamic properties.
+///   Intergovernmental Oceanographic Commission, Manuals and Guides No. 56,
+///   UNESCO (English), 196 pp.  Available from http://www.TEOS-10.org
+///   See Appendix K of this TEOS-10 Manual.
+///
+/// * McDougall, T.J., D.R. Jackett, D.G. Wright and R. Feistel, 2003:
+///   Accurate and computationally efficient algorithms for potential
+///   temperature and density of seawater.  J. Atmosph. Ocean. Tech., 20,
+///   pp. 730-741.
+///
+/// * Roquet, F., G. Madec, T.J. McDougall, P.M. Barker, 2015: Accurate
+///   polynomial expressions for the density and specifc volume of seawater
+///   using the TEOS-10 standard. Ocean Modelling., 90, pp. 29-43.
+///
+pub fn sound_speed(sa: f64, ct: f64, p: f64) -> Result<f64> {
+    let xs: f64 = non_dimensional_sa(sa)?;
+    let ys: f64 = ct / GSW_CTU;
+    //
+    let z: f64 = non_dimensional_p(p);
+
+    // Specific Volume
+    let v = V000
+        + xs * (V100 + xs * (V200 + xs * (V300 + xs * (V400 + xs * (V500 + xs * V600)))))
+        + ys * (V010
+            + xs * (V110 + xs * (V210 + xs * (V310 + xs * (V410 + xs * V510))))
+            + ys * (V020
+                + xs * (V120 + xs * (V220 + xs * (V320 + xs * V420)))
+                + ys * (V030
+                    + xs * (V130 + xs * (V230 + xs * V330))
+                    + ys * (V040
+                        + xs * (V140 + xs * V240)
+                        + ys * (V050 + xs * V150 + ys * V060)))))
+        + z * (V001
+            + xs * (V101 + xs * (V201 + xs * (V301 + xs * (V401 + xs * V501))))
+            + ys * (V011
+                + xs * (V111 + xs * (V211 + xs * (V311 + xs * V411)))
+                + ys * (V021
+                    + xs * (V121 + xs * (V221 + xs * V321))
+                    + ys * (V031
+                        + xs * (V131 + xs * V231)
+                        + ys * (V041 + xs * V141 + ys * V051))))
+            + z * (V002
+                + xs * (V102 + xs * (V202 + xs * (V302 + xs * V402)))
+                + ys * (V012
+                    + xs * (V112 + xs * (V212 + xs * V312))
+                    + ys * (V022
+                        + xs * (V122 + xs * V222)
+                        + ys * (V032 + xs * V132 + ys * V042)))
+                + z * (V003
+                    + xs * (V103 + xs * V203)
+                    + ys * (V013 + xs * V113 + ys * V023)
+                    + z * (V004 + xs * V104 + ys * V014 + z * (V005 + z * V006)))));
+
+    let v_p = C000
+        + xs * (C100 + xs * (C200 + xs * (C300 + xs * (C400 + C500 * xs))))
+        + ys * (C010
+            + xs * (C110 + xs * (C210 + xs * (C310 + C410 * xs)))
+            + ys * (C020
+                + xs * (C120 + xs * (C220 + C320 * xs))
+                + ys * (C030 + xs * (C130 + C230 * xs) + ys * (C040 + C140 * xs + C050 * ys))))
+        + z * (C001
+            + xs * (C101 + xs * (C201 + xs * (C301 + C401 * xs)))
+            + ys * (C011
+                + xs * (C111 + xs * (C211 + C311 * xs))
+                + ys * (C021 + xs * (C121 + C221 * xs) + ys * (C031 + C131 * xs + C041 * ys)))
+            + z * (C002
+                + xs * (C102 + C202 * xs)
+                + ys * (C012 + C112 * xs + C022 * ys)
+                + z * (C003 + C103 * xs + C013 * ys + z * (C004 + C005 * z))));
+
+    Ok(10_000.0 * libm::sqrt(-v * v / v_p))
+}
+
+/// Potential density anomaly with reference to sea pressure of 0 dbar
+/// (75-term polynomial approximation)
+pub fn sigma0(sa: f64, ct: f64) -> Result<f64> {
+    let xs: f64 = non_dimensional_sa(sa)?;
+    let ys: f64 = ct / GSW_CTU;
+
+    // Specific Volume
+    let v = V000
+        + xs * (V100 + xs * (V200 + xs * (V300 + xs * (V400 + xs * (V500 + xs * V600)))))
+        + ys * (V010
+            + xs * (V110 + xs * (V210 + xs * (V310 + xs * (V410 + xs * V510))))
+            + ys * (V020
+                + xs * (V120 + xs * (V220 + xs * (V320 + xs * V420)))
+                + ys * (V030
+                    + xs * (V130 + xs * (V230 + xs * V330))
+                    + ys * (V040
+                        + xs * (V140 + xs * V240)
+                        + ys * (V050 + xs * V150 + ys * V060)))));
+
+    Ok(1.0 / v - 1000.0)
+}
+
+/// Potential density anomaly with reference to sea pressure of 1000 dbar
+/// (75-term polynomial approximation)
+pub fn sigma1(sa: f64, ct: f64) -> Result<f64> {
+    Ok(rho(sa, ct, 1000.0)? - 1000.0)
+}
+
+/// Potential density anomaly with reference to sea pressure of 2000 dbar
+/// (75-term polynomial approximation)
+pub fn sigma2(sa: f64, ct: f64) -> Result<f64> {
+    Ok(rho(sa, ct, 2000.0)? - 1000.0)
+}
+
+/// Potential density anomaly with reference to sea pressure of 3000 dbar
+/// (75-term polynomial approximation)
+pub fn sigma3(sa: f64, ct: f64) -> Result<f64> {
+    Ok(rho(sa, ct, 3000.0)? - 1000.0)
+}
+
+/// Potential density anomaly with reference to sea pressure of 4000 dbar
+/// (75-term polynomial approximation)
+pub fn sigma4(sa: f64, ct: f64) -> Result<f64> {
+    Ok(rho(sa, ct, 4000.0)? - 1000.0)
 }
 
 #[cfg(test)]
