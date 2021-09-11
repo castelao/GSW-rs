@@ -57,6 +57,34 @@ pub fn specvol_sso_0(p: f64) -> f64 {
                             + crate::gsw_specvol_coefficients::V006 * p)))))
 }
 
+const A0: f64 = 0.008_0;
+const A1: f64 = -0.169_2;
+const A2: f64 = 25.385_1;
+const A3: f64 = 14.094_1;
+const A4: f64 = -7.026_1;
+const A5: f64 = 2.708_1;
+
+const B0: f64 = 0.000_5;
+const B1: f64 = -0.005_6;
+const B2: f64 = -0.006_6;
+const B3: f64 = -0.037_5;
+const B4: f64 = 0.063_6;
+const B5: f64 = -0.014_4;
+
+// Consider rename K to something different
+const K: f64 = 0.016_2;
+
+const G0: f64 = 2.641_463_563_366_498e-1;
+const G1: f64 = 2.007_883_247_811_176e-4;
+const G2: f64 = -4.107_694_432_853_053e-6;
+const G3: f64 = 8.401_670_882_091_225e-8;
+const G4: f64 = -1.711_392_021_989_210e-9;
+const G5: f64 = 3.374_193_893_377_380e-11;
+const G6: f64 = -5.923_731_174_730_784e-13;
+const G7: f64 = 8.057_771_569_962_299e-15;
+const G8: f64 = -7.054_313_817_447_962e-17;
+const G9: f64 = 2.859_992_717_347_235e-19;
+
 pub(crate) fn enthalpy_sso_0(p: f64) -> f64 {
     const H006: f64 = -2.10787688100e-9;
     const H007: f64 = 2.80192913290e-10;
@@ -89,4 +117,57 @@ mod tests {
             assert!((specvol - specvol_sso_0).abs() < f64::EPSILON);
         }
     }
+}
+
+pub(crate) fn hill_ratio_at_sp2(t: f64) -> f64 {
+    let sp2 = 2.0;
+
+    let t68: f64 = t * 1.00024;
+    let ft68: f64 = (t68 - 15.0) / (1.0 + K * (t68 - 15.0));
+
+    // Find the initial estimates of Rtx (Rtx0) and of the derivative
+    // dSP_dRtx at SP = 2.
+    let rtx0: f64 = G0
+        + t68
+            * (G1
+                + t68
+                    * (G2
+                        + t68
+                            * (G3
+                                + t68
+                                    * (G4
+                                        + t68
+                                            * (G5
+                                                + t68
+                                                    * (G6
+                                                        + t68 * (G7 + t68 * (G8 + t68 * G9))))))));
+
+    let dsp_drtx: f64 = A1
+        + (2.0 * A2 + (3.0 * A3 + (4.0 * A4 + 5.0 * A5 * rtx0) * rtx0) * rtx0) * rtx0
+        + ft68 * (B1 + (2.0 * B2 + (3.0 * B3 + (4.0 * B4 + 5.0 * B5 * rtx0) * rtx0) * rtx0) * rtx0);
+
+    //  Begin a single modified Newton-Raphson iteration (McDougall and
+    //  Wotherspoon, 2013) to find Rt at SP = 2.
+
+    let sp_est: f64 = A0
+        + (A1 + (A2 + (A3 + (A4 + A5 * rtx0) * rtx0) * rtx0) * rtx0) * rtx0
+        + ft68 * (B0 + (B1 + (B2 + (B3 + (B4 + B5 * rtx0) * rtx0) * rtx0) * rtx0) * rtx0);
+    let rtx: f64 = rtx0 - (sp_est - sp2) / dsp_drtx;
+    let rtxm: f64 = 0.5 * (rtx + rtx0);
+    let dsp_drtx: f64 = A1
+        + (2.0 * A2 + (3.0 * A3 + (4.0 * A4 + 5.0 * A5 * rtxm) * rtxm) * rtxm) * rtxm
+        + ft68 * (B1 + (2.0 * B2 + (3.0 * B3 + (4.0 * B4 + 5.0 * B5 * rtxm) * rtxm) * rtxm) * rtxm);
+    let rtx: f64 = rtx0 - (sp_est - sp2) / dsp_drtx;
+
+    // This is the end of one full iteration of the modified Newton-Raphson
+    // iterative equation solver.  The error in Rtx at this point is
+    // equivalent to an error in SP of 9e-16 psu.
+
+    let x: f64 = 400.0 * rtx * rtx;
+    let sqrty: f64 = 10.0 * rtx;
+    let part1: f64 = 1.0 + x * (1.5 + x);
+    let part2: f64 = 1.0 + sqrty * (1.0 + sqrty * (1.0 + sqrty));
+    let sp_hill_raw_at_sp2: f64 = sp2 - A0 / part1 - B0 * ft68 / part2;
+
+    2.0 / sp_hill_raw_at_sp2
 }
