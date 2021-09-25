@@ -47,6 +47,51 @@ pub fn gravity(lat: f64, p: f64) -> Result<f64> {
     let sin2 = sinlat * sinlat;
     let gs = 9.780327 * (1.0 + (5.2792e-3 + (2.32e-5 * sin2)) * sin2);
 
+    // Here we use the convention that the height z, corresponding to the given
+    // pressure p, is negative in the ocean.
     let z = z_from_p(p, lat, 0.0, 0.0);
     Ok(gs * (1.0 - GAMMA * z))
+}
+
+/// Distance between two coordinates on Earth
+///
+/// # Arguments
+///  * `lon1`: longitude of the first waypoint \[decimal degrees\]
+///  * `lat1`: latitude of the first waypoint \[decimal degrees\]
+///  * `p1`: sea pressure of the first waypoint \[dbar\] (i.e. absolute
+///    pressure - 10.1325 dbar)
+///  * `lon2`: longitude of the second waypoint \[decimal degrees\]
+///  * `lat2`: latitude of the second waypoint \[decimal degrees\]
+///  * `p2`: sea pressure of the second waypoint \[dbar\] (i.e. absolute
+///    pressure - 10.1325 dbar)
+///
+/// # Returns
+/// * The 'horizontal' distance between two coordinates \[m\]
+///
+/// # Example
+/// ```
+/// use gsw::earth::distance;
+/// let d = distance(-38.0, 15.0, 100.0, -38.0, 12.0, 105.0).unwrap();
+/// assert_eq!(d.round(), 333579.0);
+/// ```
+pub fn distance(lon1: f64, lat1: f64, p1: f64, lon2: f64, lat2: f64, p2: f64) -> Result<f64> {
+    // Earth's radius in metres
+    let earth_radius = 6371000.0;
+
+    let dlon = (lon2 - lon1) * DEG2RAD;
+    let dlat = (lat2 - lat1) * DEG2RAD;
+    let sdlat = libm::sin(0.5 * dlat);
+    let sdlon = libm::sin(0.5 * dlon);
+
+    let a =
+        (sdlat * sdlat) + libm::cos(lat1 * DEG2RAD) * libm::cos(lat2 * DEG2RAD) * (sdlon * sdlon);
+    let angles = 2.0 * libm::atan2(libm::sqrt(a), libm::sqrt(1.0 - a));
+
+    let p_mid = 0.5 * (p1 + p2);
+    let lat_mid = 0.5 * (lat1 + lat2);
+    // Here we use the convention that the height z, corresponding to the given
+    // pressure p, is negative in the ocean.
+    let z = z_from_p(p_mid, lat_mid, 0.0, 0.0);
+
+    Ok((earth_radius + z) * angles)
 }
