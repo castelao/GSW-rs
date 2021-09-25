@@ -34,8 +34,6 @@ pub fn coriollis_parameter(lat: f64) -> Result<f64> {
 /// ```
 ///
 /// # Notes:
-/// * Here we use the convention that the height z, corresponding to the given
-///   pressure p, is negative in the ocean.
 /// * If feature nodgdz is activated, GAMMA is zero, thus this can be
 ///   simplified.
 pub fn gravity(lat: f64, p: f64) -> Result<f64> {
