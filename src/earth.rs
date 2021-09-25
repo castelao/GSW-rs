@@ -95,3 +95,26 @@ pub fn distance(lon1: f64, lat1: f64, p1: f64, lon2: f64, lat2: f64, p2: f64) ->
 
     Ok((earth_radius + z) * angles)
 }
+
+#[cfg(test)]
+mod tests {
+    use super::distance;
+
+    #[test]
+    fn distance_along_equator() {
+        let d = distance(0.0, 0.0, 0.0, 1.0, 0.0, 0.0).unwrap();
+        assert!((d - 111194.92664455874).abs() <= f64::EPSILON);
+    }
+
+    #[test]
+    fn distance_high_latitude() {
+        let d = distance(0.0, 75.0, 0.0, 1.0, 75.0, 0.0).unwrap();
+        assert!((d - 28779.023924964815).abs() <= f64::EPSILON);
+    }
+
+    #[test]
+    fn distance_on_depth() {
+        let d = distance(0.0, 0.0, 0.0, 0.0, 1.0, 1000.0).unwrap();
+        assert!((d - 111186.2584129753).abs() <= f64::EPSILON);
+    }
+}
