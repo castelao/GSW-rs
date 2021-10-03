@@ -14,7 +14,7 @@ use crate::{Error, Result};
 /// ```
 pub fn coriollis_parameter(lat: f64) -> Result<f64> {
     if (lat < -90.0) | (lat > 90.0) {
-        return Err(Error::InvalidValue);
+        return Err(Error::Undefined);
     }
 
     let omega = 7.292115e-5;
@@ -38,7 +38,7 @@ pub fn coriollis_parameter(lat: f64) -> Result<f64> {
 ///   simplified.
 pub fn gravity(lat: f64, p: f64) -> Result<f64> {
     if (lat < -90.0) | (lat > 90.0) {
-        return Err(Error::InvalidValue);
+        return Err(Error::Undefined);
     }
 
     let sinlat = libm::sin(lat * DEG2RAD);
@@ -74,7 +74,7 @@ pub fn gravity(lat: f64, p: f64) -> Result<f64> {
 /// ```
 pub fn distance(lon1: f64, lat1: f64, p1: f64, lon2: f64, lat2: f64, p2: f64) -> Result<f64> {
     if (lat1 < -90.0) | (lat1 > 90.0) | (lat2 < -90.0) | (lat2 > 90.0) {
-        return Err(Error::InvalidValue);
+        return Err(Error::Undefined);
     }
 
     // Earth's radius in metres
