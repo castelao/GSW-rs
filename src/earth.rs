@@ -13,7 +13,7 @@ use crate::{Error, Result};
 /// assert!((f - 1.2710993980526786e-05).abs() <= f64::EPSILON);
 /// ```
 pub fn coriollis_parameter(lat: f64) -> Result<f64> {
-    if (lat < -90.0) | (lat > 90.0) {
+    if !(-90.0..=90.0).contains(&lat) {
         return Err(Error::Undefined);
     }
 
@@ -37,7 +37,7 @@ pub fn coriollis_parameter(lat: f64) -> Result<f64> {
 /// * If feature nodgdz is activated, GAMMA is zero, thus this can be
 ///   simplified.
 pub fn gravity(lat: f64, p: f64) -> Result<f64> {
-    if (lat < -90.0) | (lat > 90.0) {
+    if !(-90.0..=90.0).contains(&lat) {
         return Err(Error::Undefined);
     }
 
@@ -73,7 +73,7 @@ pub fn gravity(lat: f64, p: f64) -> Result<f64> {
 /// assert_eq!(d.round(), 333579.0);
 /// ```
 pub fn distance(lon1: f64, lat1: f64, p1: f64, lon2: f64, lat2: f64, p2: f64) -> Result<f64> {
-    if (lat1 < -90.0) | (lat1 > 90.0) | (lat2 < -90.0) | (lat2 > 90.0) {
+    if !(-90.0..=90.0).contains(&lat1) | !(-90.0..=90.0).contains(&lat2) {
         return Err(Error::Undefined);
     }
 
