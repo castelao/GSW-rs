@@ -115,8 +115,24 @@ mod tests {
     }
 
     #[test]
-    fn distance_on_depth() {
+    fn distance_with_depth() {
         let d = distance(0.0, 0.0, 0.0, 0.0, 1.0, 1000.0).unwrap();
         assert!((d - 111186.2584129753).abs() <= f64::EPSILON);
+    }
+
+    #[test]
+    // Vertical distance is not included
+    fn distance_on_depth() {
+        let d = distance(0.0, 0.0, 0.0, 0.0, 0.0, 1000.0).unwrap();
+        assert!((d - 0.0).abs() <= f64::EPSILON);
+    }
+
+    #[test]
+    // Distance reduces with depth (average depth between p1 & p2)
+    fn distance_depth_effect() {
+        let d_surf = distance(0.0, 0.0, 0.0, 0.0, 0.1, 0.0).unwrap();
+        let d_deep = distance(0.0, 0.0, 0.0, 0.0, 0.1, 4000.0).unwrap();
+        let diff = d_surf - d_deep;
+        assert!((diff - 3.4549677662762406).abs() <= f64::EPSILON);
     }
 }
