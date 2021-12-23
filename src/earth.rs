@@ -99,7 +99,7 @@ pub fn distance(lon1: f64, lat1: f64, p1: f64, lon2: f64, lat2: f64, p2: f64) ->
 }
 
 #[cfg(test)]
-mod tests {
+mod test_distance {
     use super::distance;
 
     #[test]
