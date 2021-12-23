@@ -35,3 +35,28 @@ fn coriolis_parameter() {
         }
     }
 }
+
+#[test]
+#[cfg(not(windows))]
+fn gravity() {
+    let mut input = File::open("tests/data/gsw_validation.bin").expect("Unable to open file");
+    let mut contents = vec![];
+    input
+        .read_to_end(&mut contents)
+        .expect("Failed to read content");
+
+    let out: DataRef = from_bytes(&contents).unwrap();
+
+    let lat = out.data_x.get(&String::from("lat_chck_cast")).unwrap();
+    let p = out.data2d.get(&String::from("p_chck_cast")).unwrap();
+    let g = out.data2d.get(&String::from("grav")).unwrap();
+    for i in 0..3 {
+        for j in 0..45 {
+            if !g[i][j].is_nan() {
+                assert!(
+                    (gsw::earth::gravity(lat[i], p[i][j]).unwrap() - g[i][j]).abs() <= f64::EPSILON
+                );
+            }
+        }
+    }
+}
