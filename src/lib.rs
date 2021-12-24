@@ -23,6 +23,7 @@ mod gsw_specvol_coefficients;
 mod ffi;
 
 pub mod conversions;
+pub mod earth;
 mod gsw_internal_funcs;
 pub mod volume;
 

@@ -6,6 +6,8 @@ extern crate std;
 pub enum Error {
     #[cfg_attr(feature = "std", error("Negative salinity"))]
     NegativeSalinity,
+    #[cfg_attr(feature = "std", error("Undefined error"))]
+    Undefined,
 }
 
 pub type Result<T> = core::result::Result<T, Error>;
