@@ -55,9 +55,6 @@ mod test_coriollis_parameter {
 /// assert!((g - 9.78799904835888).abs() <= f64::EPSILON);
 /// ```
 ///
-/// # Notes:
-/// * If feature nodgdz is activated, GAMMA is zero, thus this can be
-///   simplified.
 pub fn gravity(lat: f64, p: f64) -> Result<f64> {
     if !(-90.0..=90.0).contains(&lat) {
         return Err(Error::Undefined);
@@ -66,6 +63,11 @@ pub fn gravity(lat: f64, p: f64) -> Result<f64> {
     let sinlat = libm::sin(lat * DEG2RAD);
     let sin2 = sinlat * sinlat;
     let gs = 9.780327 * (1.0 + (5.2792e-3 + (2.32e-5 * sin2)) * sin2);
+
+    // If nodgdz is activate, GAMMA is zero, thus this function can be simplified.
+    if cfg!(feature = "nodgdz") {
+        return Ok(gs);
+    }
 
     // Here we use the convention that the height z, corresponding to the given
     // pressure p, is negative in the ocean.
