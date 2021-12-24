@@ -35,6 +35,12 @@ mod test_coriollis_parameter {
         let f = coriollis_parameter(-90.0).unwrap();
         assert!((f + 0.0001458423).abs() <= f64::EPSILON);
     }
+
+    #[test]
+    fn equator() {
+        let f = coriollis_parameter(0.0).unwrap();
+        assert!((f).abs() <= f64::EPSILON);
+    }
 }
 
 /// Gravity in the ocean
