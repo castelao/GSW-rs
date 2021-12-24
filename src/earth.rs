@@ -45,8 +45,8 @@ mod test_coriollis_parameter {
 
 /// Gravity in the ocean
 ///
-/// Calculates acceleration due to gravity as a function of latitude and as a
-/// function of pressure in the ocean.
+/// Calculates acceleration due to gravity as a function of latitude and
+/// pressure in the ocean.
 ///
 /// # Example:
 /// ```
