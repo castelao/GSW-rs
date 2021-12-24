@@ -5,10 +5,10 @@
         "homepage": "https://github.com/nmattia/niv",
         "owner": "nmattia",
         "repo": "niv",
-        "rev": "af958e8057f345ee1aca714c1247ef3ba1c15f5e",
-        "sha256": "1qjavxabbrsh73yck5dcq8jggvh3r2jkbr6b5nlz5d9yrqm9255n",
+        "rev": "5830a4dd348d77e39a0f3c4c762ff2663b602d4c",
+        "sha256": "1d3lsrqvci4qz2hwjrcnd8h5vfkg8aypq3sjd4g3izbc8frwz5sm",
         "type": "tarball",
-        "url": "https://github.com/nmattia/niv/archive/af958e8057f345ee1aca714c1247ef3ba1c15f5e.tar.gz",
+        "url": "https://github.com/nmattia/niv/archive/5830a4dd348d77e39a0f3c4c762ff2663b602d4c.tar.gz",
         "url_template": "https://github.com/<owner>/<repo>/archive/<rev>.tar.gz"
     },
     "nixpkgs": {
@@ -17,10 +17,10 @@
         "homepage": "",
         "owner": "NixOS",
         "repo": "nixpkgs",
-        "rev": "c0e881852006b132236cbf0301bd1939bb50867e",
-        "sha256": "0fy7z7yxk5n7yslsvx5cyc6h21qwi4bhxf3awhirniszlbvaazy2",
+        "rev": "0c408a087b4751c887e463e3848512c12017be25",
+        "sha256": "049l2w7sngxb354kkrvaigzkkiz5073y7s176xdvqgm4gyzp05dw",
         "type": "tarball",
-        "url": "https://github.com/NixOS/nixpkgs/archive/c0e881852006b132236cbf0301bd1939bb50867e.tar.gz",
+        "url": "https://github.com/NixOS/nixpkgs/archive/0c408a087b4751c887e463e3848512c12017be25.tar.gz",
         "url_template": "https://github.com/<owner>/<repo>/archive/<rev>.tar.gz"
     },
     "rust-overlay": {
@@ -29,10 +29,10 @@
         "homepage": null,
         "owner": "oxalica",
         "repo": "rust-overlay",
-        "rev": "5f0888c4b7c70bcb20f617358318640befaf67d4",
-        "sha256": "02yy535ydbj448fgmwa4gsxsgn6yfflin873z731w89bb5i9wr1l",
+        "rev": "5c8f3e3facc8b2d183bd18bbf9eb760ed37b5a49",
+        "sha256": "1gfw8kns1g5kyypx24w5vw42lvh1hbdsiq8vnk1yd15v5dcvdp8l",
         "type": "tarball",
-        "url": "https://github.com/oxalica/rust-overlay/archive/5f0888c4b7c70bcb20f617358318640befaf67d4.tar.gz",
+        "url": "https://github.com/oxalica/rust-overlay/archive/5c8f3e3facc8b2d183bd18bbf9eb760ed37b5a49.tar.gz",
         "url_template": "https://github.com/<owner>/<repo>/archive/<rev>.tar.gz"
     }
 }
