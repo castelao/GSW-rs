@@ -21,6 +21,22 @@ pub fn coriollis_parameter(lat: f64) -> Result<f64> {
     Ok(2.0 * omega * libm::sin(lat * DEG2RAD))
 }
 
+#[cfg(test)]
+mod test_coriollis_parameter {
+    use super::coriollis_parameter;
+
+    #[test]
+    fn poles() {
+        // North pole
+        let f = coriollis_parameter(90.0).unwrap();
+        assert!((f - 0.0001458423).abs() <= f64::EPSILON);
+
+        // South pole
+        let f = coriollis_parameter(-90.0).unwrap();
+        assert!((f + 0.0001458423).abs() <= f64::EPSILON);
+    }
+}
+
 /// Gravity in the ocean
 ///
 /// Calculates acceleration due to gravity as a function of latitude and as a
