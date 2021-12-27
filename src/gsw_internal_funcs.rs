@@ -159,8 +159,8 @@ pub(crate) fn hill_ratio_at_sp2(t: f64) -> f64 {
     let t68: f64 = t * 1.00024;
     let ft68: f64 = (t68 - 15.0) / (1.0 + K * (t68 - 15.0));
 
-    // Find the initial estimates of Rtx (Rtx0) and of the derivative
-    // dSP_dRtx at SP = 2.
+    // Find the initial estimates of Rtx (Rtx0) and of the derivative dSP_dRtx
+    // at SP = 2.
     let rtx0: f64 = G0
         + t68
             * (G1
