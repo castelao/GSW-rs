@@ -23,6 +23,8 @@ pub const GAMMA: f64 = if cfg!(feature = "nodgdz") {
 /// cp0: The "specific heat" for use with Conservative Temperature
 pub const GSW_CP0: f64 = 3_991.867_957_119_63;
 
+pub const GSW_C3515: f64 = 42.914_0;
+
 /// Conversion factor deciBar to Pascal
 pub const DB2PA: f64 = 1.0e4;
 
