@@ -129,6 +129,13 @@ mod tests {
 ///
 /// * `t90`: Temperature ITS-90 \[deg C\]
 ///
+/// # Example:
+/// ```
+/// use gsw::practical_salinity::c_from_sp;
+/// let cndc = c_from_sp(34.86, 10.0, 100.0).unwrap();
+/// assert_eq!(cndc, 37.99819884763376);
+/// ```
+///
 /// # Notes
 /// * Practical Salinity is limited between 0 and 42 as defined in the
 ///   references
