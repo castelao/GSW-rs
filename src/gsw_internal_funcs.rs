@@ -3,6 +3,7 @@
 //! Functions not intended to be used outside this library
 
 use crate::gsw_internal_const::{DB2PA, GSW_PU};
+use crate::gsw_specvol_coefficients::{V005, V006};
 
 #[inline]
 /// Non-dimensional pressure
@@ -87,14 +88,7 @@ pub fn specvol_sso_0(p: f64) -> f64 {
     };
 
     let p = non_dimensional_p(p);
-
-    VXX0 + p
-        * (VXX1
-            + p * (VXX2
-                + p * (VXX3
-                    + p * (VXX4
-                        + p * (crate::gsw_specvol_coefficients::V005
-                            + crate::gsw_specvol_coefficients::V006 * p)))))
+    VXX0 + p * (VXX1 + p * (VXX2 + p * (VXX3 + p * (VXX4 + p * (V005 + V006 * p)))))
 }
 
 const A0: f64 = 0.008_0;
