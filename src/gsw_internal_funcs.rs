@@ -119,6 +119,24 @@ pub fn specvol_sso_0(p: f64) -> f64 {
     VXX0 + p * (VXX1 + p * (VXX2 + p * (VXX3 + p * (VXX4 + p * (V005 + V006 * p)))))
 }
 
+#[cfg(test)]
+mod test_specvol_sso_0 {
+    use super::specvol_sso_0;
+    use crate::gsw_internal_const::GSW_SSO;
+    use crate::volume::specvol;
+
+    /// specvol() at SSO & CT=0 should be identical to specvol_sso_0()
+    #[test]
+    fn specvol_vs_specvol_sso_0() {
+        let p_to_test: [f64; 5] = [0., 10., 100., 1000., 5000.];
+        for p in p_to_test.iter().cloned() {
+            let specvol = specvol(GSW_SSO, 0., p).unwrap();
+            let specvol_sso_0 = specvol_sso_0(p);
+            assert!((specvol - specvol_sso_0).abs() < f64::EPSILON);
+        }
+    }
+}
+
 pub(crate) fn enthalpy_sso_0(p: f64) -> f64 {
     const H006: f64 = -2.10787688100e-9;
     const H007: f64 = 2.80192913290e-10;
@@ -133,24 +151,6 @@ pub(crate) fn enthalpy_sso_0(p: f64) -> f64 {
                         + z * (-5.988_108_894_465_758e-9 + z * (H006 + H007 * z))))));
 
     dynamic_enthalpy_sso_0_p * DB2PA * 1.0e4
-}
-
-#[cfg(test)]
-mod tests {
-    use super::specvol_sso_0;
-    use crate::gsw_internal_const::GSW_SSO;
-    use crate::volume::specvol;
-
-    /// specvol() at SSO & CT=0 should be identical to specvol_sso_0()
-    #[test]
-    fn test_specvol_vs_specvol_sso_0() {
-        let p_to_test: [f64; 5] = [0., 10., 100., 1000., 5000.];
-        for p in p_to_test.iter().cloned() {
-            let specvol = specvol(GSW_SSO, 0., p).unwrap();
-            let specvol_sso_0 = specvol_sso_0(p);
-            assert!((specvol - specvol_sso_0).abs() < f64::EPSILON);
-        }
-    }
 }
 
 pub(crate) fn hill_ratio_at_sp2(t: f64) -> f64 {
@@ -204,4 +204,18 @@ pub(crate) fn hill_ratio_at_sp2(t: f64) -> f64 {
     let sp_hill_raw_at_sp2: f64 = sp2 - A0 / part1 - B0 * ft68 / part2;
 
     2.0 / sp_hill_raw_at_sp2
+}
+
+#[cfg(test)]
+mod test_hill_ratio_at_sp2 {
+    use super::hill_ratio_at_sp2;
+
+    #[test]
+    fn example_values() {
+        let ratio = hill_ratio_at_sp2(10.);
+        assert!((ratio - 0.9999586761759697).abs() <= f64::EPSILON);
+
+        let ratio = hill_ratio_at_sp2(25.);
+        assert!((ratio - 1.0000764830968472).abs() <= f64::EPSILON);
+    }
 }
