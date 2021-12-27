@@ -4,8 +4,7 @@
 use crate::gsw_internal_const::*;
 use crate::gsw_internal_funcs::*;
 // use crate::gsw_specvol_coefficients::*;
-// use crate::{Error, Result};
-use crate::Result;
+use crate::{Error, Result};
 
 /// Practical Salinity from conductivity
 ///
@@ -283,6 +282,10 @@ pub fn c_from_sp(sp: f64, t90: f64, p: f64) -> Result<f64> {
     let ft68 = (t68 - 15.0) / (1.0 + K * (t68 - 15.0));
 
     let x = libm::sqrt(sp);
+
+    if cfg!(feature = "compat") && (sp < 0.0 || sp > 42.0) {
+        return Err(Error::Undefined);
+    }
 
     // Finding the starting value of Rtx, the square root of Rt, using four
     // different polynomials of SP and t68.
