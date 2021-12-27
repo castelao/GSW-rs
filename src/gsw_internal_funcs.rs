@@ -5,6 +5,34 @@
 use crate::gsw_internal_const::{DB2PA, GSW_PU};
 use crate::gsw_specvol_coefficients::{V005, V006};
 
+const A0: f64 = 0.008_0;
+const A1: f64 = -0.169_2;
+const A2: f64 = 25.385_1;
+const A3: f64 = 14.094_1;
+const A4: f64 = -7.026_1;
+const A5: f64 = 2.708_1;
+
+const B0: f64 = 0.000_5;
+const B1: f64 = -0.005_6;
+const B2: f64 = -0.006_6;
+const B3: f64 = -0.037_5;
+const B4: f64 = 0.063_6;
+const B5: f64 = -0.014_4;
+
+// Consider rename K to something different
+const K: f64 = 0.016_2;
+
+const G0: f64 = 2.641_463_563_366_498e-1;
+const G1: f64 = 2.007_883_247_811_176e-4;
+const G2: f64 = -4.107_694_432_853_053e-6;
+const G3: f64 = 8.401_670_882_091_225e-8;
+const G4: f64 = -1.711_392_021_989_210e-9;
+const G5: f64 = 3.374_193_893_377_380e-11;
+const G6: f64 = -5.923_731_174_730_784e-13;
+const G7: f64 = 8.057_771_569_962_299e-15;
+const G8: f64 = -7.054_313_817_447_962e-17;
+const G9: f64 = 2.859_992_717_347_235e-19;
+
 #[inline]
 /// Non-dimensional pressure
 ///
@@ -90,34 +118,6 @@ pub fn specvol_sso_0(p: f64) -> f64 {
     let p = non_dimensional_p(p);
     VXX0 + p * (VXX1 + p * (VXX2 + p * (VXX3 + p * (VXX4 + p * (V005 + V006 * p)))))
 }
-
-const A0: f64 = 0.008_0;
-const A1: f64 = -0.169_2;
-const A2: f64 = 25.385_1;
-const A3: f64 = 14.094_1;
-const A4: f64 = -7.026_1;
-const A5: f64 = 2.708_1;
-
-const B0: f64 = 0.000_5;
-const B1: f64 = -0.005_6;
-const B2: f64 = -0.006_6;
-const B3: f64 = -0.037_5;
-const B4: f64 = 0.063_6;
-const B5: f64 = -0.014_4;
-
-// Consider rename K to something different
-const K: f64 = 0.016_2;
-
-const G0: f64 = 2.641_463_563_366_498e-1;
-const G1: f64 = 2.007_883_247_811_176e-4;
-const G2: f64 = -4.107_694_432_853_053e-6;
-const G3: f64 = 8.401_670_882_091_225e-8;
-const G4: f64 = -1.711_392_021_989_210e-9;
-const G5: f64 = 3.374_193_893_377_380e-11;
-const G6: f64 = -5.923_731_174_730_784e-13;
-const G7: f64 = 8.057_771_569_962_299e-15;
-const G8: f64 = -7.054_313_817_447_962e-17;
-const G9: f64 = 2.859_992_717_347_235e-19;
 
 pub(crate) fn enthalpy_sso_0(p: f64) -> f64 {
     const H006: f64 = -2.10787688100e-9;
