@@ -2,6 +2,7 @@
 //!
 
 use crate::gsw_internal_const::*;
+use crate::gsw_internal_funcs::non_dimensional_p;
 use crate::gsw_specvol_coefficients::*;
 use crate::{Error, Result};
 
@@ -19,46 +20,6 @@ fn non_dimensional_sa(sa: f64) -> Result<f64> {
     };
 
     Ok(libm::sqrt(GSW_SFAC * sa + OFFSET))
-}
-
-#[inline]
-/// Non-dimensional pressure
-///
-/// The polynomial approximation solutions proposed by Roquet (2015) are based
-/// on non-dimensional salinity, temperature, and pressure. Here we scale
-/// pressure by p_u (1e4 [dbar]) to obtain the non-dimensional quantity \pi
-/// (TEOS-10 Manual appendix K, or \zeta on Roquet (2015)).
-///
-/// # Argument
-///
-/// * `p`: sea pressure \[dbar\] (i.e. absolute pressure - 10.1325 dbar)
-///
-/// # Returns
-///
-/// * `\pi`: Non-dimensional pressure
-///
-/// # Notes
-///
-/// * The original formulation is a scaling of p by p_u. The MatLab and C
-///   implementations of GSW operate as the product with 1e-4, which does make
-///   sense since it is a lighter operation than a division is for computers.
-///   The issue here is on the inhability of f64 to fully represent certain
-///   fractions. For instance, while 3812.0 can be perfectly represented,
-///   0.3812 is rounded to 0.381200000000000038813. Simmilarly 1e4 is fine but
-///   1e-4 on f64 is rounded to 0.000100000000000000004792, thus 3812/1e4 is
-///   diffrent than 3812*1e-4.
-///
-/// # Example
-/// ```
-/// let p = 3812;
-/// assert!((3812.0 * 1e-4) > (3812.0 / 1e4))
-/// ```
-pub(crate) fn non_dimensional_p(p: f64) -> f64 {
-    if cfg!(feature = "compat") {
-        p * 1e-4
-    } else {
-        p / GSW_PU
-    }
 }
 
 /// Thermal expansion coefficient with respect to Conservative Temperature
