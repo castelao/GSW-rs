@@ -9,6 +9,10 @@ use crate::Result;
 
 /// Practical Salinity from conductivity
 ///
+/// # Arguments
+///
+/// * `t90`: Temperature ITS-90 \[deg C\]
+///
 /// # Example:
 /// ```
 /// use gsw::practical_salinity::sp_from_c;
@@ -19,7 +23,7 @@ use crate::Result;
 /// # Notes:
 ///
 /// - Return Ok(NaN) or an Error? Maybe a new error ivalid range?
-pub fn sp_from_c(cndc: f64, t: f64, p: f64) -> Result<f64> {
+pub fn sp_from_c(cndc: f64, t90: f64, p: f64) -> Result<f64> {
     // Once other functions from the module are implemented, verify
     // constants and move outside functions for common use.
     const A0: f64 = 0.0080;
@@ -53,7 +57,7 @@ pub fn sp_from_c(cndc: f64, t: f64, p: f64) -> Result<f64> {
 
     const K: f64 = 0.0162;
 
-    let t68 = t * 1.00024;
+    let t68 = t90 * 1.00024;
     let ft68 = (t68 - 15.0) / (1.0 + K * (t68 - 15.0));
 
     /*
@@ -92,7 +96,7 @@ pub fn sp_from_c(cndc: f64, t: f64, p: f64) -> Result<f64> {
     */
 
     if sp < 2.0 {
-        let hill_ratio = hill_ratio_at_sp2(t);
+        let hill_ratio = hill_ratio_at_sp2(t90);
         let x = 400.0 * rt;
         let sqrty = 10.0 * rtx;
         let part1 = 1.0 + x * (1.5 + x);
