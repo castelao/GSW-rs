@@ -212,6 +212,9 @@ mod test_hill_ratio_at_sp2 {
 
     #[test]
     fn example_values() {
+        let ratio = hill_ratio_at_sp2(0.);
+        assert!((ratio - 0.9998343644127332).abs() <= f64::EPSILON);
+
         let ratio = hill_ratio_at_sp2(10.);
         assert!((ratio - 0.9999586761759697).abs() <= f64::EPSILON);
 
