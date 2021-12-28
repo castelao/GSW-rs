@@ -17,6 +17,10 @@ mod gsw_internal_const;
 
 /// cbindgen:ignore
 #[allow(unused)]
+mod gsw_sp_coefficients;
+
+/// cbindgen:ignore
+#[allow(unused)]
 mod gsw_specvol_coefficients;
 
 #[cfg(feature = "capi")]
