@@ -47,7 +47,7 @@ mod tests {
     }
 }
 
-///
+/// Conductivity from Practical Salinity
 ///
 /// # Arguments
 ///
@@ -70,6 +70,19 @@ pub fn c_from_sp(sp: f64, t90: f64, p: f64) -> Result<f64> {
     Ok(GSW_C3515 * r_from_sp(sp, t90, p)?)
 }
 
+/// Practical Salinity from conductivity ratio
+///
+/// # Arguments
+///
+/// * `r`: Conductivity ratio \[unitless\]
+/// * `t90`: Temperature ITS-90 \[deg C\]
+///
+/// # Example:
+/// ```
+/// use gsw::practical_salinity::sp_from_r;
+/// let sp = sp_from_r(1.0, 15.0, 100.0).unwrap();
+/// assert_eq!(sp, 34.95619860613106);
+/// ```
 pub fn sp_from_r(r: f64, t90: f64, p: f64) -> Result<f64> {
     let t68 = t90 * 1.00024;
     let ft68 = (t68 - 15.0) / (1.0 + K * (t68 - 15.0));
@@ -112,7 +125,7 @@ pub fn sp_from_r(r: f64, t90: f64, p: f64) -> Result<f64> {
     Ok(sp)
 }
 
-///
+/// Conductivity ratio from Practical Salinity
 ///
 /// # Arguments
 ///
@@ -291,7 +304,7 @@ pub fn r_from_sp(sp: f64, t90: f64, p: f64) -> Result<f64> {
     Ok(r)
 }
 
-///
+/// Practical Salinity from a laboratory salinometer
 ///
 /// # Arguments
 ///
