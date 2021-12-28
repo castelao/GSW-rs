@@ -167,15 +167,9 @@ const U20: f64 = 8.285687652694768e-13;
 ///
 /// - Return Ok(NaN) or an Error? Maybe a new error ivalid range?
 pub fn sp_from_c(cndc: f64, t90: f64, p: f64) -> Result<f64> {
-    let t68 = t90 * 1.00024;
-    let ft68 = (t68 - 15.0) / (1.0 + K * (t68 - 15.0));
-
-    /*
-    The dimensionless conductivity ratio, R, is the conductivity input, C,
-    divided by the present estimate of C(SP=35, t_68=15, p=0) which is
-    42.9140 mS/cm (=4.29140 S/m), (Culkin and Smith, 1980).
-    */
-
+    // The dimensionless conductivity ratio, R, is the conductivity input, C,
+    // divided by the present estimate of C(SP=35, t_68=15, p=0) which is
+    // 42.9140 mS/cm (=4.29140 S/m^).
     // Matlab only. C didn't follow Matlab here.
     let r = if cfg!(feature = "compat") {
         cndc * 0.023302418791070513
@@ -183,44 +177,7 @@ pub fn sp_from_c(cndc: f64, t90: f64, p: f64) -> Result<f64> {
         cndc / GSW_C3515
     };
 
-    /*rt_lc corresponds to rt as defined in the UNESCO 44 (1983) routines.*/
-    let rt_lc = C0 + (C1 + (C2 + (C3 + C4 * t68) * t68) * t68) * t68;
-    let rp = 1.0
-        + (p * (E1 + E2 * p + E3 * p * p))
-            / (1.0 + D1 * t68 + D2 * t68 * t68 + (D3 + D4 * t68) * r);
-    let rt = r / (rp * rt_lc);
-
-    if rt < 0.0 {
-        return Ok(f64::NAN);
-    }
-
-    let rtx = libm::sqrt(rt);
-
-    let mut sp = A0
-        + (A1 + (A2 + (A3 + (A4 + A5 * rtx) * rtx) * rtx) * rtx) * rtx
-        + ft68 * (B0 + (B1 + (B2 + (B3 + (B4 + B5 * rtx) * rtx) * rtx) * rtx) * rtx);
-    /*
-    The following section of the code is designed for SP < 2 based on the
-    Hill et al. (1986) algorithm.  This algorithm is adjusted so that it is
-    exactly equal to the PSS-78 algorithm at SP = 2.
-    */
-
-    if sp < 2.0 {
-        let hill_ratio = hill_ratio_at_sp2(t90);
-        let x = 400.0 * rt;
-        let sqrty = 10.0 * rtx;
-        let part1 = 1.0 + x * (1.5 + x);
-        let part2 = 1.0 + sqrty * (1.0 + sqrty * (1.0 + sqrty));
-        let sp_hill_raw = sp - A0 / part1 - B0 * ft68 / part2;
-        sp = hill_ratio * sp_hill_raw;
-    }
-
-    /* This line ensures that SP is non-negative. */
-    if sp < 0.0 {
-        sp = f64::NAN;
-    }
-
-    return Ok(sp);
+    Ok(sp_from_r(r, t90, p)?)
 }
 
 #[cfg(test)]
