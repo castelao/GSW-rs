@@ -6,6 +6,10 @@ use crate::gsw_internal_funcs::*;
 use crate::gsw_sp_coefficients::*;
 use crate::{Error, Result};
 
+fn t68_from_t90(t90: f64) -> f64 {
+    t90 * 1.00024
+}
+
 /// Practical Salinity from conductivity
 ///
 /// # Arguments
@@ -84,7 +88,7 @@ pub fn c_from_sp(sp: f64, t90: f64, p: f64) -> Result<f64> {
 /// assert_eq!(sp, 34.95619860613106);
 /// ```
 pub fn sp_from_r(r: f64, t90: f64, p: f64) -> Result<f64> {
-    let t68 = t90 * 1.00024;
+    let t68 = t68_from_t90(t90);
     let ft68 = (t68 - 15.0) / (1.0 + K * (t68 - 15.0));
 
     // rt_lc corresponds to rt as defined in the UNESCO 44 (1983) routines.
@@ -138,7 +142,7 @@ pub fn sp_from_r(r: f64, t90: f64, p: f64) -> Result<f64> {
 /// assert_eq!(ratio, 0.8854499428539347);
 /// ```
 pub fn r_from_sp(sp: f64, t90: f64, p: f64) -> Result<f64> {
-    let t68 = t90 * 1.00024;
+    let t68 = t68_from_t90(t90);
     let ft68 = (t68 - 15.0) / (1.0 + K * (t68 - 15.0));
 
     let x = libm::sqrt(sp);
@@ -318,7 +322,7 @@ pub fn r_from_sp(sp: f64, t90: f64, p: f64) -> Result<f64> {
 /// ```
 //
 pub fn sp_salinometer(rt: f64, t90: f64) -> Result<f64> {
-    let t68 = t90 * 1.00024;
+    let t68 = t68_from_t90(t90);
     let ft68 = (t68 - 15.0) / (1.0 + K * (t68 - 15.0));
 
     if rt < 0.0 {
