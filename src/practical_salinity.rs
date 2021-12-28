@@ -41,13 +41,33 @@ pub fn sp_from_c(cndc: f64, t90: f64, p: f64) -> Result<f64> {
 }
 
 #[cfg(test)]
-mod tests {
-    use super::sp_from_c;
+mod test_sp_from_c {
+    use super::{sp_from_c, Error};
 
     #[test]
-    fn sp_from_c_negative_rt() {
-        let sp = sp_from_c(-1.0, 10.0, 100.0).unwrap();
-        assert!(sp.is_nan());
+    fn zero_cndc() {
+        let sp = sp_from_c(0.0, 10.0, 100.0).unwrap();
+        assert!((sp - 0.0).abs() <= f64::EPSILON);
+    }
+
+    #[test]
+    // MatLab returns NaN if Rt < 0
+    fn negative_cndc() {
+        let sp = sp_from_c(-0.1, 10.0, 100.0);
+
+        if cfg!(feature = "compat") {
+            assert!(sp.unwrap().is_nan());
+            // If rt is > 0, and S_p end up negative, Matlab forces it to zero
+            // assert_eq!(sp, Ok(0.0));
+        } else {
+            match sp {
+                // rt < 0
+                Err(Error::Undefined) => (),
+                // S_p < 0
+                Err(Error::NegativeSalinity) => (),
+                _ => assert!(false),
+            }
+        }
     }
 }
 
@@ -74,6 +94,40 @@ pub fn c_from_sp(sp: f64, t90: f64, p: f64) -> Result<f64> {
     Ok(GSW_C3515 * r_from_sp(sp, t90, p)?)
 }
 
+#[cfg(test)]
+mod test_c_from_sp {
+    use super::{c_from_sp, Error};
+
+    #[test]
+    fn zero_sp() {
+        let cndc = c_from_sp(0.0, 0.0, 0.0).unwrap();
+        assert!((cndc - 0.000779962392516606).abs() <= f64::EPSILON);
+    }
+
+    #[test]
+    // Matlab also returns error if S_p < 0.0, thus standard as well as compat
+    // returns error.
+    fn negative_sp() {
+        let cndc = c_from_sp(-0.1, 10.0, 100.0);
+        match cndc {
+            Err(Error::NegativeSalinity) => (),
+            _ => assert!(false),
+        }
+    }
+
+    #[test]
+    #[cfg(not(feature = "compat"))]
+    // Matlab does not check for upper limit, thus ignore this test if compiled
+    // with "compat".
+    fn overlimit_sp() {
+        let cndc = c_from_sp(42.1, 10.0, 100.0);
+        match cndc {
+            Err(Error::Undefined) => (),
+            _ => assert!(false),
+        }
+    }
+}
+
 /// Practical Salinity from conductivity ratio
 ///
 /// # Arguments
@@ -98,6 +152,8 @@ pub fn sp_from_r(r: f64, t90: f64, p: f64) -> Result<f64> {
             / (1.0 + D1 * t68 + D2 * t68 * t68 + (D3 + D4 * t68) * r);
     let rt = r / (rp * rt_lc);
 
+    // Matlab returns NaN if rt < 0
+    // C: returns GSW_INVALID_VALUE if rt < 0
     if rt < 0.0 {
         return Ok(f64::NAN);
     }
@@ -149,7 +205,10 @@ pub fn r_from_sp(sp: f64, t90: f64, p: f64) -> Result<f64> {
 
     // TEOS-10 & Hill et. al. 1986 limited range to 0-42, but all other
     // libraries ignores that.
-    if cfg!(feature = "compat") && (sp < 0.0 || sp > 42.0) {
+    // MatLab returns error if SP < 0
+    if sp < 0.0 {
+        return Err(Error::NegativeSalinity);
+    } else if !cfg!(feature = "compat") && (sp > 42.0) {
         return Err(Error::Undefined);
     }
 
@@ -349,6 +408,10 @@ pub fn sp_salinometer(rt: f64, t90: f64) -> Result<f64> {
     }
 
     // This line ensures that SP is non-negative.
+    // Matlab: SP(SP < 0) = 0;
+    if sp < 0.0 && cfg!(feature = "compat") {
+        return Ok(0.0);
+    }
     if sp < 0.0 {
         sp = f64::NAN;
     }
