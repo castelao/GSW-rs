@@ -29,6 +29,7 @@ mod ffi;
 pub mod conversions;
 pub mod earth;
 mod gsw_internal_funcs;
+pub mod practical_salinity;
 pub mod volume;
 
 mod error;
