@@ -451,3 +451,67 @@ pub fn c_from_sp(sp: f64, t90: f64, p: f64) -> Result<f64> {
     // 42.9140 mS/cm (=4.29140 S/m^).
     Ok(GSW_C3515 * r)
 }
+
+///
+///
+/// # Arguments
+///
+/// * `Rt`: C(SP,t_68,0)/C(SP=35,t_68,0) \[ unitless \]
+///
+/// # Example:
+/// ```
+/// use gsw::practical_salinity::sp_salinometer;
+/// let sp = sp_salinometer(0.9, 10.0).unwrap();
+/// assert_eq!(sp, 31.130296542699828);
+/// ```
+//
+pub fn sp_salinometer(rt: f64, t90: f64) -> Result<f64> {
+    const A0: f64 = 0.0080;
+    const A1: f64 = -0.1692;
+    const A2: f64 = 25.3851;
+    const A3: f64 = 14.0941;
+    const A4: f64 = -7.0261;
+    const A5: f64 = 2.7081;
+
+    const B0: f64 = 0.0005;
+    const B1: f64 = -0.0056;
+    const B2: f64 = -0.0066;
+    const B3: f64 = -0.0375;
+    const B4: f64 = 0.0636;
+    const B5: f64 = -0.0144;
+
+    const K: f64 = 0.0162;
+
+    let t68 = t90 * 1.00024;
+    let ft68 = (t68 - 15.0) / (1.0 + K * (t68 - 15.0));
+
+    if rt < 0.0 {
+        return Ok(f64::NAN);
+    }
+
+    let rtx = libm::sqrt(rt);
+
+    let mut sp = A0
+        + (A1 + (A2 + (A3 + (A4 + A5 * rtx) * rtx) * rtx) * rtx) * rtx
+        + ft68 * (B0 + (B1 + (B2 + (B3 + (B4 + B5 * rtx) * rtx) * rtx) * rtx) * rtx);
+
+    // The following section of the code is designed for SP < 2 based on the
+    // Hill et al. (1986) algorithm.  This algorithm is adjusted so that it is
+    // exactly equal to the PSS-78 algorithm at SP = 2.
+    if sp < 2.0 {
+        let hill_ratio = hill_ratio_at_sp2(t90);
+        let x = 400.0 * rt;
+        let sqrty = 10.0 * rtx;
+        let part1 = 1.0 + x * (1.5 + x);
+        let part2 = 1.0 + sqrty * (1.0 + sqrty * (1.0 + sqrty));
+        let sp_hill_raw = sp - A0 / part1 - B0 * ft68 / part2;
+        sp = hill_ratio * sp_hill_raw;
+    }
+
+    /* This line ensures that SP is non-negative. */
+    if sp < 0.0 {
+        sp = f64::NAN;
+    }
+
+    return Ok(sp);
+}
