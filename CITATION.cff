@@ -10,7 +10,7 @@ authors:
     family-names: Irber
     affiliation: UC Davis
     orcid: https://orcid.org/0000-0003-4371-9659
-version: 0.0.3
+version: 0.0.6
 doi: 10.5281/zenodo.5348561
 date-released: 2021-08-31
 repository-code: https://github.com/castelao/GSW-rs
