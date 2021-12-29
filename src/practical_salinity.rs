@@ -14,7 +14,9 @@ fn t68_from_t90(t90: f64) -> f64 {
 ///
 /// # Arguments
 ///
-/// * `t90`: Temperature ITS-90 \[deg C\]
+/// * `cndc`: conductivity \[ mS/cm \]
+/// * `t90`: in-situ temperature (ITS-90) \[ deg C \]
+/// * `p`: sea pressure \[ dbar \] (i.e. absolute pressure - 10.1325 dbar)
 ///
 /// # Example:
 /// ```
@@ -75,7 +77,10 @@ mod test_sp_from_c {
 ///
 /// # Arguments
 ///
-/// * `t90`: Temperature ITS-90 \[deg C\]
+/// * `sp`: practical salinity (PSS-78) \[ unitless \]
+/// * `t90`: in-situ temperature (ITS-90) \[ deg C \]
+/// * `p`: sea pressure \[ dbar \] (i.e. absolute pressure - 10.1325 dbar)
+///
 ///
 /// # Example:
 /// ```
@@ -132,8 +137,9 @@ mod test_c_from_sp {
 ///
 /// # Arguments
 ///
-/// * `r`: Conductivity ratio \[unitless\]
-/// * `t90`: Temperature ITS-90 \[deg C\]
+/// * `r`: conductivity ratio \[ unitless \]
+/// * `t90`: in-situ temperature (ITS-90) \[ deg C \]
+/// * `p`: sea pressure \[ dbar \] (i.e. absolute pressure - 10.1325 dbar)
 ///
 /// # Example:
 /// ```
@@ -189,7 +195,9 @@ pub fn sp_from_r(r: f64, t90: f64, p: f64) -> Result<f64> {
 ///
 /// # Arguments
 ///
-/// * `t90`: Temperature ITS-90 \[deg C\]
+/// * `sp`: practical salinity (PSS-78) \[ unitless \]
+/// * `t90`: in-situ temperature (ITS-90) \[ deg C \]
+/// * `p`: sea pressure \[ dbar \] (i.e. absolute pressure - 10.1325 dbar)
 ///
 /// # Example:
 /// ```
@@ -371,7 +379,8 @@ pub fn r_from_sp(sp: f64, t90: f64, p: f64) -> Result<f64> {
 ///
 /// # Arguments
 ///
-/// * `Rt`: C(SP,t_68,0)/C(SP=35,t_68,0) \[ unitless \]
+/// * `Rt`: C(SP, t_68, 0)/C(SP=35,  t_68, 0) \[ unitless \]
+/// * `t90`: temperature (ITS-90) of the bath of the salinometer \[ deg C \]
 ///
 /// # Example:
 /// ```
