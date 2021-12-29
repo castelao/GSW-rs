@@ -296,7 +296,7 @@ pub fn r_from_sp(sp: f64, t90: f64, p: f64) -> Result<f64> {
     // One iteration through the modified Newton-Raphson method (McDougall and
     // Wotherspoon, 2012) achieves an error in Practical Salinity of about
     // 10^-12 for all combinations of the inputs.  One and a half iterations of
-    // the modified Newton-Raphson method achevies a maximum error in terms of
+    // the modified Newton-Raphson method achieves a maximum error in terms of
     // Practical Salinity of better than 2x10^-14 everywhere.
     //
     // We recommend one and a half iterations of the modified Newton-Raphson
