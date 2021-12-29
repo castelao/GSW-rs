@@ -3,24 +3,8 @@
 //! Functions not intended to be used outside this library
 
 use crate::gsw_internal_const::{DB2PA, GSW_PU};
+use crate::gsw_sp_coefficients::*;
 use crate::gsw_specvol_coefficients::{V005, V006};
-
-const A0: f64 = 0.008_0;
-const A1: f64 = -0.169_2;
-const A2: f64 = 25.385_1;
-const A3: f64 = 14.094_1;
-const A4: f64 = -7.026_1;
-const A5: f64 = 2.708_1;
-
-const B0: f64 = 0.000_5;
-const B1: f64 = -0.005_6;
-const B2: f64 = -0.006_6;
-const B3: f64 = -0.037_5;
-const B4: f64 = 0.063_6;
-const B5: f64 = -0.014_4;
-
-// Consider rename K to something different
-const K: f64 = 0.016_2;
 
 const G0: f64 = 2.641_463_563_366_498e-1;
 const G1: f64 = 2.007_883_247_811_176e-4;

@@ -2,19 +2,19 @@
 //!
 
 // Constants from Appendix E.1
-pub(crate) const A0: f64 = 0.0080;
-pub(crate) const A1: f64 = -0.1692;
-pub(crate) const A2: f64 = 25.3851;
-pub(crate) const A3: f64 = 14.0941;
-pub(crate) const A4: f64 = -7.0261;
-pub(crate) const A5: f64 = 2.7081;
+pub(crate) const A0: f64 = 0.008_0;
+pub(crate) const A1: f64 = -0.169_2;
+pub(crate) const A2: f64 = 25.385_1;
+pub(crate) const A3: f64 = 14.094_1;
+pub(crate) const A4: f64 = -7.026_1;
+pub(crate) const A5: f64 = 2.708_1;
 
-pub(crate) const B0: f64 = 0.0005;
-pub(crate) const B1: f64 = -0.0056;
-pub(crate) const B2: f64 = -0.0066;
-pub(crate) const B3: f64 = -0.0375;
-pub(crate) const B4: f64 = 0.0636;
-pub(crate) const B5: f64 = -0.0144;
+pub(crate) const B0: f64 = 0.000_5;
+pub(crate) const B1: f64 = -0.005_6;
+pub(crate) const B2: f64 = -0.006_6;
+pub(crate) const B3: f64 = -0.037_5;
+pub(crate) const B4: f64 = 0.063_6;
+pub(crate) const B5: f64 = -0.014_4;
 
 pub(crate) const C0: f64 = 0.6766097;
 pub(crate) const C1: f64 = 2.00564e-2;
@@ -31,7 +31,8 @@ pub(crate) const E1: f64 = 2.070e-5;
 pub(crate) const E2: f64 = -6.370e-10;
 pub(crate) const E3: f64 = 3.989e-15;
 
-pub(crate) const K: f64 = 0.0162;
+// Consider rename K to something different
+pub(crate) const K: f64 = 0.016_2;
 
 pub(crate) const P0: f64 = 4.577801212923119e-3;
 pub(crate) const P1: f64 = 1.924049429136640e-1;
