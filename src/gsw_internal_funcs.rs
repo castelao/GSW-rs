@@ -40,7 +40,7 @@ const G9: f64 = 2.859_992_717_347_235e-19;
 ///   sense since it is a lighter operation than a division is for computers.
 ///   The issue here is on the inability of f64 to fully represent certain
 ///   fractions. For instance, while 3812.0 can be perfectly represented,
-///   0.3812 is rounded to 0.381200000000000038813. Simmilarly 1e4 is fine but
+///   0.3812 is rounded to 0.381200000000000038813. Similarly 1e4 is fine but
 ///   1e-4 on f64 is rounded to 0.000100000000000000004792, thus 3812/1e4 is
 ///   diffrent than 3812*1e-4.
 ///
