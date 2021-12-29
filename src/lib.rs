@@ -3,7 +3,7 @@
 //! Gibbs Sea Water Oceanographic Toolbox of TEOS-10 implemented in Rust.
 //! version: 3.06.12
 //!
-//! http://www.teos-10.org
+//! <http://www.teos-10.org>
 //!
 
 ////////////////////////////////////////////////////////////////////////////////
