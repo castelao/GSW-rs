@@ -1,6 +1,6 @@
 [package]
 name = "gsw"
-version = "0.0.5"
+version = "0.0.6"
 authors = ["Guilherme Castelão <guilherme@castelao.net>", "Luiz Irber <luiz.irber@gmail.com>"]
 edition = "2018"
 license = "MIT OR Apache-2.0"
