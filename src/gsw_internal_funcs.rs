@@ -38,7 +38,7 @@ const G9: f64 = 2.859_992_717_347_235e-19;
 /// * The original formulation is a scaling of p by p_u. The MatLab and C
 ///   implementations of GSW operate as the product with 1e-4, which does make
 ///   sense since it is a lighter operation than a division is for computers.
-///   The issue here is on the inhability of f64 to fully represent certain
+///   The issue here is on the inability of f64 to fully represent certain
 ///   fractions. For instance, while 3812.0 can be perfectly represented,
 ///   0.3812 is rounded to 0.381200000000000038813. Simmilarly 1e4 is fine but
 ///   1e-4 on f64 is rounded to 0.000100000000000000004792, thus 3812/1e4 is
