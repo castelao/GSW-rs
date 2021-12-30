@@ -32,7 +32,9 @@ cbindgen = { version = "0.18.0", optional = true }
 default = []
 capi = ["libc", "std"]
 # Compatibility with Matlab implementation
-compat = []
+compat = ["invalidasnan"]
+# Invalid value returns Ok(f64:NAN) instead of an Error
+invalidasnan = []
 # Depth-independent gravitational acceleration. Useful for numerical models
 # Maybe rename to constg?
 nodgdz = []
