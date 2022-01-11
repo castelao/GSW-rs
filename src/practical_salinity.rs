@@ -420,6 +420,26 @@ pub fn r_from_sp(sp: f64, t90: f64, p: f64) -> Result<f64> {
     Ok(r)
 }
 
+#[cfg(test)]
+mod test_r_from_sp {
+    use super::r_from_sp;
+
+    #[test]
+    // NaN input results in NaN output.
+    // Other libraries using GSW-rs might rely on this behavior to propagate
+    // and handle invalid elements.
+    fn nan() {
+        let r = r_from_sp(f64::NAN, 1.0, 1.0);
+        assert!(r.unwrap().is_nan());
+
+        let r = r_from_sp(1.0, f64::NAN, 1.0);
+        assert!(r.unwrap().is_nan());
+
+        let r = r_from_sp(1.0, 1.0, f64::NAN);
+        assert!(r.unwrap().is_nan());
+    }
+}
+
 /// Practical Salinity from a laboratory salinometer
 ///
 /// # Arguments
