@@ -216,6 +216,26 @@ pub fn sp_from_r(r: f64, t90: f64, p: f64) -> Result<f64> {
     }
 }
 
+#[cfg(test)]
+mod test_sp_from_r {
+    use super::sp_from_r;
+
+    #[test]
+    // NaN input results in NaN output.
+    // Other libraries using GSW-rs might rely on this behavior to propagate
+    // and handle invalid elements.
+    fn nan() {
+        let sp = sp_from_r(f64::NAN, 1.0, 1.0);
+        assert!(sp.unwrap().is_nan());
+
+        let sp = sp_from_r(1.0, f64::NAN, 1.0);
+        assert!(sp.unwrap().is_nan());
+
+        let sp = sp_from_r(1.0, 1.0, f64::NAN);
+        assert!(sp.unwrap().is_nan());
+    }
+}
+
 /// Conductivity ratio from Practical Salinity
 ///
 /// # Arguments
