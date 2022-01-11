@@ -458,8 +458,13 @@ pub fn sp_salinometer(rt: f64, t90: f64) -> Result<f64> {
     let t68 = t68_from_t90(t90);
     let ft68 = (t68 - 15.0) / (1.0 + K * (t68 - 15.0));
 
+    // if rt < 0, Matlab returns NaN
     if rt < 0.0 {
-        return Ok(f64::NAN);
+        if cfg!(feature = "invalidasnan") {
+            return Ok(f64::NAN);
+        } else {
+            return Err(Error::Undefined);
+        }
     }
 
     let rtx = libm::sqrt(rt);
@@ -481,14 +486,16 @@ pub fn sp_salinometer(rt: f64, t90: f64) -> Result<f64> {
         sp = hill_ratio * sp_hill_raw;
     }
 
-    // This line ensures that SP is non-negative.
-    // Matlab: SP(SP < 0) = 0;
-    if sp < 0.0 && cfg!(feature = "compat") {
-        return Ok(0.0);
-    }
     if sp < 0.0 {
-        sp = f64::NAN;
+        // MatLab forces zero if negative.
+        if cfg!(feature = "compat") {
+            Ok(0.0)
+        } else if cfg!(feature = "invalidasnan") {
+            Ok(f64::NAN)
+        } else {
+            Err(Error::NegativeSalinity)
+        }
+    } else {
+        Ok(sp)
     }
-
-    Ok(sp)
 }
