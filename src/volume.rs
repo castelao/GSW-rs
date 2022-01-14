@@ -11,12 +11,16 @@ use crate::{Error, Result};
 fn non_dimensional_sa(sa: f64) -> Result<f64> {
     // Other implementations force negative SA to be 0. That is dangerous
     // since it can hide error by processing unrealistic inputs
-    let sa: f64 = if sa >= 0.0 {
-        sa
-    } else if cfg!(feature = "compat") {
-        0.0
+    let sa: f64 = if sa < 0.0 {
+        if cfg!(feature = "compat") {
+            0.0
+        } else if cfg!(feature = "invalidasnan") {
+            return Ok(f64::NAN);
+        } else {
+            return Err(Error::NegativeSalinity);
+        }
     } else {
-        return Err(Error::NegativeSalinity);
+        sa
     };
 
     Ok(libm::sqrt(GSW_SFAC * sa + OFFSET))
