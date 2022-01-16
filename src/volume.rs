@@ -189,6 +189,27 @@ pub fn specvol(sa: f64, ct: f64, p: f64) -> Result<f64> {
                     + z * (V004 + xs * V104 + ys * V014 + z * (V005 + z * V006))))))
 }
 
+/// Specific volume anomaly (75-term polynomial approximation)
+///
+/// # Arguments
+///
+/// * `sa`: Absolute Salinity \[ g kg-1 \]
+/// * `ct`: Conservative Temperature (ITS-90) \[ deg C \]
+/// * `p`: sea pressure \[ dbar \] (i.e. absolute pressure - 10.1325 dbar)
+/// * `sa_ref`:
+/// * `ct_ref`:
+///
+fn specvol_anom(sa: f64, ct: f64, p: f64, sa_ref: Option<f64>, ct_ref: Option<f64>) -> Result<f64> {
+    let xs: f64 = non_dimensional_sa(sa)?;
+    let ys: f64 = ct / GSW_CTU;
+    let z: f64 = non_dimensional_p(p);
+
+    unimplemented!();
+
+    // let xs_ref: f64 = non_dimensional_sa(sa_ref)?;
+    // let ys: f64 = ct_ref / GSW_CTU;
+}
+
 /// Specific Volume Anomaly of Standard Ocean Salinity and CT=0
 ///
 /// Specific volume anomaly with reference of SA = SSO & CT = 0 (75-term equation)
