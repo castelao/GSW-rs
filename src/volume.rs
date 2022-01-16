@@ -210,7 +210,7 @@ mod test_specvol {
 
     #[test]
     // Test value from Roquet 2015 Appendix C.3, rounded to 9.732819628e-04
-    fn test_specvol_roquet2015() {
+    fn roquet2015() {
         assert!((specvol(30., 10., 1000.0).unwrap() - 9.732819628e-04).abs() <= 5e-14);
     }
 
