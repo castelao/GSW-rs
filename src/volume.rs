@@ -515,3 +515,66 @@ mod tests {
         }
     }
 }
+
+/// Absolute salinity of seawater from given density, Conservative
+/// Temperature, and pressure. (75-term polynomial approximation)
+///
+/// # Arguments
+///
+/// * `rho`: Density of seawater sample \[ kg m-3 \]. Do not mistake it by
+///          sigma (density anomaly).
+/// * `ct`: Conservative Temperature (ITS-90) \[ deg C \]
+/// * `p`: sea pressure \[ dbar \] (i.e. absolute pressure - 10.1325 dbar)
+///
+/// # Example:
+/// ```
+/// use gsw::volume::sa_from_rho;
+/// let rho = sa_from_rho(1026.0, 10.0, 100.0).unwrap();
+/// assert!((rho-33.75603881310435).abs() <= f64::EPSILON);
+/// ```
+///
+/// # Notes:
+///
+/// - According to the Matlab GSW toolbox, after two iterations of this
+/// modified Newton-Raphson iteration, the error in SA is no larger than
+/// 8e-13 g/kg, which is machine precision for this calculation.
+pub fn sa_from_rho(rho: f64, ct: f64, p: f64) -> Result<f64> {
+    let v_lab = 1.0 / rho;
+    let v_0 = specvol(0.0, ct, p)?;
+    let v_50 = specvol(50.0, ct, p)?;
+
+    // First guess, a linear ratio
+    let sa = 50.0 * (v_lab - v_0) / (v_50 - v_0);
+
+    // Matlab returns NaN if out of bounds
+    if (sa < 0.0) || (sa > 50.0) {
+        if cfg!(feature = "invalidasnan") {
+            return Ok(f64::NAN);
+        } else {
+            return Err(Error::Undefined);
+        }
+    }
+
+    // First guess of dv/dSA
+    let v_sa: f64 = (v_50 - v_0) / 50.0;
+
+    // Modified Newton-Raphson iterative optimization
+    for _ in 0..2 {
+        let sa_old = sa;
+        let delta_v = specvol(sa_old, ct, p)? - v_lab;
+        // this is half way through the modified N-R method (McDougall and
+        // Wotherspoon, 2012, appud Matlab GSW implementation)
+        let sa = sa_old - delta_v / v_sa;
+        let sa_mean = 0.5 * (sa + sa_old);
+        let (v_sa, _, _) = specvol_first_derivatives(sa_mean, ct, p)?;
+        let sa = sa_old - delta_v / v_sa;
+        if (sa < 0.0) || (sa > 50.0) {
+            if cfg!(feature = "invalidasnan") {
+                return Ok(f64::NAN);
+            } else {
+                return Err(Error::Undefined);
+            }
+        }
+    }
+    Ok(sa)
+}
