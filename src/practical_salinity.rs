@@ -53,6 +53,21 @@ mod test_sp_from_c {
     }
 
     #[test]
+    // NaN input results in NaN output.
+    // Other libraries using GSW-rs might rely on this behavior to propagate
+    // and handle invalid elements.
+    fn nan() {
+        let sp = sp_from_c(f64::NAN, 1.0, 1.0);
+        assert!(sp.unwrap().is_nan());
+
+        let sp = sp_from_c(1.0, f64::NAN, 1.0);
+        assert!(sp.unwrap().is_nan());
+
+        let sp = sp_from_c(1.0, 1.0, f64::NAN);
+        assert!(sp.unwrap().is_nan());
+    }
+
+    #[test]
     // MatLab returns NaN if Rt < 0
     fn negative_cndc() {
         let sp = sp_from_c(-0.1, 10.0, 100.0);
@@ -158,10 +173,13 @@ pub fn sp_from_r(r: f64, t90: f64, p: f64) -> Result<f64> {
             / (1.0 + D1 * t68 + D2 * t68 * t68 + (D3 + D4 * t68) * r);
     let rt = r / (rp * rt_lc);
 
-    // Matlab returns NaN if rt < 0
-    // C: returns GSW_INVALID_VALUE if rt < 0
+    // if rt < 0, Matlab returns NaN and C returns GSW_INVALID_VALUE
     if rt < 0.0 {
-        return Ok(f64::NAN);
+        if cfg!(feature = "invalidasnan") {
+            return Ok(f64::NAN);
+        } else {
+            return Err(Error::Undefined);
+        }
     }
 
     let rtx = libm::sqrt(rt);
@@ -183,12 +201,39 @@ pub fn sp_from_r(r: f64, t90: f64, p: f64) -> Result<f64> {
         sp = hill_ratio * sp_hill_raw;
     }
 
-    // This line ensures that SP is non-negative.
     if sp < 0.0 {
-        sp = f64::NAN;
+        // MatLab forces zero if negative.
+        if cfg!(feature = "compat") {
+            Ok(0.0)
+        // C lib returns GSW_INVALID_VALUE instead
+        } else if cfg!(feature = "invalidasnan") {
+            Ok(f64::NAN)
+        } else {
+            Err(Error::NegativeSalinity)
+        }
+    } else {
+        Ok(sp)
     }
+}
 
-    Ok(sp)
+#[cfg(test)]
+mod test_sp_from_r {
+    use super::sp_from_r;
+
+    #[test]
+    // NaN input results in NaN output.
+    // Other libraries using GSW-rs might rely on this behavior to propagate
+    // and handle invalid elements.
+    fn nan() {
+        let sp = sp_from_r(f64::NAN, 1.0, 1.0);
+        assert!(sp.unwrap().is_nan());
+
+        let sp = sp_from_r(1.0, f64::NAN, 1.0);
+        assert!(sp.unwrap().is_nan());
+
+        let sp = sp_from_r(1.0, 1.0, f64::NAN);
+        assert!(sp.unwrap().is_nan());
+    }
 }
 
 /// Conductivity ratio from Practical Salinity
@@ -375,6 +420,26 @@ pub fn r_from_sp(sp: f64, t90: f64, p: f64) -> Result<f64> {
     Ok(r)
 }
 
+#[cfg(test)]
+mod test_r_from_sp {
+    use super::r_from_sp;
+
+    #[test]
+    // NaN input results in NaN output.
+    // Other libraries using GSW-rs might rely on this behavior to propagate
+    // and handle invalid elements.
+    fn nan() {
+        let r = r_from_sp(f64::NAN, 1.0, 1.0);
+        assert!(r.unwrap().is_nan());
+
+        let r = r_from_sp(1.0, f64::NAN, 1.0);
+        assert!(r.unwrap().is_nan());
+
+        let r = r_from_sp(1.0, 1.0, f64::NAN);
+        assert!(r.unwrap().is_nan());
+    }
+}
+
 /// Practical Salinity from a laboratory salinometer
 ///
 /// # Arguments
@@ -393,8 +458,13 @@ pub fn sp_salinometer(rt: f64, t90: f64) -> Result<f64> {
     let t68 = t68_from_t90(t90);
     let ft68 = (t68 - 15.0) / (1.0 + K * (t68 - 15.0));
 
+    // if rt < 0, Matlab returns NaN
     if rt < 0.0 {
-        return Ok(f64::NAN);
+        if cfg!(feature = "invalidasnan") {
+            return Ok(f64::NAN);
+        } else {
+            return Err(Error::Undefined);
+        }
     }
 
     let rtx = libm::sqrt(rt);
@@ -416,14 +486,58 @@ pub fn sp_salinometer(rt: f64, t90: f64) -> Result<f64> {
         sp = hill_ratio * sp_hill_raw;
     }
 
-    // This line ensures that SP is non-negative.
-    // Matlab: SP(SP < 0) = 0;
-    if sp < 0.0 && cfg!(feature = "compat") {
-        return Ok(0.0);
-    }
     if sp < 0.0 {
-        sp = f64::NAN;
+        // MatLab forces zero if negative.
+        if cfg!(feature = "compat") {
+            Ok(0.0)
+        } else if cfg!(feature = "invalidasnan") {
+            Ok(f64::NAN)
+        } else {
+            Err(Error::NegativeSalinity)
+        }
+    } else {
+        Ok(sp)
+    }
+}
+
+#[cfg(test)]
+mod test_sp_salinometer {
+    use super::{sp_salinometer, Error};
+
+    #[test]
+    // NaN input results in NaN output.
+    // Other libraries using GSW-rs might rely on this behavior to propagate
+    // and handle invalid elements.
+    fn nan() {
+        let sp = sp_salinometer(f64::NAN, 1.0);
+        assert!(sp.unwrap().is_nan());
+
+        let sp = sp_salinometer(1.0, f64::NAN);
+        assert!(sp.unwrap().is_nan());
     }
 
-    Ok(sp)
+    #[test]
+    fn ratio_one() {
+        let sp = sp_salinometer(1.0, 15.0).unwrap();
+        assert!((sp - 35.00000000000001).abs() <= f64::EPSILON);
+    }
+
+    #[test]
+    fn negative_rt() {
+        let sp = sp_salinometer(-0.1, 15.0);
+
+        if cfg!(feature = "compat") {
+            assert!(sp.unwrap().is_nan());
+            // If rt is > 0, and S_p end up negative, Matlab forces it to zero
+            // assert_eq!(sp, Ok(0.0));
+        } else {
+            match sp {
+                // rt < 0
+                Err(Error::Undefined) => (),
+                // S_p < 0
+                Err(Error::NegativeSalinity) => (),
+                _ => assert!(false),
+            }
+        }
+    }
 }
