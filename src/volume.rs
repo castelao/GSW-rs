@@ -114,6 +114,23 @@ pub fn beta(sa: f64, ct: f64, p: f64) -> Result<f64> {
     Ok(-v_sa * 0.5 * GSW_SFAC / (specvol(sa, ct, p)? * xs))
 }
 
+/// in-situ density, thermal expansion & saline contraction coefficients
+/// (75-term polynomial approximation)
+///
+/// # Arguments
+///
+/// * `sa`: Absolute Salinity \[ g kg-1 \]
+/// * `ct`: Conservative Temperature (ITS-90) \[ deg C \]
+/// * `p`: sea pressure \[ dbar \] (i.e. absolute pressure - 10.1325 dbar)
+///
+pub fn rho_alpha_beta(sa: f64, ct: f64, p: f64) -> Result<(f64, f64, f64)> {
+    let rho = rho(sa, ct, p)?;
+    let alpha = alpha(sa, ct, p)?;
+    let beta = beta(sa, ct, p)?;
+
+    Ok((rho, alpha, beta))
+}
+
 /// Specific volume of sea water (75-term polynomial approximation)
 ///
 /// Calculates specific volume from Absolute Salinity, Conservative
