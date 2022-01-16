@@ -494,27 +494,6 @@ mod tests {
     use super::{alpha, beta, specvol, specvol_anom_standard, GSW_SSO};
 
     #[test]
-    // Test value from Roquet 2015, Appendix C.3
-    // rounded to 9.732819628e-04
-    fn test_specvol_roquet2015() {
-        assert!((specvol(30., 10., 1000.0).unwrap() - 9.732819628e-04).abs() <= 5e-14);
-    }
-
-    #[allow(clippy::excessive_precision)]
-    #[test]
-    fn test_specvol() {
-        if cfg!(feature = "compat") {
-            // Test value from C library.
-            assert!(
-                (specvol(34.507499465692057, 27.994827331978655, 0.0).unwrap()
-                    - 0.00097855432330275953)
-                    .abs()
-                    < f64::EPSILON
-            );
-        }
-    }
-
-    #[test]
     /// This anomaly should be zero for SSO & CT=0 at any depth
     fn test_specvol_anom_standard_at_standard() {
         let p_to_test: [f64; 5] = [0., 10., 100., 1000., 5000.];
