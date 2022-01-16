@@ -26,8 +26,35 @@ fn non_dimensional_sa(sa: f64) -> Result<f64> {
     Ok(libm::sqrt(GSW_SFAC * sa + OFFSET))
 }
 
+/// in-situ density
+///
+/// Calculates in-situ density from Absolute Salinity and Conservative
+/// Temperature, using the computationally-efficient expression for
+/// specific volume in terms of SA, CT and p (Roquet et al., 2014).
+///
+/// # Arguments
+///
+/// * `sa`: Absolute Salinity \[g kg-1\]
+/// * `ct`: Conservative Temperature (ITS-90) \[deg C\]
+/// * `p`: sea pressure \[dbar\] (i.e. absolute pressure - 10.1325 dbar)
+///
+/// # Returns
+///
+/// * `rho`: in-situ density \[kg m-3\]
+///
+pub fn rho(sa: f64, ct: f64, p: f64) -> Result<f64> {
+    Ok(1.0 / specvol(sa, ct, p)?)
+}
+
 /// Thermal expansion coefficient with respect to Conservative Temperature
 /// (75-term polynomial approximation)
+///
+/// # Arguments
+///
+/// * `sa`: Absolute Salinity \[ g kg-1 \]
+/// * `ct`: Conservative Temperature (ITS-90) \[ deg C \]
+/// * `p`: sea pressure \[ dbar \] (i.e. absolute pressure - 10.1325 dbar)
+///
 pub fn alpha(sa: f64, ct: f64, p: f64) -> Result<f64> {
     let xs: f64 = non_dimensional_sa(sa)?;
     let ys: f64 = ct / GSW_CTU;
@@ -259,26 +286,6 @@ fn specvol_p_parts() {
     unimplemented!()
 }
 */
-
-/// in-situ density
-///
-/// Calculates in-situ density from Absolute Salinity and Conservative
-/// Temperature, using the computationally-efficient expression for
-/// specific volume in terms of SA, CT and p (Roquet et al., 2014).
-///
-/// # Arguments
-///
-/// * `sa`: Absolute Salinity \[g kg-1\]
-/// * `ct`: Conservative Temperature (ITS-90) \[deg C\]
-/// * `p`: sea pressure \[dbar\] (i.e. absolute pressure - 10.1325 dbar)
-///
-/// # Returns
-///
-/// * `rho`: in-situ density \[kg m-3\]
-///
-pub fn rho(sa: f64, ct: f64, p: f64) -> Result<f64> {
-    Ok(1.0 / specvol(sa, ct, p)?)
-}
 
 /// Sound speed in seawater (75-term polynomial approximation)
 ///
