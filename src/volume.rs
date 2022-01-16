@@ -207,6 +207,26 @@ mod test_specvol {
         let v = specvol(1.0, 1.0, f64::NAN);
         assert!(v.unwrap().is_nan());
     }
+
+    #[test]
+    // Test value from Roquet 2015 Appendix C.3, rounded to 9.732819628e-04
+    fn test_specvol_roquet2015() {
+        assert!((specvol(30., 10., 1000.0).unwrap() - 9.732819628e-04).abs() <= 5e-14);
+    }
+
+    #[allow(clippy::excessive_precision)]
+    #[test]
+    fn test_specvol() {
+        if cfg!(feature = "compat") {
+            // Test value from C library.
+            assert!(
+                (specvol(34.507499465692057, 27.994827331978655, 0.0).unwrap()
+                    - 0.00097855432330275953)
+                    .abs()
+                    < f64::EPSILON
+            );
+        }
+    }
 }
 
 /// Specific volume anomaly (75-term polynomial approximation)
@@ -423,6 +443,50 @@ pub fn sigma3(sa: f64, ct: f64) -> Result<f64> {
 /// (75-term polynomial approximation)
 pub fn sigma4(sa: f64, ct: f64) -> Result<f64> {
     Ok(rho(sa, ct, 4000.0)? - 1000.0)
+}
+
+///
+/// # Arguments
+///
+/// * `sa`: Absolute Salinity \[g kg-1\]
+/// * `ct`: Conservative Temperature (ITS-90) \[deg C\]
+/// * `p`: sea pressure \[dbar\] (i.e. absolute pressure - 10.1325 dbar)
+///
+fn internal_energy(sa: f64, ct: f64, p: f64) -> Result<f64> {
+    unimplemented!()
+}
+
+///
+/// # Arguments
+///
+/// * `sa`: Absolute Salinity \[g kg-1\]
+/// * `ct`: Conservative Temperature (ITS-90) \[deg C\]
+/// * `p`: sea pressure \[dbar\] (i.e. absolute pressure - 10.1325 dbar)
+///
+fn enthalpy(sa: f64, ct: f64, p: f64) -> Result<f64> {
+    unimplemented!()
+}
+
+///
+/// # Arguments
+///
+/// * `sa`: Absolute Salinity \[g kg-1\]
+/// * `ct`: Conservative Temperature (ITS-90) \[deg C\]
+/// * `p`: sea pressure \[dbar\] (i.e. absolute pressure - 10.1325 dbar)
+///
+fn enthalpy_diff(sa: f64, ct: f64, p: f64) -> Result<f64> {
+    unimplemented!()
+}
+
+///
+/// # Arguments
+///
+/// * `sa`: Absolute Salinity \[g kg-1\]
+/// * `ct`: Conservative Temperature (ITS-90) \[deg C\]
+/// * `p`: sea pressure \[dbar\] (i.e. absolute pressure - 10.1325 dbar)
+///
+fn dynamic_enthalpy(sa: f64, ct: f64, p: f64) -> Result<f64> {
+    unimplemented!()
 }
 
 #[cfg(test)]
