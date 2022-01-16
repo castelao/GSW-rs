@@ -328,7 +328,7 @@ fn specvol_p_parts() {
 /// * IOC, SCOR and IAPSO, 2010: The international thermodynamic equation of
 ///   seawater - 2010: Calculation and use of thermodynamic properties.
 ///   Intergovernmental Oceanographic Commission, Manuals and Guides No. 56,
-///   UNESCO (English), 196 pp.  Available from http://www.TEOS-10.org
+///   UNESCO (English), 196 pp.  Available from <http://www.TEOS-10.org>
 ///   See Appendix K of this TEOS-10 Manual.
 ///
 /// * McDougall, T.J., D.R. Jackett, D.G. Wright and R. Feistel, 2003:
