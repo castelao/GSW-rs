@@ -189,6 +189,26 @@ pub fn specvol(sa: f64, ct: f64, p: f64) -> Result<f64> {
                     + z * (V004 + xs * V104 + ys * V014 + z * (V005 + z * V006))))))
 }
 
+#[cfg(test)]
+mod test_specvol {
+    use super::specvol;
+
+    #[test]
+    // NaN input results in NaN output.
+    // Other libraries using GSW-rs might rely on this behavior to propagate
+    // and handle invalid elements.
+    fn nan() {
+        let v = specvol(f64::NAN, 1.0, 1.0);
+        assert!(v.unwrap().is_nan());
+
+        let v = specvol(1.0, f64::NAN, 1.0);
+        assert!(v.unwrap().is_nan());
+
+        let v = specvol(1.0, 1.0, f64::NAN);
+        assert!(v.unwrap().is_nan());
+    }
+}
+
 /// Specific volume anomaly (75-term polynomial approximation)
 ///
 /// # Arguments
