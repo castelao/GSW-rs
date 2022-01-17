@@ -515,7 +515,7 @@ pub fn sa_from_rho(rho: f64, ct: f64, p: f64) -> Result<f64> {
         if cfg!(feature = "invalidasnan") {
             return Ok(f64::NAN);
         } else {
-            return Err(Error::OutOfBounds);
+            return Err(Error::Undefined);
         }
     }
 
@@ -536,7 +536,7 @@ pub fn sa_from_rho(rho: f64, ct: f64, p: f64) -> Result<f64> {
             if cfg!(feature = "invalidasnan") {
                 return Ok(f64::NAN);
             } else {
-                return Err(Error::OutOfBounds);
+                return Err(Error::Undefined);
             }
         }
     }
