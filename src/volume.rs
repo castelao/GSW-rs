@@ -131,6 +131,21 @@ pub fn rho_alpha_beta(sa: f64, ct: f64, p: f64) -> Result<(f64, f64, f64)> {
     Ok((rho, alpha, beta))
 }
 
+///
+/// # Arguments
+///
+/// * `sa`: Absolute Salinity \[ g kg-1 \]
+/// * `ct`: Conservative Temperature (ITS-90) \[ deg C \]
+/// * `p`: sea pressure \[ dbar \] (i.e. absolute pressure - 10.1325 dbar)
+///
+pub fn specvol_alpha_beta(sa: f64, ct: f64, p: f64) -> Result<(f64, f64, f64)> {
+    let specvol = specvol(sa, ct, p)?;
+    let alpha = alpha(sa, ct, p)?;
+    let beta = beta(sa, ct, p)?;
+
+    Ok((specvol, alpha, beta))
+}
+
 /// Specific volume of sea water (75-term polynomial approximation)
 ///
 /// Calculates specific volume from Absolute Salinity, Conservative
@@ -268,44 +283,81 @@ pub fn specvol_anom_standard(sa: f64, ct: f64, p: f64) -> Result<f64> {
     Ok(specvol(sa, ct, p)? - crate::gsw_internal_funcs::specvol_sso_0(p))
 }
 
-pub fn specvol_alpha_beta(sa: f64, ct: f64, p: f64) -> Result<(f64, f64, f64)> {
-    let specvol = specvol(sa, ct, p)?;
-    let alpha = alpha(sa, ct, p)?;
-    let beta = beta(sa, ct, p)?;
+/// Potential density anomaly with reference to sea pressure of 0 dbar
+/// (75-term polynomial approximation)
+///
+/// # Arguments
+///
+/// * `sa`: Absolute Salinity \[g kg-1\]
+/// * `ct`: Conservative Temperature (ITS-90) \[deg C\]
+/// * `p`: sea pressure \[dbar\] (i.e. absolute pressure - 10.1325 dbar)
+pub fn sigma0(sa: f64, ct: f64) -> Result<f64> {
+    let xs: f64 = non_dimensional_sa(sa)?;
+    let ys: f64 = ct / GSW_CTU;
 
-    Ok((specvol, alpha, beta))
+    // Specific Volume
+    let v = V000
+        + xs * (V100 + xs * (V200 + xs * (V300 + xs * (V400 + xs * (V500 + xs * V600)))))
+        + ys * (V010
+            + xs * (V110 + xs * (V210 + xs * (V310 + xs * (V410 + xs * V510))))
+            + ys * (V020
+                + xs * (V120 + xs * (V220 + xs * (V320 + xs * V420)))
+                + ys * (V030
+                    + xs * (V130 + xs * (V230 + xs * V330))
+                    + ys * (V040
+                        + xs * (V140 + xs * V240)
+                        + ys * (V050 + xs * V150 + ys * V060)))));
+
+    Ok(1.0 / v - 1000.0)
 }
 
-/*
-fn specvol_first_derivatives_wrt_enthalpy(sa: f64, ct: f64, p: f64) -> (f64, f64) {
-    unimplemented!()
+/// Potential density anomaly with reference to sea pressure of 1000 dbar
+/// (75-term polynomial approximation)
+///
+/// # Arguments
+///
+/// * `sa`: Absolute Salinity \[g kg-1\]
+/// * `ct`: Conservative Temperature (ITS-90) \[deg C\]
+/// * `p`: sea pressure \[dbar\] (i.e. absolute pressure - 10.1325 dbar)
+pub fn sigma1(sa: f64, ct: f64) -> Result<f64> {
+    Ok(rho(sa, ct, 1000.0)? - 1000.0)
 }
 
-fn specvol_ice(t: f64, p: f64) {
-    unimplemented!()
+/// Potential density anomaly with reference to sea pressure of 2000 dbar
+/// (75-term polynomial approximation)
+///
+/// # Arguments
+///
+/// * `sa`: Absolute Salinity \[g kg-1\]
+/// * `ct`: Conservative Temperature (ITS-90) \[deg C\]
+/// * `p`: sea pressure \[dbar\] (i.e. absolute pressure - 10.1325 dbar)
+pub fn sigma2(sa: f64, ct: f64) -> Result<f64> {
+    Ok(rho(sa, ct, 2000.0)? - 1000.0)
 }
 
-fn specvol_second_derivatives(sa: f64, ct: f64, p: f64) -> (f64, f64, f64, f64, f64) {
-    unimplemented!()
+/// Potential density anomaly with reference to sea pressure of 3000 dbar
+/// (75-term polynomial approximation)
+///
+/// # Arguments
+///
+/// * `sa`: Absolute Salinity \[g kg-1\]
+/// * `ct`: Conservative Temperature (ITS-90) \[deg C\]
+/// * `p`: sea pressure \[dbar\] (i.e. absolute pressure - 10.1325 dbar)
+pub fn sigma3(sa: f64, ct: f64) -> Result<f64> {
+    Ok(rho(sa, ct, 3000.0)? - 1000.0)
 }
 
-fn specvol_second_derivatives_wrt_enthalpy(sa: f64, ct: f64, p: f64) -> (f64, f64, f64) {
-    unimplemented!()
+/// Potential density anomaly with reference to sea pressure of 4000 dbar
+/// (75-term polynomial approximation)
+///
+/// # Arguments
+///
+/// * `sa`: Absolute Salinity \[g kg-1\]
+/// * `ct`: Conservative Temperature (ITS-90) \[deg C\]
+/// * `p`: sea pressure \[dbar\] (i.e. absolute pressure - 10.1325 dbar)
+pub fn sigma4(sa: f64, ct: f64) -> Result<f64> {
+    Ok(rho(sa, ct, 4000.0)? - 1000.0)
 }
-
-fn specvol_diff() {
-    unimplemented!()
-}
-fn specvol_from_pot_enthalpy_ice() {
-    unimplemented!()
-}
-fn specvol_from_pot_enthalpy_ice_poly() {
-    unimplemented!()
-}
-fn specvol_p_parts() {
-    unimplemented!()
-}
-*/
 
 /// Sound speed in seawater (75-term polynomial approximation)
 ///
@@ -399,52 +451,6 @@ pub fn sound_speed(sa: f64, ct: f64, p: f64) -> Result<f64> {
     Ok(10_000.0 * libm::sqrt(-v * v / v_p))
 }
 
-/// Potential density anomaly with reference to sea pressure of 0 dbar
-/// (75-term polynomial approximation)
-pub fn sigma0(sa: f64, ct: f64) -> Result<f64> {
-    let xs: f64 = non_dimensional_sa(sa)?;
-    let ys: f64 = ct / GSW_CTU;
-
-    // Specific Volume
-    let v = V000
-        + xs * (V100 + xs * (V200 + xs * (V300 + xs * (V400 + xs * (V500 + xs * V600)))))
-        + ys * (V010
-            + xs * (V110 + xs * (V210 + xs * (V310 + xs * (V410 + xs * V510))))
-            + ys * (V020
-                + xs * (V120 + xs * (V220 + xs * (V320 + xs * V420)))
-                + ys * (V030
-                    + xs * (V130 + xs * (V230 + xs * V330))
-                    + ys * (V040
-                        + xs * (V140 + xs * V240)
-                        + ys * (V050 + xs * V150 + ys * V060)))));
-
-    Ok(1.0 / v - 1000.0)
-}
-
-/// Potential density anomaly with reference to sea pressure of 1000 dbar
-/// (75-term polynomial approximation)
-pub fn sigma1(sa: f64, ct: f64) -> Result<f64> {
-    Ok(rho(sa, ct, 1000.0)? - 1000.0)
-}
-
-/// Potential density anomaly with reference to sea pressure of 2000 dbar
-/// (75-term polynomial approximation)
-pub fn sigma2(sa: f64, ct: f64) -> Result<f64> {
-    Ok(rho(sa, ct, 2000.0)? - 1000.0)
-}
-
-/// Potential density anomaly with reference to sea pressure of 3000 dbar
-/// (75-term polynomial approximation)
-pub fn sigma3(sa: f64, ct: f64) -> Result<f64> {
-    Ok(rho(sa, ct, 3000.0)? - 1000.0)
-}
-
-/// Potential density anomaly with reference to sea pressure of 4000 dbar
-/// (75-term polynomial approximation)
-pub fn sigma4(sa: f64, ct: f64) -> Result<f64> {
-    Ok(rho(sa, ct, 4000.0)? - 1000.0)
-}
-
 ///
 /// # Arguments
 ///
@@ -488,6 +494,59 @@ fn enthalpy_diff(sa: f64, ct: f64, p: f64) -> Result<f64> {
 fn dynamic_enthalpy(sa: f64, ct: f64, p: f64) -> Result<f64> {
     unimplemented!()
 }
+
+/// Absolute salinity of seawater from given density, Conservative
+/// Temperature, and pressure.
+///
+/// # Notes:
+///
+/// - According to the Matlab GSW toolbox, after two iterations of this
+/// modified Newton-Raphson iteration, the error in SA is no larger than
+/// 8e-13 g/kg, which is machine precision for this calculation.
+pub fn sa_from_rho(rho: f64, ct: f64, p: f64) -> Result<f64> {
+    let v_lab = 1.0 / rho;
+    let v_0 = specvol(0.0, ct, p)?;
+    let v_50 = specvol(50.0, ct, p)?;
+
+    // First guess, a linear ratio
+    let sa = 50.0 * (v_lab - v_0) / (v_50 - v_0);
+
+    if (sa < 0.0) || (sa > 50.0) {
+        if cfg!(feature = "invalidasnan") {
+            return Ok(f64::NAN);
+        } else {
+            return Err(Error::OutOfBounds);
+        }
+    }
+
+    // First guess of dv/dSA
+    let v_sa: f64 = (v_50 - v_0) / 50.0;
+
+    // Modified Newton-Raphson iterative optimization
+    for _ in 0..2 {
+        let sa_old = sa;
+        let delta_v = specvol(sa_old, ct, p)? - v_lab;
+        // this is half way through the modified N-R method (McDougall and
+        // Wotherspoon, 2012, appud Matlab GSW implementation)
+        let sa = sa_old - delta_v / v_sa;
+        let sa_mean = 0.5 * (sa + sa_old);
+        let (v_sa, _, _) = specvol_first_derivatives(sa_mean, ct, p)?;
+        let sa = sa_old - delta_v / v_sa;
+        if (sa < 0.0) || (sa > 50.0) {
+            if cfg!(feature = "invalidasnan") {
+                return Ok(f64::NAN);
+            } else {
+                return Err(Error::OutOfBounds);
+            }
+        }
+    }
+    Ok(sa)
+}
+
+/*
+fn CT_from_rho
+fn CT_maxdensity
+*/
 
 #[cfg(test)]
 mod tests {
@@ -533,69 +592,6 @@ mod tests {
             }
         }
     }
-}
-
-/// Absolute salinity of seawater from given density, Conservative
-/// Temperature, and pressure. (75-term polynomial approximation)
-///
-/// # Arguments
-///
-/// * `rho`: Density of seawater sample \[ kg m-3 \]. Do not mistake it by
-///          sigma (density anomaly).
-/// * `ct`: Conservative Temperature (ITS-90) \[ deg C \]
-/// * `p`: sea pressure \[ dbar \] (i.e. absolute pressure - 10.1325 dbar)
-///
-/// # Example:
-/// ```
-/// use gsw::volume::sa_from_rho;
-/// let rho = sa_from_rho(1026.0, 10.0, 100.0).unwrap();
-/// assert!((rho-33.75603881310435).abs() <= f64::EPSILON);
-/// ```
-///
-/// # Notes:
-///
-/// - According to the Matlab GSW toolbox, after two iterations of this
-/// modified Newton-Raphson iteration, the error in SA is no larger than
-/// 8e-13 g/kg, which is machine precision for this calculation.
-pub fn sa_from_rho(rho: f64, ct: f64, p: f64) -> Result<f64> {
-    let v_lab = 1.0 / rho;
-    let v_0 = specvol(0.0, ct, p)?;
-    let v_50 = specvol(50.0, ct, p)?;
-
-    // First guess, a linear ratio
-    let sa = 50.0 * (v_lab - v_0) / (v_50 - v_0);
-
-    // Matlab returns NaN if out of bounds
-    if (sa < 0.0) || (sa > 50.0) {
-        if cfg!(feature = "invalidasnan") {
-            return Ok(f64::NAN);
-        } else {
-            return Err(Error::Undefined);
-        }
-    }
-
-    // First guess of dv/dSA
-    let v_sa: f64 = (v_50 - v_0) / 50.0;
-
-    // Modified Newton-Raphson iterative optimization
-    for _ in 0..2 {
-        let sa_old = sa;
-        let delta_v = specvol(sa_old, ct, p)? - v_lab;
-        // this is half way through the modified N-R method (McDougall and
-        // Wotherspoon, 2012, appud Matlab GSW implementation)
-        let sa = sa_old - delta_v / v_sa;
-        let sa_mean = 0.5 * (sa + sa_old);
-        let (v_sa, _, _) = specvol_first_derivatives(sa_mean, ct, p)?;
-        let sa = sa_old - delta_v / v_sa;
-        if (sa < 0.0) || (sa > 50.0) {
-            if cfg!(feature = "invalidasnan") {
-                return Ok(f64::NAN);
-            } else {
-                return Err(Error::Undefined);
-            }
-        }
-    }
-    Ok(sa)
 }
 
 pub fn specvol_first_derivatives(sa: f64, ct: f64, p: f64) -> Result<(f64, f64, f64)> {
@@ -662,3 +658,34 @@ pub fn specvol_first_derivatives(sa: f64, ct: f64, p: f64) -> Result<(f64, f64, 
 
     Ok((v_sa, v_ct, v_p))
 }
+
+/*
+fn specvol_first_derivatives_wrt_enthalpy(sa: f64, ct: f64, p: f64) -> (f64, f64) {
+    unimplemented!()
+}
+
+fn specvol_ice(t: f64, p: f64) {
+    unimplemented!()
+}
+
+fn specvol_second_derivatives(sa: f64, ct: f64, p: f64) -> (f64, f64, f64, f64, f64) {
+    unimplemented!()
+}
+
+fn specvol_second_derivatives_wrt_enthalpy(sa: f64, ct: f64, p: f64) -> (f64, f64, f64) {
+    unimplemented!()
+}
+
+fn specvol_diff() {
+    unimplemented!()
+}
+fn specvol_from_pot_enthalpy_ice() {
+    unimplemented!()
+}
+fn specvol_from_pot_enthalpy_ice_poly() {
+    unimplemented!()
+}
+fn specvol_p_parts() {
+    unimplemented!()
+}
+*/
