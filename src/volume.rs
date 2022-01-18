@@ -484,6 +484,7 @@ fn enthalpy_diff(sa: f64, ct: f64, p: f64) -> Result<f64> {
     unimplemented!()
 }
 
+/// Dynamic enthalpy of seawater (75-term polynomial approximation)
 ///
 /// # Arguments
 ///
@@ -491,8 +492,45 @@ fn enthalpy_diff(sa: f64, ct: f64, p: f64) -> Result<f64> {
 /// * `ct`: Conservative Temperature (ITS-90) \[deg C\]
 /// * `p`: sea pressure \[dbar\] (i.e. absolute pressure - 10.1325 dbar)
 ///
-fn dynamic_enthalpy(sa: f64, ct: f64, p: f64) -> Result<f64> {
-    unimplemented!()
+pub fn dynamic_enthalpy(sa: f64, ct: f64, p: f64) -> Result<f64> {
+    let xs: f64 = non_dimensional_sa(sa)?;
+    let ys: f64 = ct / GSW_CTU;
+    let z: f64 = non_dimensional_p(p);
+
+    let dynamic_enthalpy_part = z
+        * (H001
+            + xs * (H101 + xs * (H201 + xs * (H301 + xs * (H401 + xs * (H501 + H601 * xs)))))
+            + ys * (H011
+                + xs * (H111 + xs * (H211 + xs * (H311 + xs * (H411 + H511 * xs))))
+                + ys * (H021
+                    + xs * (H121 + xs * (H221 + xs * (H321 + H421 * xs)))
+                    + ys * (H031
+                        + xs * (H131 + xs * (H231 + H331 * xs))
+                        + ys * (H041
+                            + xs * (H141 + H241 * xs)
+                            + ys * (H051 + H151 * xs + H061 * ys)))))
+            + z * (H002
+                + xs * (H102 + xs * (H202 + xs * (H302 + xs * (H402 + H502 * xs))))
+                + ys * (H012
+                    + xs * (H112 + xs * (H212 + xs * (H312 + H412 * xs)))
+                    + ys * (H022
+                        + xs * (H122 + xs * (H222 + H322 * xs))
+                        + ys * (H032
+                            + xs * (H132 + H232 * xs)
+                            + ys * (H042 + H142 * xs + H052 * ys))))
+                + z * (H003
+                    + xs * (H103 + xs * (H203 + xs * (H303 + H403 * xs)))
+                    + ys * (H013
+                        + xs * (H113 + xs * (H213 + H313 * xs))
+                        + ys * (H023
+                            + xs * (H123 + H223 * xs)
+                            + ys * (H033 + H133 * xs + H043 * ys)))
+                    + z * (H004
+                        + xs * (H104 + H204 * xs)
+                        + ys * (H014 + H114 * xs + H024 * ys)
+                        + z * (H005 + H105 * xs + H015 * ys + z * (H006 + H007 * z))))));
+
+    Ok(dynamic_enthalpy_part * DB2PA * 1e4)
 }
 
 /// Absolute salinity of seawater from given density, Conservative
