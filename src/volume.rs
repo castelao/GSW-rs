@@ -547,7 +547,7 @@ pub fn dynamic_enthalpy(sa: f64, ct: f64, p: f64) -> Result<f64> {
 
 #[cfg(test)]
 mod test_dynamic_enthalpy {
-    use super::dynamic_enthalpy;
+    use super::{dynamic_enthalpy, Error};
 
     #[test]
     // NaN input results in NaN output.
@@ -562,6 +562,22 @@ mod test_dynamic_enthalpy {
 
         let h_hat = dynamic_enthalpy(1.0, 1.0, f64::NAN);
         assert!(h_hat.unwrap().is_nan());
+    }
+
+    #[test]
+    fn negative_sa() {
+        let h_hat = dynamic_enthalpy(-0.1, 10.0, 100.0);
+
+        if cfg!(feature = "compat") {
+            assert!((h_hat.unwrap() - 1000.0132803364188).abs() <= f64::EPSILON);
+        } else if cfg!(feature = "invalidasnan") {
+            assert!(h_hat.unwrap().is_nan());
+        } else {
+            match h_hat {
+                Err(Error::NegativeSalinity) => (),
+                _ => assert!(false),
+            }
+        }
     }
 }
 
