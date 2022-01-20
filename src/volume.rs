@@ -492,6 +492,12 @@ fn enthalpy_diff(sa: f64, ct: f64, p: f64) -> Result<f64> {
 /// * `ct`: Conservative Temperature (ITS-90) \[deg C\]
 /// * `p`: sea pressure \[dbar\] (i.e. absolute pressure - 10.1325 dbar)
 ///
+/// # Returns
+///
+/// * Dynamic enthalpy \[ J kg-1 \]
+///
+/// # References
+///
 /// # Example:
 /// ```
 /// use gsw::volume::dynamic_enthalpy;
