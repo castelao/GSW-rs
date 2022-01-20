@@ -492,6 +492,12 @@ fn enthalpy_diff(sa: f64, ct: f64, p: f64) -> Result<f64> {
 /// * `ct`: Conservative Temperature (ITS-90) \[deg C\]
 /// * `p`: sea pressure \[dbar\] (i.e. absolute pressure - 10.1325 dbar)
 ///
+/// # Example:
+/// ```
+/// use gsw::volume::dynamic_enthalpy;
+/// let h_hat = dynamic_enthalpy(32.0, 10.0, 100.0).unwrap();
+/// assert!((h_hat - 975.8669302190772).abs() <= f64::EPSILON);
+/// ```
 pub fn dynamic_enthalpy(sa: f64, ct: f64, p: f64) -> Result<f64> {
     let xs: f64 = non_dimensional_sa(sa)?;
     let ys: f64 = ct / GSW_CTU;
