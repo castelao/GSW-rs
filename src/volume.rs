@@ -545,6 +545,26 @@ pub fn dynamic_enthalpy(sa: f64, ct: f64, p: f64) -> Result<f64> {
     Ok(dynamic_enthalpy_part * DB2PA * 1e4)
 }
 
+#[cfg(test)]
+mod test_dynamic_enthalpy {
+    use super::dynamic_enthalpy;
+
+    #[test]
+    // NaN input results in NaN output.
+    // Other libraries using GSW-rs might rely on this behavior to propagate
+    // and handle invalid elements.
+    fn nan() {
+        let h_hat = dynamic_enthalpy(f64::NAN, 1.0, 1.0);
+        assert!(h_hat.unwrap().is_nan());
+
+        let h_hat = dynamic_enthalpy(1.0, f64::NAN, 1.0);
+        assert!(h_hat.unwrap().is_nan());
+
+        let h_hat = dynamic_enthalpy(1.0, 1.0, f64::NAN);
+        assert!(h_hat.unwrap().is_nan());
+    }
+}
+
 /// Absolute salinity of seawater from given density, Conservative
 /// Temperature, and pressure.
 ///
