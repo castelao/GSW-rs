@@ -462,6 +462,7 @@ fn internal_energy(sa: f64, ct: f64, p: f64) -> Result<f64> {
     unimplemented!()
 }
 
+/// Specific enthalpy of seawater (75-term polynomial approximation)
 ///
 /// # Arguments
 ///
@@ -470,7 +471,7 @@ fn internal_energy(sa: f64, ct: f64, p: f64) -> Result<f64> {
 /// * `p`: sea pressure \[dbar\] (i.e. absolute pressure - 10.1325 dbar)
 ///
 fn enthalpy(sa: f64, ct: f64, p: f64) -> Result<f64> {
-    unimplemented!()
+    Ok(GSW_CP0 * ct + dynamic_enthalpy(sa, ct, p)?)
 }
 
 ///
