@@ -499,6 +499,10 @@ fn enthalpy_diff(sa: f64, ct: f64, p: f64) -> Result<f64> {
 ///
 /// # References
 ///
+/// * Young, W. R. (2010). Dynamic Enthalpy, Conservative Temperature, and the
+///   Seawater Boussinesq Approximation, Journal of Physical Oceanography,
+///   40(2), 394-400. doi: 10.1175/2009JPO4294.1
+///
 /// # Example:
 /// ```
 /// use gsw::volume::dynamic_enthalpy;
