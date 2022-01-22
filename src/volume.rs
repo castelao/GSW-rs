@@ -462,6 +462,7 @@ fn internal_energy(sa: f64, ct: f64, p: f64) -> Result<f64> {
     unimplemented!()
 }
 
+/// Specific enthalpy of seawater (75-term polynomial approximation)
 ///
 /// # Arguments
 ///
@@ -470,7 +471,7 @@ fn internal_energy(sa: f64, ct: f64, p: f64) -> Result<f64> {
 /// * `p`: sea pressure \[dbar\] (i.e. absolute pressure - 10.1325 dbar)
 ///
 fn enthalpy(sa: f64, ct: f64, p: f64) -> Result<f64> {
-    unimplemented!()
+    Ok(GSW_CP0 * ct + dynamic_enthalpy(sa, ct, p)?)
 }
 
 ///
@@ -484,6 +485,7 @@ fn enthalpy_diff(sa: f64, ct: f64, p: f64) -> Result<f64> {
     unimplemented!()
 }
 
+/// Dynamic enthalpy of seawater (75-term polynomial approximation)
 ///
 /// # Arguments
 ///
@@ -491,8 +493,106 @@ fn enthalpy_diff(sa: f64, ct: f64, p: f64) -> Result<f64> {
 /// * `ct`: Conservative Temperature (ITS-90) \[deg C\]
 /// * `p`: sea pressure \[dbar\] (i.e. absolute pressure - 10.1325 dbar)
 ///
-fn dynamic_enthalpy(sa: f64, ct: f64, p: f64) -> Result<f64> {
-    unimplemented!()
+/// # Returns
+///
+/// * Dynamic enthalpy \[ J kg-1 \]
+///
+/// # References
+///
+/// * Young, W. R. (2010). Dynamic Enthalpy, Conservative Temperature, and the
+///   Seawater Boussinesq Approximation, Journal of Physical Oceanography,
+///   40(2), 394-400. doi: 10.1175/2009JPO4294.1
+///
+/// # Example:
+/// ```
+/// use gsw::volume::dynamic_enthalpy;
+/// let h_hat = dynamic_enthalpy(32.0, 10.0, 100.0).unwrap();
+/// assert!((h_hat - 975.8669302190772).abs() <= f64::EPSILON);
+/// ```
+pub fn dynamic_enthalpy(sa: f64, ct: f64, p: f64) -> Result<f64> {
+    let s: f64 = non_dimensional_sa(sa)?;
+    let tau: f64 = ct / GSW_CTU;
+    let pi: f64 = non_dimensional_p(p);
+
+    let dynamic_enthalpy_part = pi
+        * (H001
+            + s * (H101 + s * (H201 + s * (H301 + s * (H401 + s * (H501 + H601 * s)))))
+            + tau
+                * (H011
+                    + s * (H111 + s * (H211 + s * (H311 + s * (H411 + H511 * s))))
+                    + tau
+                        * (H021
+                            + s * (H121 + s * (H221 + s * (H321 + H421 * s)))
+                            + tau
+                                * (H031
+                                    + s * (H131 + s * (H231 + H331 * s))
+                                    + tau
+                                        * (H041
+                                            + s * (H141 + H241 * s)
+                                            + tau * (H051 + H151 * s + H061 * tau)))))
+            + pi * (H002
+                + s * (H102 + s * (H202 + s * (H302 + s * (H402 + H502 * s))))
+                + tau
+                    * (H012
+                        + s * (H112 + s * (H212 + s * (H312 + H412 * s)))
+                        + tau
+                            * (H022
+                                + s * (H122 + s * (H222 + H322 * s))
+                                + tau
+                                    * (H032
+                                        + s * (H132 + H232 * s)
+                                        + tau * (H042 + H142 * s + H052 * tau))))
+                + pi * (H003
+                    + s * (H103 + s * (H203 + s * (H303 + H403 * s)))
+                    + tau
+                        * (H013
+                            + s * (H113 + s * (H213 + H313 * s))
+                            + tau
+                                * (H023
+                                    + s * (H123 + H223 * s)
+                                    + tau * (H033 + H133 * s + H043 * tau)))
+                    + pi * (H004
+                        + s * (H104 + H204 * s)
+                        + tau * (H014 + H114 * s + H024 * tau)
+                        + pi * (H005 + H105 * s + H015 * tau + pi * (H006 + H007 * pi))))));
+
+    Ok(dynamic_enthalpy_part * DB2PA * 1e4)
+}
+
+#[cfg(test)]
+mod test_dynamic_enthalpy {
+    use super::{dynamic_enthalpy, Error};
+
+    #[test]
+    // NaN input results in NaN output.
+    // Other libraries using GSW-rs might rely on this behavior to propagate
+    // and handle invalid elements.
+    fn nan() {
+        let h_hat = dynamic_enthalpy(f64::NAN, 1.0, 1.0);
+        assert!(h_hat.unwrap().is_nan());
+
+        let h_hat = dynamic_enthalpy(1.0, f64::NAN, 1.0);
+        assert!(h_hat.unwrap().is_nan());
+
+        let h_hat = dynamic_enthalpy(1.0, 1.0, f64::NAN);
+        assert!(h_hat.unwrap().is_nan());
+    }
+
+    #[test]
+    fn negative_sa() {
+        let h_hat = dynamic_enthalpy(-0.1, 10.0, 100.0);
+
+        if cfg!(feature = "compat") {
+            assert!((h_hat.unwrap() - 1000.0132803364188).abs() <= f64::EPSILON);
+        } else if cfg!(feature = "invalidasnan") {
+            assert!(h_hat.unwrap().is_nan());
+        } else {
+            match h_hat {
+                Err(Error::NegativeSalinity) => (),
+                _ => assert!(false),
+            }
+        }
+    }
 }
 
 /// Absolute salinity of seawater from given density, Conservative

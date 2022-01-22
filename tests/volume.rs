@@ -70,6 +70,40 @@ fn beta() {
 
 #[test]
 #[cfg(not(windows))]
+fn dynamic_enthalpy() {
+    let mut input = File::open("tests/data/gsw_validation.bin").expect("Unable to open file");
+    let mut contents = vec![];
+    input
+        .read_to_end(&mut contents)
+        .expect("Failed to read content");
+
+    let out: DataRef = from_bytes(&contents).unwrap();
+
+    let p = out.data2d.get(&String::from("p_chck_cast")).unwrap();
+    let sa = out.data2d.get(&String::from("SA_chck_cast")).unwrap();
+    let ct = out.data2d.get(&String::from("CT_chck_cast")).unwrap();
+    let dynamic_enthalpy = out.data2d.get(&String::from("dynamic_enthalpy")).unwrap();
+    let tol = if cfg!(feature = "compat") || (f64::EPSILON > 1e-10) {
+        // f64::EPSILON
+        1e-11
+    } else {
+        1e-10
+    };
+    for i in 0..3 {
+        for j in 0..45 {
+            if !dynamic_enthalpy[i][j].is_nan() {
+                assert!(
+                    (gsw::volume::dynamic_enthalpy(sa[i][j], ct[i][j], p[i][j]).unwrap()
+                        - dynamic_enthalpy[i][j])
+                        .abs()
+                        <= tol
+                );
+            }
+        }
+    }
+}
+#[test]
+#[cfg(not(windows))]
 fn rho() {
     let mut input = File::open("tests/data/gsw_validation.bin").expect("Unable to open file");
     let mut contents = vec![];
