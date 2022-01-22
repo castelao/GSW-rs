@@ -83,6 +83,12 @@ fn dynamic_enthalpy() {
     let sa = out.data2d.get(&String::from("SA_chck_cast")).unwrap();
     let ct = out.data2d.get(&String::from("CT_chck_cast")).unwrap();
     let dynamic_enthalpy = out.data2d.get(&String::from("dynamic_enthalpy")).unwrap();
+    let tol = if cfg!(feature = "compat") || (f64::EPSILON > 1e-10) {
+        // f64::EPSILON
+        1e-11
+    } else {
+        1e-10
+    };
     for i in 0..3 {
         for j in 0..45 {
             if !dynamic_enthalpy[i][j].is_nan() {
@@ -90,7 +96,7 @@ fn dynamic_enthalpy() {
                     (gsw::volume::dynamic_enthalpy(sa[i][j], ct[i][j], p[i][j]).unwrap()
                         - dynamic_enthalpy[i][j])
                         .abs()
-                        <= 1e-11 //f64::EPSILON
+                        <= tol
                 );
             }
         }
