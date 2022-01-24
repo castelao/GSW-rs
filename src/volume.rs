@@ -116,6 +116,60 @@ pub fn beta(sa: f64, ct: f64, p: f64) -> Result<f64> {
     Ok(-v_sa * 0.5 * GSW_SFAC / (specvol(sa, ct, p)? * xs))
 }
 
+fn alpha_on_beta(sa: f64, ct: f64, p: f64) -> Result<f64> {
+    let s: f64 = non_dimensional_sa(sa)?;
+    let tau: f64 = ct / GSW_CTU;
+    let pi: f64 = non_dimensional_p(p);
+
+    let v_ct: f64 = A000
+        + s * (A100 + s * (A200 + s * (A300 + s * (A400 + A500 * s))))
+        + tau
+            * (A010
+                + s * (A110 + s * (A210 + s * (A310 + A410 * s)))
+                + tau
+                    * (A020
+                        + s * (A120 + s * (A220 + A320 * s))
+                        + tau
+                            * (A030
+                                + s * (A130 + A230 * s)
+                                + tau * (A040 + A140 * s + A050 * tau))))
+        + pi * (A001
+            + s * (A101 + s * (A201 + s * (A301 + A401 * s)))
+            + tau
+                * (A011
+                    + s * (A111 + s * (A211 + A311 * s))
+                    + tau * (A021 + s * (A121 + A221 * s) + tau * (A031 + A131 * s + A041 * tau)))
+            + pi * (A002
+                + s * (A102 + s * (A202 + A302 * s))
+                + tau * (A012 + s * (A112 + A212 * s) + tau * (A022 + A122 * s + A032 * tau))
+                + pi * (A003 + A103 * s + A013 * tau + A004 * pi)));
+
+    let v_sa: f64 = B000
+        + s * (B100 + s * (B200 + s * (B300 + s * (B400 + B500 * s))))
+        + tau
+            * (B010
+                + s * (B110 + s * (B210 + s * (B310 + B410 * s)))
+                + tau
+                    * (B020
+                        + s * (B120 + s * (B220 + B320 * s))
+                        + tau
+                            * (B030
+                                + s * (B130 + B230 * s)
+                                + tau * (B040 + B140 * s + B050 * tau))))
+        + pi * (B001
+            + s * (B101 + s * (B201 + s * (B301 + B401 * s)))
+            + tau
+                * (B011
+                    + s * (B111 + s * (B211 + B311 * s))
+                    + tau * (B021 + s * (B121 + B221 * s) + tau * (B031 + B131 * s + B041 * tau)))
+            + pi * (B002
+                + s * (B102 + s * (B202 + B302 * s))
+                + tau * (B012 + s * (B112 + B212 * s) + tau * (B022 + B122 * s + B032 * tau))
+                + pi * (B003 + B103 * s + B013 * tau + B004 * pi)));
+
+    Ok(-v_ct * s / (20 * GSW_SFAC * v_sa))
+}
+
 /// in-situ density, thermal expansion & saline contraction coefficients
 /// (75-term polynomial approximation)
 ///
