@@ -703,8 +703,40 @@ fn ct_from_rho() {
     unimplemented!()
 }
 
-fn ct_maxdensity() {
-    unimplemented!()
+/// Conservative Temperature of maximum density of seawater
+/// (75-term polynomial approximation)
+///
+/// # Example
+/// ```
+/// use gsw::volume::ct_maxdensity;
+/// let ct = ct_maxdensity(32.0, 100.0).unwrap();
+/// assert!((ct - (-3.337428439202098)).abs() <= f64::EPSILON);
+/// ```
+///
+/// # Notes
+/// * After three iterations of this modified Newton-Raphson (McDougall and
+///   Wotherspoon, 2012) iteration, the error in CT_maxdensity is typically
+///   no larger than 1x10^-15 degress C.
+pub fn ct_maxdensity(sa: f64, p: f64) -> Result<f64> {
+    let number_of_iterations = 3;
+    // Conservative Temperature delta
+    let dct = 0.001;
+    // Initial guess of Conservative Temperature
+    let mut ct = 3.978 - 0.22072 * sa;
+    // Initial guess for d alpha / d CT
+    let dalpha_dct = 1.1e-5;
+
+    for _ in 0..number_of_iterations {
+        let ct_old = ct;
+        let a = alpha(sa, ct_old, p)?;
+        ct = ct_old - a / dalpha_dct;
+        let ct_mean = 0.5 * (ct + ct_old);
+        let dalpha_dct =
+            (alpha(sa, ct_mean + dct, p)? - alpha(sa, ct_mean - dct, p)?) / (2.0 * dct);
+        ct = ct_old - a / dalpha_dct;
+    }
+
+    Ok(ct)
 }
 
 #[cfg(test)]
