@@ -507,15 +507,58 @@ pub fn sound_speed(sa: f64, ct: f64, p: f64) -> Result<f64> {
     Ok(10_000.0 * libm::sqrt(-v * v / v_p))
 }
 
+/// Specific interal energy of seawater (75-term polynomial approximation)
 ///
 /// # Arguments
 ///
-/// * `sa`: Absolute Salinity \[g kg-1\]
-/// * `ct`: Conservative Temperature (ITS-90) \[deg C\]
-/// * `p`: sea pressure \[dbar\] (i.e. absolute pressure - 10.1325 dbar)
+/// * `sa`: Absolute Salinity \[ g kg-1 \]
+/// * `ct`: Conservative Temperature (ITS-90) \[ deg C \]
+/// * `p`: sea pressure \[ dbar \] (i.e. absolute pressure - 10.1325 dbar)
 ///
-fn internal_energy(sa: f64, ct: f64, p: f64) -> Result<f64> {
-    unimplemented!()
+/// # Example:
+/// ```
+/// use gsw::volume::internal_energy;
+/// let U = internal_energy(32.0, 10.0, 100.0).unwrap();
+/// assert!((U - 39820.03700517441).abs() <= f64::EPSILON);
+/// ```
+pub fn internal_energy(sa: f64, ct: f64, p: f64) -> Result<f64> {
+    Ok(enthalpy(sa, ct, p)? - (GSW_P0 + DB2PA * p) * specvol(sa, ct, p)?)
+}
+
+#[cfg(test)]
+mod test_internal_energy {
+    use super::{internal_energy, Error};
+
+    #[test]
+    // NaN input results in NaN output.
+    // Other libraries using GSW-rs might rely on this behavior to propagate
+    // and handle invalid elements.
+    fn nan() {
+        let u = internal_energy(f64::NAN, 1.0, 1.0).unwrap();
+        assert!(u.is_nan());
+
+        let u = internal_energy(1.0, f64::NAN, 1.0).unwrap();
+        assert!(u.is_nan());
+
+        let u = internal_energy(1.0, 1.0, f64::NAN).unwrap();
+        assert!(u.is_nan());
+    }
+
+    #[test]
+    fn negative_sa() {
+        let u = internal_energy(-0.1, 10.0, 100.0);
+
+        if cfg!(feature = "compat") {
+            assert!((u.unwrap() - 39817.61643796252).abs() <= f64::EPSILON);
+        } else if cfg!(feature = "invalidasnan") {
+            assert!(u.unwrap().is_nan());
+        } else {
+            match u {
+                Err(Error::NegativeSalinity) => (),
+                _ => assert!(false),
+            }
+        }
+    }
 }
 
 /// Specific enthalpy of seawater (75-term polynomial approximation)
