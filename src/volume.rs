@@ -202,6 +202,188 @@ pub fn specvol_alpha_beta(sa: f64, ct: f64, p: f64) -> Result<(f64, f64, f64)> {
     Ok((specvol, alpha, beta))
 }
 
+/// Second order derivatives of specific volume
+/// (75-term polynomial approximation)
+///
+/// # Arguments
+///
+/// * `sa`: Absolute Salinity \[ g kg-1 \]
+/// * `ct`: Conservative Temperature (ITS-90) \[ deg C \]
+/// * `p`: sea pressure \[ dbar \] (i.e. absolute pressure - 10.1325 dbar)
+pub fn specvol_second_derivatives(sa: f64, ct: f64, p: f64) -> Result<(f64, f64, f64, f64, f64)> {
+    // Same procedure of non_dimensional_sa, but here we also want s2.
+    let sa: f64 = if sa < 0.0 {
+        if cfg!(feature = "compat") {
+            0.0
+        } else if cfg!(feature = "invalidasnan") {
+            return Ok((f64::NAN, f64::NAN, f64::NAN, f64::NAN, f64::NAN));
+        } else {
+            return Err(Error::NegativeSalinity);
+        }
+    } else {
+        sa
+    };
+
+    let s2 = GSW_SFAC * sa + OFFSET;
+    let s = libm::sqrt(s2);
+
+    let tau: f64 = ct / GSW_CTU;
+    let pi: f64 = non_dimensional_p(p);
+
+    let v_sa_sa_part = (-B000
+        + s2 * (B200 + s * (2.0 * B300 + s * (3.0 * B400 + 4.0 * B500 * s)))
+        + tau
+            * (-B010
+                + s2 * (B210 + s * (2.0 * B310 + 3.0 * B410 * s))
+                + tau
+                    * (-B020
+                        + s2 * (B220 + 2.0 * B320 * s)
+                        + tau * (-B030 + B230 * s2 + tau * (-B040 - B050 * tau))))
+        + pi * (-B001
+            + s2 * (B201 + s * (2.0 * B301 + 3.0 * B401 * s))
+            + tau
+                * (-B011
+                    + s2 * (B211 + 2.0 * B311 * s)
+                    + tau * (-B021 + B221 * s2 + tau * (-B031 - B041 * tau)))
+            + pi * (-B002
+                + s2 * (B202 + 2.0 * B302 * s)
+                + tau * (-B012 + B212 * s2 + tau * (-B022 - B032 * tau))
+                + pi * (-B003 - B013 * tau - B004 * pi))))
+        / s2;
+
+    let v_sa_sa = 0.25 * GSW_SFAC * GSW_SFAC * v_sa_sa_part / s;
+
+    let v_sa_ct_part = (B010
+        + s * (B110 + s * (B210 + s * (B310 + B410 * s)))
+        + tau
+            * (2.0 * (B020 + s * (B120 + s * (B220 + B320 * s)))
+                + tau
+                    * (3.0 * (B030 + s * (B130 + B230 * s))
+                        + tau * (4.0 * (B040 + B140 * s) + 5.0 * B050 * tau)))
+        + pi * (B011
+            + s * (B111 + s * (B211 + B311 * s))
+            + tau
+                * (2.0 * (B021 + s * (B121 + B221 * s))
+                    + tau * (3.0 * (B031 + B131 * s) + 4.0 * B041 * tau))
+            + pi * (B012
+                + s * (B112 + B212 * s)
+                + tau * (2.0 * (B022 + B122 * s) + 3.0 * B032 * tau)
+                + B013 * pi)))
+        / s;
+
+    let v_sa_ct = 0.025 * 0.5 * GSW_SFAC * v_sa_ct_part;
+
+    let v_ct_ct_part = A010
+        + s * (A110 + s * (A210 + s * (A310 + A410 * s)))
+        + tau
+            * (2.0 * (A020 + s * (A120 + s * (A220 + A320 * s)))
+                + tau
+                    * (3.0 * (A030 + s * (A130 + A230 * s))
+                        + tau * (4.0 * (A040 + A140 * s) + 5.0 * A050 * tau)))
+        + pi * (A011
+            + s * (A111 + s * (A211 + A311 * s))
+            + tau
+                * (2.0 * (A021 + s * (A121 + A221 * s))
+                    + tau * (3.0 * (A031 + A131 * s) + 4.0 * A041 * tau))
+            + pi * (A012
+                + s * (A112 + A212 * s)
+                + tau * (2.0 * (A022 + A122 * s) + 3.0 * A032 * tau)
+                + A013 * pi));
+
+    let v_ct_ct = 0.025 * 0.025 * v_ct_ct_part;
+
+    let v_sa_p_part = B001
+        + s * (B101 + s * (B201 + s * (B301 + B401 * s)))
+        + tau
+            * (B011
+                + s * (B111 + s * (B211 + B311 * s))
+                + tau * (B021 + s * (B121 + B221 * s) + tau * (B031 + B131 * s + B041 * tau)))
+        + pi * (2.0
+            * (B002
+                + s * (B102 + s * (B202 + B302 * s))
+                + tau * (B012 + s * (B112 + B212 * s) + tau * (B022 + B122 * s + B032 * tau)))
+            + pi * (3.0 * (B003 + B103 * s + B013 * tau) + 4.0 * B004 * pi));
+
+    let v_sa_p = 1e-8 * 0.5 * GSW_SFAC * v_sa_p_part;
+
+    let v_ct_p_part = A001
+        + s * (A101 + s * (A201 + s * (A301 + A401 * s)))
+        + tau
+            * (A011
+                + s * (A111 + s * (A211 + A311 * s))
+                + tau * (A021 + s * (A121 + A221 * s) + tau * (A031 + A131 * s + A041 * tau)))
+        + pi * (2.0
+            * (A002
+                + s * (A102 + s * (A202 + A302 * s))
+                + tau * (A012 + s * (A112 + A212 * s) + tau * (A022 + A122 * s + A032 * tau)))
+            + pi * (3.0 * (A003 + A103 * s + A013 * tau) + 4.0 * A004 * pi));
+
+    let v_ct_p = 1e-8 * 0.025 * v_ct_p_part;
+
+    Ok((v_sa_sa, v_sa_ct, v_ct_ct, v_sa_p, v_ct_p))
+}
+
+#[cfg(test)]
+mod test_specvol_second_derivatives {
+    use super::{specvol_second_derivatives, Error};
+
+    #[test]
+    // NaN input results in NaN output.
+    // Other libraries using GSW-rs might rely on this behavior to propagate
+    // and handle invalid elements.
+    fn nan() {
+        let (dsds, dsdt, dtdt, dsdp, dtdp) =
+            specvol_second_derivatives(f64::NAN, 1.0, 1.0).unwrap();
+        assert!(dsds.is_nan());
+        assert!(dsdt.is_nan());
+        assert!(dtdt.is_nan());
+        assert!(dsdp.is_nan());
+        assert!(dtdp.is_nan());
+
+        let (dsds, dsdt, dtdt, dsdp, dtdp) =
+            specvol_second_derivatives(1.0, f64::NAN, 1.0).unwrap();
+        assert!(dsds.is_nan());
+        assert!(dsdt.is_nan());
+        assert!(dtdt.is_nan());
+        assert!(dsdp.is_nan());
+        assert!(dtdp.is_nan());
+
+        let (dsds, dsdt, dtdt, dsdp, dtdp) =
+            specvol_second_derivatives(1.0, 1.0, f64::NAN).unwrap();
+        assert!(dsds.is_nan());
+        assert!(dsdt.is_nan());
+        assert!(dtdt.is_nan());
+        assert!(dsdp.is_nan());
+        assert!(dtdp.is_nan());
+    }
+
+    #[test]
+    fn negative_sa() {
+        let ans = specvol_second_derivatives(-0.1, 10.0, 100.0);
+
+        if cfg!(feature = "compat") {
+            let (dsds, dsdt, dtdt, dsdp, dtdp) = ans.unwrap();
+            assert!((dsds - 4.171687573107866e-9).abs() <= f64::EPSILON);
+            assert!((dsdt - 2.6980316664661234e-9).abs() <= f64::EPSILON);
+            assert!((dtdt - 1.224276720857283e-8).abs() <= f64::EPSILON);
+            assert!((dsdp - 1.2399041600177509e-15).abs() <= f64::EPSILON);
+            assert!((dtdp - 2.4440494320176846e-15).abs() <= f64::EPSILON);
+        } else if cfg!(feature = "invalidasnan") {
+            let (dsds, dsdt, dtdt, dsdp, dtdp) = ans.unwrap();
+            assert!(dsds.is_nan());
+            assert!(dsdt.is_nan());
+            assert!(dtdt.is_nan());
+            assert!(dsdp.is_nan());
+            assert!(dtdp.is_nan());
+        } else {
+            match ans {
+                Err(Error::NegativeSalinity) => (),
+                _ => assert!(false),
+            }
+        }
+    }
+}
+
 /// Specific volume of sea water (75-term polynomial approximation)
 ///
 /// Calculates specific volume from Absolute Salinity, Conservative
