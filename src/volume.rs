@@ -597,6 +597,28 @@ pub fn sigma4(sa: f64, ct: f64) -> Result<f64> {
     Ok(rho(sa, ct, 4000.0)? - 1000.0)
 }
 
+/// Cabbeling coefficient (75-term polynomial approximation)
+///
+/// # Arguments
+///
+/// * `sa`: Absolute Salinity \[ g kg-1 \]
+/// * `ct`: Conservative Temperature (ITS-90) \[ deg C \]
+/// * `p`: sea pressure \[ dbar \] (i.e. absolute pressure - 10.1325 dbar)
+fn cabbeling(sa: f64, ct: f64, p: f64) -> Result<f64> {
+    let (v_sa, v_ct, _) = specvol_first_derivatives(sa, ct, p)?;
+    let (v_sa_sa, v_sa_ct, v_ct_ct, _, _) = specvol_second_derivatives(sa, ct, p)?;
+
+    let rho = rho(sa, ct, p)?;
+
+    let alpha_ct = rho * (v_ct_ct - rho * v_ct * v_ct);
+    let alpha_sa = rho * (v_sa_ct - rho * v_sa * v_ct);
+    let beta_sa = -rho * (v_sa_sa - rho * v_sa * v_sa);
+
+    let alpha_on_beta = alpha_on_beta(sa, ct, p)?;
+
+    Ok(alpha_ct + alpha_on_beta * (2.0 * alpha_sa - alpha_on_beta * beta_sa))
+}
+
 /// Sound speed in seawater (75-term polynomial approximation)
 ///
 /// # Arguments
