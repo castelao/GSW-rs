@@ -711,6 +711,78 @@ pub fn sound_speed(sa: f64, ct: f64, p: f64) -> Result<f64> {
     Ok(10_000.0 * libm::sqrt(-v * v / v_p))
 }
 
+fn kappa(sa: f64, ct: f64, p: f64) -> Result<f64> {
+    let s: f64 = non_dimensional_sa(sa)?;
+    let tau: f64 = ct / GSW_CTU;
+    let pi: f64 = non_dimensional_p(p);
+
+    let v = V000
+        + s * (V010 + s * (V020 + s * (V030 + s * (V040 + s * (V050 + V060 * s)))))
+        + tau
+            * (V100
+                + s * (V110 + s * (V120 + s * (V130 + s * (V140 + V150 * s))))
+                + tau
+                    * (V200
+                        + s * (V210 + s * (V220 + s * (V230 + V240 * s)))
+                        + tau
+                            * (V300
+                                + s * (V310 + s * (V320 + V330 * s))
+                                + tau
+                                    * (V400
+                                        + s * (V410 + V420 * s)
+                                        + tau * (V500 + V510 * s + V600 * tau)))))
+        + pi * (V001
+            + s * (V011 + s * (V021 + s * (V031 + s * (V041 + V051 * s))))
+            + tau
+                * (V101
+                    + s * (V111 + s * (V121 + s * (V131 + V141 * s)))
+                    + tau
+                        * (V201
+                            + s * (V211 + s * (V221 + V231 * s))
+                            + tau
+                                * (V301
+                                    + s * (V311 + V321 * s)
+                                    + tau * (V401 + V411 * s + V501 * tau))))
+            + pi * (V002
+                + s * (V012 + s * (V022 + s * (V032 + V042 * s)))
+                + tau
+                    * (V102
+                        + s * (V112 + s * (V122 + V132 * s))
+                        + tau
+                            * (V202
+                                + s * (V212 + V222 * s)
+                                + tau * (V302 + V312 * s + V402 * tau)))
+                + pi * (V003
+                    + s * (V013 + V023 * s)
+                    + tau * (V103 + V113 * s + V203 * tau)
+                    + pi * (V004 + V014 * s + V104 * tau + pi * (V005 + V006 * pi)))));
+
+    let v_p = C000
+        + s * (C100 + s * (C200 + s * (C300 + s * (C400 + C500 * s))))
+        + tau
+            * (C010
+                + s * (C110 + s * (C210 + s * (C310 + C410 * s)))
+                + tau
+                    * (C020
+                        + s * (C120 + s * (C220 + C320 * s))
+                        + tau
+                            * (C030
+                                + s * (C130 + C230 * s)
+                                + tau * (C040 + C140 * s + C050 * tau))))
+        + pi * (C001
+            + s * (C101 + s * (C201 + s * (C301 + C401 * s)))
+            + tau
+                * (C011
+                    + s * (C111 + s * (C211 + C311 * s))
+                    + tau * (C021 + s * (C121 + C221 * s) + tau * (C031 + C131 * s + C041 * tau)))
+            + pi * (C002
+                + s * (C102 + C202 * s)
+                + tau * (C012 + C112 * s + C022 * tau)
+                + pi * (C003 + C103 * s + C013 * tau + pi * (C004 + C005 * pi))));
+
+    Ok(-1e-8 * v_p / v)
+}
+
 /// Specific interal energy of seawater (75-term polynomial approximation)
 ///
 /// # Arguments
