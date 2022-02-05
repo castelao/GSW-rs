@@ -202,6 +202,89 @@ pub fn specvol_alpha_beta(sa: f64, ct: f64, p: f64) -> Result<(f64, f64, f64)> {
     Ok((specvol, alpha, beta))
 }
 
+pub fn specvol_first_derivatives(sa: f64, ct: f64, p: f64) -> Result<(f64, f64, f64)> {
+    let s: f64 = non_dimensional_sa(sa)?;
+    let tau: f64 = ct / GSW_CTU;
+    let pi: f64 = non_dimensional_p(p);
+
+    let v_ct_part: f64 = A000
+        + s * (A100 + s * (A200 + s * (A300 + s * (A400 + A500 * s))))
+        + tau
+            * (A010
+                + s * (A110 + s * (A210 + s * (A310 + A410 * s)))
+                + tau
+                    * (A020
+                        + s * (A120 + s * (A220 + A320 * s))
+                        + tau
+                            * (A030
+                                + s * (A130 + A230 * s)
+                                + tau * (A040 + A140 * s + A050 * tau))))
+        + pi * (A001
+            + s * (A101 + s * (A201 + s * (A301 + A401 * s)))
+            + tau
+                * (A011
+                    + s * (A111 + s * (A211 + A311 * s))
+                    + tau * (A021 + s * (A121 + A221 * s) + tau * (A031 + A131 * s + A041 * tau)))
+            + pi * (A002
+                + s * (A102 + s * (A202 + A302 * s))
+                + tau * (A012 + s * (A112 + A212 * s) + tau * (A022 + A122 * s + A032 * tau))
+                + pi * (A003 + A103 * s + A013 * tau + A004 * pi)));
+
+    let v_ct = 0.025 * v_ct_part;
+
+    let v_sa_part: f64 = B000
+        + s * (B100 + s * (B200 + s * (B300 + s * (B400 + B500 * s))))
+        + tau
+            * (B010
+                + s * (B110 + s * (B210 + s * (B310 + B410 * s)))
+                + tau
+                    * (B020
+                        + s * (B120 + s * (B220 + B320 * s))
+                        + tau
+                            * (B030
+                                + s * (B130 + B230 * s)
+                                + tau * (B040 + B140 * s + B050 * tau))))
+        + pi * (B001
+            + s * (B101 + s * (B201 + s * (B301 + B401 * s)))
+            + tau
+                * (B011
+                    + s * (B111 + s * (B211 + B311 * s))
+                    + tau * (B021 + s * (B121 + B221 * s) + tau * (B031 + B131 * s + B041 * tau)))
+            + pi * (B002
+                + s * (B102 + s * (B202 + B302 * s))
+                + tau * (B012 + s * (B112 + B212 * s) + tau * (B022 + B122 * s + B032 * tau))
+                + pi * (B003 + B103 * s + B013 * tau + B004 * pi)));
+
+    let v_sa = 0.5 * GSW_SFAC * v_sa_part / s;
+
+    let v_p_part = C000
+        + s * (C100 + s * (C200 + s * (C300 + s * (C400 + C500 * s))))
+        + tau
+            * (C010
+                + s * (C110 + s * (C210 + s * (C310 + C410 * s)))
+                + tau
+                    * (C020
+                        + s * (C120 + s * (C220 + C320 * s))
+                        + tau
+                            * (C030
+                                + s * (C130 + C230 * s)
+                                + tau * (C040 + C140 * s + C050 * tau))))
+        + pi * (C001
+            + s * (C101 + s * (C201 + s * (C301 + C401 * s)))
+            + tau
+                * (C011
+                    + s * (C111 + s * (C211 + C311 * s))
+                    + tau * (C021 + s * (C121 + C221 * s) + tau * (C031 + C131 * s + C041 * tau)))
+            + pi * (C002
+                + s * (C102 + C202 * s)
+                + tau * (C012 + C112 * s + C022 * tau)
+                + pi * (C003 + C103 * s + C013 * tau + pi * (C004 + C005 * pi))));
+
+    let v_p = 1e-8 * v_p_part;
+
+    Ok((v_sa, v_ct, v_p))
+}
+
 /// Second order derivatives of specific volume
 /// (75-term polynomial approximation)
 ///
@@ -1103,72 +1186,6 @@ mod tests {
         }
     }
 }
-
-pub fn specvol_first_derivatives(sa: f64, ct: f64, p: f64) -> Result<(f64, f64, f64)> {
-    let xs: f64 = non_dimensional_sa(sa)?;
-    let ys: f64 = ct / GSW_CTU;
-    let z: f64 = non_dimensional_p(p);
-
-    let v_ct_part: f64 = A000
-        + xs * (A100 + xs * (A200 + xs * (A300 + xs * (A400 + A500 * xs))))
-        + ys * (A010
-            + xs * (A110 + xs * (A210 + xs * (A310 + A410 * xs)))
-            + ys * (A020
-                + xs * (A120 + xs * (A220 + A320 * xs))
-                + ys * (A030 + xs * (A130 + A230 * xs) + ys * (A040 + A140 * xs + A050 * ys))))
-        + z * (A001
-            + xs * (A101 + xs * (A201 + xs * (A301 + A401 * xs)))
-            + ys * (A011
-                + xs * (A111 + xs * (A211 + A311 * xs))
-                + ys * (A021 + xs * (A121 + A221 * xs) + ys * (A031 + A131 * xs + A041 * ys)))
-            + z * (A002
-                + xs * (A102 + xs * (A202 + A302 * xs))
-                + ys * (A012 + xs * (A112 + A212 * xs) + ys * (A022 + A122 * xs + A032 * ys))
-                + z * (A003 + A103 * xs + A013 * ys + A004 * z)));
-
-    let v_ct = 0.025 * v_ct_part;
-
-    let v_sa_part: f64 = B000
-        + xs * (B100 + xs * (B200 + xs * (B300 + xs * (B400 + B500 * xs))))
-        + ys * (B010
-            + xs * (B110 + xs * (B210 + xs * (B310 + B410 * xs)))
-            + ys * (B020
-                + xs * (B120 + xs * (B220 + B320 * xs))
-                + ys * (B030 + xs * (B130 + B230 * xs) + ys * (B040 + B140 * xs + B050 * ys))))
-        + z * (B001
-            + xs * (B101 + xs * (B201 + xs * (B301 + B401 * xs)))
-            + ys * (B011
-                + xs * (B111 + xs * (B211 + B311 * xs))
-                + ys * (B021 + xs * (B121 + B221 * xs) + ys * (B031 + B131 * xs + B041 * ys)))
-            + z * (B002
-                + xs * (B102 + xs * (B202 + B302 * xs))
-                + ys * (B012 + xs * (B112 + B212 * xs) + ys * (B022 + B122 * xs + B032 * ys))
-                + z * (B003 + B103 * xs + B013 * ys + B004 * z)));
-
-    let v_sa = 0.5 * GSW_SFAC * v_sa_part / xs;
-
-    let v_p_part = C000
-        + xs * (C100 + xs * (C200 + xs * (C300 + xs * (C400 + C500 * xs))))
-        + ys * (C010
-            + xs * (C110 + xs * (C210 + xs * (C310 + C410 * xs)))
-            + ys * (C020
-                + xs * (C120 + xs * (C220 + C320 * xs))
-                + ys * (C030 + xs * (C130 + C230 * xs) + ys * (C040 + C140 * xs + C050 * ys))))
-        + z * (C001
-            + xs * (C101 + xs * (C201 + xs * (C301 + C401 * xs)))
-            + ys * (C011
-                + xs * (C111 + xs * (C211 + C311 * xs))
-                + ys * (C021 + xs * (C121 + C221 * xs) + ys * (C031 + C131 * xs + C041 * ys)))
-            + z * (C002
-                + xs * (C102 + C202 * xs)
-                + ys * (C012 + C112 * xs + C022 * ys)
-                + z * (C003 + C103 * xs + C013 * ys + z * (C004 + C005 * z))));
-
-    let v_p = 1e-8 * v_p_part;
-
-    Ok((v_sa, v_ct, v_p))
-}
-
 /*
 fn specvol_first_derivatives_wrt_enthalpy(sa: f64, ct: f64, p: f64) -> (f64, f64) {
     unimplemented!()
