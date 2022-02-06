@@ -152,6 +152,25 @@ pub fn rho(sa: f64, ct: f64, p: f64) -> Result<f64> {
     Ok(1.0 / specvol(sa, ct, p)?)
 }
 
+#[cfg(test)]
+mod test_rho {
+    use super::rho;
+
+    #[test]
+    // NaN input results in NaN output.
+    // Other libraries using GSW-rs might rely on this behavior to propagate
+    // and handle invalid elements.
+    fn nan() {
+        let density = rho(f64::NAN, 1.0, 1.0);
+        assert!(density.unwrap().is_nan());
+
+        let density = rho(1.0, f64::NAN, 1.0);
+        assert!(density.unwrap().is_nan());
+
+        let density = rho(1.0, 1.0, f64::NAN);
+        assert!(density.unwrap().is_nan());
+    }
+}
 /// Thermal expansion coefficient with respect to Conservative Temperature
 /// (75-term polynomial approximation)
 ///
