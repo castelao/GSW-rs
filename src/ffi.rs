@@ -1504,7 +1504,7 @@ mod test {
 
     #[test]
     fn test_specvol_c() {
-        let result: f64 = crate::specvol(1., 1., 1.).unwrap();
+        let result: f64 = crate::volume::specvol(1., 1., 1.).unwrap();
         (assert_c! {
             #include <stdio.h>
             #include "gswteos-10.h"
@@ -1521,7 +1521,7 @@ mod test {
 
     #[test]
     fn test_alpha_c() {
-        let result: f64 = crate::alpha(1., 1., 1.).unwrap();
+        let result: f64 = crate::volume::alpha(1., 1., 1.).unwrap();
         (assert_c! {
             #include <stdio.h>
             #include "gswteos-10.h"
@@ -1538,7 +1538,7 @@ mod test {
 
     #[test]
     fn test_beta_c() {
-        let result: f64 = crate::beta(1., 1., 1.).unwrap();
+        let result: f64 = crate::volume::beta(1., 1., 1.).unwrap();
         (assert_c! {
             #include <stdio.h>
             #include "gswteos-10.h"
@@ -1555,7 +1555,7 @@ mod test {
 
     #[test]
     fn test_specvol_sso_0_c() {
-        let result: f64 = crate::specvol_sso_0(1.);
+        let result: f64 = crate::volume::specvol_sso_0(1.);
         (assert_c! {
             #include <stdio.h>
             #include "gswteos-10.h"
@@ -1572,7 +1572,7 @@ mod test {
 
     #[test]
     fn test_specvol_anom_standard_c() {
-        let result: f64 = crate::specvol_anom_standard(1., 1., 1.).unwrap();
+        let result: f64 = crate::volume::specvol_anom_standard(1., 1., 1.).unwrap();
         (assert_c! {
             #include <stdio.h>
             #include "gswteos-10.h"
@@ -1589,7 +1589,7 @@ mod test {
 
     #[test]
     fn test_specvol_alpha_beta_c() {
-        let result = crate::specvol_alpha_beta(1., 1., 1.).unwrap();
+        let result = crate::volume::specvol_alpha_beta(1., 1., 1.).unwrap();
         (assert_c! {
             #include <stdio.h>
             #include "gswteos-10.h"
@@ -1611,7 +1611,7 @@ mod test {
 
     #[test]
     fn test_rho_c() {
-        let result: f64 = crate::rho(1., 1., 1.).unwrap();
+        let result: f64 = crate::volume::rho(1., 1., 1.).unwrap();
         (assert_c! {
             #include <stdio.h>
             #include "gswteos-10.h"
