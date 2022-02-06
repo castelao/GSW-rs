@@ -167,7 +167,7 @@ fn alpha_on_beta(sa: f64, ct: f64, p: f64) -> Result<f64> {
                 + tau * (B012 + s * (B112 + B212 * s) + tau * (B022 + B122 * s + B032 * tau))
                 + pi * (B003 + B103 * s + B013 * tau + B004 * pi)));
 
-    Ok(-v_ct * s / (20 * GSW_SFAC * v_sa))
+    Ok(-v_ct * s / (20.0 * GSW_SFAC * v_sa))
 }
 
 /// in-situ density, thermal expansion & saline contraction coefficients
