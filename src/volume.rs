@@ -134,14 +134,20 @@ mod test_specvol {
 ///
 /// # Arguments
 ///
-/// * `sa`: Absolute Salinity \[g kg-1\]
-/// * `ct`: Conservative Temperature (ITS-90) \[deg C\]
-/// * `p`: sea pressure \[dbar\] (i.e. absolute pressure - 10.1325 dbar)
+/// * `sa`: Absolute Salinity \[ g kg-1 \]
+/// * `ct`: Conservative Temperature (ITS-90) \[ deg C \]
+/// * `p`: sea pressure \[ dbar \] (i.e. absolute pressure - 10.1325 dbar)
 ///
 /// # Returns
 ///
-/// * `rho`: in-situ density \[kg m-3\]
+/// * `rho`: in-situ density \[ kg m-3 \]
 ///
+/// # Example:
+/// ```
+/// use gsw::volume::rho;
+/// let density = rho(33.0, 10.0, 100.0).unwrap();
+/// assert!((density - 1025.72882658687).abs() <= f64::EPSILON);
+/// ```
 pub fn rho(sa: f64, ct: f64, p: f64) -> Result<f64> {
     Ok(1.0 / specvol(sa, ct, p)?)
 }
