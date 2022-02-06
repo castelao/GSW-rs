@@ -6,6 +6,8 @@ use crate::gsw_internal_funcs::non_dimensional_p;
 use crate::gsw_specvol_coefficients::*;
 use crate::{Error, Result};
 
+pub use crate::gsw_internal_funcs::specvol_sso_0;
+
 #[inline]
 /// Non-dimensional salinity
 fn non_dimensional_sa(sa: f64) -> Result<f64> {

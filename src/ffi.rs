@@ -15,41 +15,27 @@ pub const INTERP_METHOD_PCHIP: u8 = 2;
 
 #[no_mangle]
 pub unsafe extern "C" fn gsw_specvol(sa: f64, ct: f64, p: f64) -> f64 {
-    match crate::volume::specvol(sa, ct, p) {
-        Ok(v) => v,
-        Err(_) => GSW_INVALID_VALUE,
-    }
+    crate::volume::specvol(sa, ct, p).unwrap_or(GSW_INVALID_VALUE)
 }
 
 #[no_mangle]
 pub unsafe extern "C" fn gsw_alpha(sa: f64, ct: f64, p: f64) -> f64 {
-    match crate::volume::alpha(sa, ct, p) {
-        Ok(v) => v,
-        Err(_) => GSW_INVALID_VALUE,
-    }
+    crate::volume::alpha(sa, ct, p).unwrap_or(GSW_INVALID_VALUE)
 }
 
 #[no_mangle]
 pub unsafe extern "C" fn gsw_beta(sa: f64, ct: f64, p: f64) -> f64 {
-    match crate::volume::beta(sa, ct, p) {
-        Ok(v) => v,
-        Err(_) => GSW_INVALID_VALUE,
-    }
+    crate::volume::beta(sa, ct, p).unwrap_or(GSW_INVALID_VALUE)
 }
 
 #[no_mangle]
 pub unsafe extern "C" fn gsw_specvol_sso_0(p: f64) -> f64 {
-    //crate::specvol_sso_0(p)
-    //unimplemented!()
-    f64::NAN
+    crate::volume::specvol_sso_0(p)
 }
 
 #[no_mangle]
 pub unsafe extern "C" fn gsw_specvol_anom_standard(sa: f64, ct: f64, p: f64) -> f64 {
-    match crate::volume::specvol_anom_standard(sa, ct, p) {
-        Ok(v) => v,
-        Err(_) => GSW_INVALID_VALUE,
-    }
+    crate::volume::specvol_anom_standard(sa, ct, p).unwrap_or(GSW_INVALID_VALUE)
 }
 
 #[no_mangle]
@@ -61,22 +47,124 @@ pub unsafe extern "C" fn gsw_specvol_alpha_beta(
     alpha: *mut f64,
     beta: *mut f64,
 ) {
-    let result = match crate::volume::specvol_alpha_beta(sa, ct, p) {
-        Ok(v) => v,
-        Err(_) => (GSW_INVALID_VALUE, GSW_INVALID_VALUE, GSW_INVALID_VALUE),
-    };
-
-    *specvol = result.0;
-    *alpha = result.1;
-    *beta = result.2;
+    let (s, a, b) = crate::volume::specvol_alpha_beta(sa, ct, p).unwrap_or((
+        GSW_INVALID_VALUE,
+        GSW_INVALID_VALUE,
+        GSW_INVALID_VALUE,
+    ));
+    *specvol = s;
+    *alpha = a;
+    *beta = b;
 }
 
 #[no_mangle]
 pub unsafe extern "C" fn gsw_rho(sa: f64, ct: f64, p: f64) -> f64 {
-    match crate::volume::rho(sa, ct, p) {
-        Ok(v) => v,
-        Err(_) => GSW_INVALID_VALUE,
-    }
+    crate::volume::rho(sa, ct, p).unwrap_or(GSW_INVALID_VALUE)
+}
+
+#[no_mangle]
+pub unsafe extern "C" fn gsw_rho_alpha_beta(
+    sa: f64,
+    ct: f64,
+    p: f64,
+    rho: *mut f64,
+    alpha: *mut f64,
+    beta: *mut f64,
+) {
+    let (r, a, b) = crate::volume::rho_alpha_beta(sa, ct, p).unwrap_or((
+        GSW_INVALID_VALUE,
+        GSW_INVALID_VALUE,
+        GSW_INVALID_VALUE,
+    ));
+
+    *rho = r;
+    *alpha = a;
+    *beta = b;
+}
+
+#[no_mangle]
+pub unsafe extern "C" fn gsw_sigma0(sa: f64, ct: f64) -> f64 {
+    crate::volume::sigma0(sa, ct).unwrap_or(GSW_INVALID_VALUE)
+}
+
+#[no_mangle]
+pub unsafe extern "C" fn gsw_sigma1(sa: f64, ct: f64) -> f64 {
+    crate::volume::sigma1(sa, ct).unwrap_or(GSW_INVALID_VALUE)
+}
+
+#[no_mangle]
+pub unsafe extern "C" fn gsw_sigma2(sa: f64, ct: f64) -> f64 {
+    crate::volume::sigma2(sa, ct).unwrap_or(GSW_INVALID_VALUE)
+}
+
+#[no_mangle]
+pub unsafe extern "C" fn gsw_sigma3(sa: f64, ct: f64) -> f64 {
+    crate::volume::sigma3(sa, ct).unwrap_or(GSW_INVALID_VALUE)
+}
+
+#[no_mangle]
+pub unsafe extern "C" fn gsw_sigma4(sa: f64, ct: f64) -> f64 {
+    crate::volume::sigma4(sa, ct).unwrap_or(GSW_INVALID_VALUE)
+}
+
+#[no_mangle]
+pub unsafe extern "C" fn gsw_sound_speed(sa: f64, ct: f64, p: f64) -> f64 {
+    crate::volume::sound_speed(sa, ct, p).unwrap_or(GSW_INVALID_VALUE)
+}
+
+#[no_mangle]
+pub unsafe extern "C" fn gsw_dynamic_enthalpy(sa: f64, ct: f64, p: f64) -> f64 {
+    crate::volume::dynamic_enthalpy(sa, ct, p).unwrap_or(GSW_INVALID_VALUE)
+}
+
+#[no_mangle]
+pub unsafe extern "C" fn gsw_sa_from_rho(rho: f64, ct: f64, p: f64) -> f64 {
+    crate::volume::sa_from_rho(rho, ct, p).unwrap_or(GSW_INVALID_VALUE)
+}
+
+#[no_mangle]
+pub unsafe extern "C" fn gsw_specvol_first_derivatives(
+    sa: f64,
+    ct: f64,
+    p: f64,
+    v_sa: *mut f64,
+    v_ct: *mut f64,
+    v_p: *mut f64,
+) {
+    let (s, c, p) = crate::volume::specvol_first_derivatives(sa, ct, p).unwrap_or((
+        GSW_INVALID_VALUE,
+        GSW_INVALID_VALUE,
+        GSW_INVALID_VALUE,
+    ));
+
+    *v_sa = s;
+    *v_ct = c;
+    *v_p = p;
+}
+
+#[no_mangle]
+pub unsafe extern "C" fn gsw_sp_from_c(c: f64, t: f64, p: f64) -> f64 {
+    crate::practical_salinity::sp_from_c(c, t, p).unwrap_or(GSW_INVALID_VALUE)
+}
+
+#[no_mangle]
+pub unsafe extern "C" fn gsw_c_from_sp(sp: f64, t: f64, p: f64) -> f64 {
+    crate::practical_salinity::c_from_sp(sp, t, p).unwrap_or(GSW_INVALID_VALUE)
+}
+
+#[no_mangle]
+pub unsafe extern "C" fn gsw_sp_salinometer(rt: f64, t: f64) -> f64 {
+    crate::practical_salinity::sp_salinometer(rt, t).unwrap_or(GSW_INVALID_VALUE)
+}
+
+#[no_mangle]
+pub unsafe extern "C" fn gsw_z_from_p(
+    p: f64,
+    lat: f64,
+    geo_strf_dyn_height: f64,
+    sea_surface_geopotential: f64,
+) -> f64 {
+    crate::conversions::z_from_p(p, lat, geo_strf_dyn_height, sea_surface_geopotential)
 }
 
 /////////////////////////
@@ -140,12 +228,6 @@ pub unsafe extern "C" fn gsw_beta_const_t_exact(sa: f64, t: f64, p: f64) -> f64 
 
 #[no_mangle]
 pub unsafe extern "C" fn gsw_cabbeling(sa: f64, ct: f64, p: f64) -> f64 {
-    //unimplemented!()
-    f64::NAN
-}
-
-#[no_mangle]
-pub unsafe extern "C" fn gsw_c_from_sp(sp: f64, t: f64, p: f64) -> f64 {
     //unimplemented!()
     f64::NAN
 }
@@ -302,12 +384,6 @@ pub unsafe extern "C" fn gsw_deltasa_from_sp(sp: f64, p: f64, lon: f64, lat: f64
 
 #[no_mangle]
 pub unsafe extern "C" fn gsw_dilution_coefficient_t_exact(sa: f64, t: f64, p: f64) -> f64 {
-    //unimplemented!()
-    f64::NAN
-}
-
-#[no_mangle]
-pub unsafe extern "C" fn gsw_dynamic_enthalpy(sa: f64, ct: f64, p: f64) -> f64 {
     //unimplemented!()
     f64::NAN
 }
@@ -527,7 +603,7 @@ pub unsafe extern "C" fn gsw_geo_strf_dyn_height(
     dyn_height: *mut f64,
 ) -> *mut f64 {
     //unimplemented
-    0 as *mut f64
+    std::ptr::null_mut::<f64>()
 }
 
 #[no_mangle]
@@ -555,7 +631,7 @@ pub unsafe extern "C" fn gsw_geo_strf_dyn_height_pc(
     p_mid: *mut f64,
 ) -> *mut f64 {
     //unimplemented!()
-    0 as _
+    std::ptr::null_mut::<f64>()
 }
 
 #[no_mangle]
@@ -984,18 +1060,6 @@ pub unsafe extern "C" fn gsw_pt_second_derivatives(
 }
 
 #[no_mangle]
-pub unsafe extern "C" fn gsw_rho_alpha_beta(
-    sa: f64,
-    ct: f64,
-    p: f64,
-    rho: *mut f64,
-    alpha: *mut f64,
-    beta: *mut f64,
-) {
-    //unimplemented!()
-}
-
-#[no_mangle]
 pub unsafe extern "C" fn gsw_rho_first_derivatives(
     sa: f64,
     ct: f64,
@@ -1120,12 +1184,6 @@ pub unsafe extern "C" fn gsw_sa_freezing_from_t_poly(
 }
 
 #[no_mangle]
-pub unsafe extern "C" fn gsw_sa_from_rho(rho: f64, ct: f64, p: f64) -> f64 {
-    //unimplemented!()
-    f64::NAN
-}
-
-#[no_mangle]
 pub unsafe extern "C" fn gsw_sa_from_sp_baltic(sp: f64, lon: f64, lat: f64) -> f64 {
     //unimplemented!()
     f64::NAN
@@ -1164,42 +1222,6 @@ pub unsafe extern "C" fn gsw_seaice_fraction_to_freeze_seawater(
 }
 
 #[no_mangle]
-pub unsafe extern "C" fn gsw_sigma0(sa: f64, ct: f64) -> f64 {
-    //unimplemented!()
-    f64::NAN
-}
-
-#[no_mangle]
-pub unsafe extern "C" fn gsw_sigma1(sa: f64, ct: f64) -> f64 {
-    //unimplemented!()
-    f64::NAN
-}
-
-#[no_mangle]
-pub unsafe extern "C" fn gsw_sigma2(sa: f64, ct: f64) -> f64 {
-    //unimplemented!()
-    f64::NAN
-}
-
-#[no_mangle]
-pub unsafe extern "C" fn gsw_sigma3(sa: f64, ct: f64) -> f64 {
-    //unimplemented!()
-    f64::NAN
-}
-
-#[no_mangle]
-pub unsafe extern "C" fn gsw_sigma4(sa: f64, ct: f64) -> f64 {
-    //unimplemented!()
-    f64::NAN
-}
-
-#[no_mangle]
-pub unsafe extern "C" fn gsw_sound_speed(sa: f64, ct: f64, p: f64) -> f64 {
-    //unimplemented!()
-    f64::NAN
-}
-
-#[no_mangle]
 pub unsafe extern "C" fn gsw_sound_speed_ice(t: f64, p: f64) -> f64 {
     //unimplemented!()
     f64::NAN
@@ -1209,18 +1231,6 @@ pub unsafe extern "C" fn gsw_sound_speed_ice(t: f64, p: f64) -> f64 {
 pub unsafe extern "C" fn gsw_sound_speed_t_exact(sa: f64, t: f64, p: f64) -> f64 {
     //unimplemented!()
     f64::NAN
-}
-
-#[no_mangle]
-pub unsafe extern "C" fn gsw_specvol_first_derivatives(
-    sa: f64,
-    ct: f64,
-    p: f64,
-    v_sa: *mut f64,
-    v_ct: *mut f64,
-    v_p: *mut f64,
-) {
-    //unimplemented!()
 }
 
 #[no_mangle]
@@ -1273,12 +1283,6 @@ pub unsafe extern "C" fn gsw_specvol_t_exact(sa: f64, t: f64, p: f64) -> f64 {
 }
 
 #[no_mangle]
-pub unsafe extern "C" fn gsw_sp_from_c(c: f64, t: f64, p: f64) -> f64 {
-    //unimplemented!()
-    f64::NAN
-}
-
-#[no_mangle]
 pub unsafe extern "C" fn gsw_sp_from_sa_baltic(sa: f64, lon: f64, lat: f64) -> f64 {
     //unimplemented!()
     f64::NAN
@@ -1304,12 +1308,6 @@ pub unsafe extern "C" fn gsw_sp_from_sr(sr: f64) -> f64 {
 
 #[no_mangle]
 pub unsafe extern "C" fn gsw_sp_from_sstar(sstar: f64, p: f64, lon: f64, lat: f64) -> f64 {
-    //unimplemented!()
-    f64::NAN
-}
-
-#[no_mangle]
-pub unsafe extern "C" fn gsw_sp_salinometer(rt: f64, t: f64) -> f64 {
     //unimplemented!()
     f64::NAN
 }
@@ -1437,7 +1435,7 @@ pub unsafe extern "C" fn gsw_util_interp1q_int(
     y_i: *mut f64,
 ) -> *mut f64 {
     //unimplemented!()
-    0 as _
+    std::ptr::null_mut::<f64>()
 }
 
 #[no_mangle]
@@ -1451,7 +1449,7 @@ pub unsafe extern "C" fn gsw_util_linear_interp(
     y_i: *mut f64,
 ) -> *mut f64 {
     //unimplemented!()
-    0 as _
+    std::ptr::null_mut::<f64>()
 }
 
 #[no_mangle]
@@ -1485,17 +1483,6 @@ pub unsafe extern "C" fn gsw_util_pchip_interp(
 ) -> ::libc::c_int {
     //unimplemented!()
     0
-}
-
-#[no_mangle]
-pub unsafe extern "C" fn gsw_z_from_p(
-    p: f64,
-    lat: f64,
-    geo_strf_dyn_height: f64,
-    sea_surface_geopotential: f64,
-) -> f64 {
-    //unimplemented!()
-    f64::NAN
 }
 
 #[no_mangle]
