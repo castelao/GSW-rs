@@ -608,15 +608,90 @@ mod test_specvol_second_derivatives {
 /// * `sa_ref`:
 /// * `ct_ref`:
 ///
-fn specvol_anom(sa: f64, ct: f64, p: f64, sa_ref: Option<f64>, ct_ref: Option<f64>) -> Result<f64> {
+// fn specvol_anom(sa: f64, ct: f64, p: f64, sa_ref: Option<f64>, ct_ref: Option<f64>) -> Result<f64> {
+pub fn specvol_anom(sa: f64, ct: f64, p: f64, sa_ref: f64, ct_ref: f64) -> Result<f64> {
     let xs: f64 = non_dimensional_sa(sa)?;
     let ys: f64 = ct / GSW_CTU;
     let z: f64 = non_dimensional_p(p);
 
-    unimplemented!();
+    let xs_ref: f64 = non_dimensional_sa(sa_ref)?;
+    let ys_ref: f64 = ct_ref / GSW_CTU;
 
-    // let xs_ref: f64 = non_dimensional_sa(sa_ref)?;
-    // let ys: f64 = ct_ref / GSW_CTU;
+    let xy_part_0 = xs * (V100 + xs * (V200 + xs * (V300 + xs * (V400 + xs * (V500 + V600 * xs)))))
+        + ys * (V010
+            + xs * (V110 + xs * (V210 + xs * (V310 + xs * (V410 + V510 * xs))))
+            + ys * (V020
+                + xs * (V120 + xs * (V220 + xs * (V320 + V420 * xs)))
+                + ys * (V030
+                    + xs * (V130 + xs * (V230 + V330 * xs))
+                    + ys * (V040
+                        + xs * (V140 + V240 * xs)
+                        + ys * (V050 + V150 * xs + V060 * ys)))));
+
+    let xy_part_1 = xs * (V101 + xs * (V201 + xs * (V301 + xs * (V401 + V501 * xs))))
+        + ys * (V011
+            + xs * (V111 + xs * (V211 + xs * (V311 + V411 * xs)))
+            + ys * (V021
+                + xs * (V121 + xs * (V221 + V321 * xs))
+                + ys * (V031 + xs * (V131 + V231 * xs) + ys * (V041 + V141 * xs + V051 * ys))));
+
+    let xy_part_2 = xs * (V102 + xs * (V202 + xs * (V302 + V402 * xs)))
+        + ys * (V012
+            + xs * (V112 + xs * (V212 + V312 * xs))
+            + ys * (V022 + xs * (V122 + V222 * xs) + ys * (V032 + V132 * xs + V042 * ys)));
+
+    let xy_part_3 = xs * (V103 + V203 * xs) + ys * (V013 + V113 * xs + V023 * ys);
+
+    let xy_part_0_ref = xs_ref
+        * (V100
+            + xs_ref
+                * (V200 + xs_ref * (V300 + xs_ref * (V400 + xs_ref * (V500 + V600 * xs_ref)))))
+        + ys_ref
+            * (V010
+                + xs_ref
+                    * (V110 + xs_ref * (V210 + xs_ref * (V310 + xs_ref * (V410 + V510 * xs_ref))))
+                + ys_ref
+                    * (V020
+                        + xs_ref * (V120 + xs_ref * (V220 + xs_ref * (V320 + V420 * xs_ref)))
+                        + ys_ref
+                            * (V030
+                                + xs_ref * (V130 + xs_ref * (V230 + V330 * xs_ref))
+                                + ys_ref
+                                    * (V040
+                                        + xs_ref * (V140 + V240 * xs_ref)
+                                        + ys_ref * (V050 + V150 * xs_ref + V060 * ys_ref)))));
+
+    let xy_part_1_ref = xs_ref
+        * (V101 + xs_ref * (V201 + xs_ref * (V301 + xs_ref * (V401 + V501 * xs_ref))))
+        + ys_ref
+            * (V011
+                + xs_ref * (V111 + xs_ref * (V211 + xs_ref * (V311 + V411 * xs_ref)))
+                + ys_ref
+                    * (V021
+                        + xs_ref * (V121 + xs_ref * (V221 + V321 * xs_ref))
+                        + ys_ref
+                            * (V031
+                                + xs_ref * (V131 + V231 * xs_ref)
+                                + ys_ref * (V041 + V141 * xs_ref + V051 * ys_ref))));
+
+    let xy_part_2_ref = xs_ref * (V102 + xs_ref * (V202 + xs_ref * (V302 + V402 * xs_ref)))
+        + ys_ref
+            * (V012
+                + xs_ref * (V112 + xs_ref * (V212 + V312 * xs_ref))
+                + ys_ref
+                    * (V022
+                        + xs_ref * (V122 + V222 * xs_ref)
+                        + ys_ref * (V032 + V132 * xs_ref + V042 * ys_ref)));
+
+    let xy_part_3_ref =
+        xs_ref * (V103 + V203 * xs_ref) + ys_ref * (V013 + V113 * xs_ref + V023 * ys_ref);
+
+    let xy_part_4_diff = V104 * (xs - xs_ref) + V014 * (ys - ys_ref);
+
+    Ok(xy_part_0 - xy_part_0_ref
+        + z * (xy_part_1 - xy_part_1_ref
+            + z * (xy_part_2 - xy_part_2_ref
+                + z * (xy_part_3 - xy_part_3_ref + z * (xy_part_4_diff)))))
 }
 
 /// Specific Volume Anomaly of Standard Ocean Salinity and CT=0
