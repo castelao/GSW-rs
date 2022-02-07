@@ -1187,7 +1187,7 @@ pub fn sa_from_rho(rho: f64, ct: f64, p: f64) -> Result<f64> {
     // First guess, a linear ratio
     let sa = 50.0 * (v_lab - v_0) / (v_50 - v_0);
 
-    if (sa < 0.0) || (sa > 50.0) {
+    if !(0.0..=50.0).contains(&sa) {
         if cfg!(feature = "invalidasnan") {
             return Ok(f64::NAN);
         } else {
@@ -1208,7 +1208,7 @@ pub fn sa_from_rho(rho: f64, ct: f64, p: f64) -> Result<f64> {
         let sa_mean = 0.5 * (sa + sa_old);
         let (v_sa, _, _) = specvol_first_derivatives(sa_mean, ct, p)?;
         let sa = sa_old - delta_v / v_sa;
-        if (sa < 0.0) || (sa > 50.0) {
+        if !(0.0..=50.0).contains(&sa) {
             if cfg!(feature = "invalidasnan") {
                 return Ok(f64::NAN);
             } else {
