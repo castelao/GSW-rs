@@ -810,6 +810,24 @@ fn cabbeling(sa: f64, ct: f64, p: f64) -> Result<f64> {
     Ok(alpha_ct + alpha_on_beta * (2.0 * alpha_sa - alpha_on_beta * beta_sa))
 }
 
+/// Specific enthalpy of seawater (75-term polynomial approximation)
+///
+/// # Arguments
+///
+/// * `sa`: Absolute Salinity \[g kg-1\]
+/// * `ct`: Conservative Temperature (ITS-90) \[deg C\]
+/// * `p`: sea pressure \[dbar\] (i.e. absolute pressure - 10.1325 dbar)
+///
+///
+/// ```
+/// use gsw::volume::enthalpy;
+/// let h = enthalpy(32.0, 10.0, 100.0).unwrap();
+/// assert!((h - 40894.546501415374).abs() <= f64::EPSILON);
+/// ```
+pub fn enthalpy(sa: f64, ct: f64, p: f64) -> Result<f64> {
+    Ok(GSW_CP0 * ct + dynamic_enthalpy(sa, ct, p)?)
+}
+
 /// Sound speed in seawater (75-term polynomial approximation)
 ///
 /// # Arguments
@@ -1041,29 +1059,6 @@ mod test_internal_energy {
             }
         }
     }
-}
-
-/// Specific enthalpy of seawater (75-term polynomial approximation)
-///
-/// # Arguments
-///
-/// * `sa`: Absolute Salinity \[g kg-1\]
-/// * `ct`: Conservative Temperature (ITS-90) \[deg C\]
-/// * `p`: sea pressure \[dbar\] (i.e. absolute pressure - 10.1325 dbar)
-///
-fn enthalpy(sa: f64, ct: f64, p: f64) -> Result<f64> {
-    Ok(GSW_CP0 * ct + dynamic_enthalpy(sa, ct, p)?)
-}
-
-///
-/// # Arguments
-///
-/// * `sa`: Absolute Salinity \[g kg-1\]
-/// * `ct`: Conservative Temperature (ITS-90) \[deg C\]
-/// * `p`: sea pressure \[dbar\] (i.e. absolute pressure - 10.1325 dbar)
-///
-fn enthalpy_diff(sa: f64, ct: f64, p: f64) -> Result<f64> {
-    unimplemented!()
 }
 
 /// Dynamic enthalpy of seawater (75-term polynomial approximation)
