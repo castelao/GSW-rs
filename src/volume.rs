@@ -975,7 +975,7 @@ pub fn sound_speed(sa: f64, ct: f64, p: f64) -> Result<f64> {
     Ok(10_000.0 * libm::sqrt(-v * v / v_p))
 }
 
-fn kappa(sa: f64, ct: f64, p: f64) -> Result<f64> {
+pub fn kappa(sa: f64, ct: f64, p: f64) -> Result<f64> {
     let s: f64 = non_dimensional_sa(sa)?;
     let tau: f64 = ct / GSW_CTU;
     let pi: f64 = non_dimensional_p(p);
