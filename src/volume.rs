@@ -239,7 +239,21 @@ pub fn beta(sa: f64, ct: f64, p: f64) -> Result<f64> {
     Ok(-v_sa * 0.5 * GSW_SFAC / (specvol(sa, ct, p)? * xs))
 }
 
-fn alpha_on_beta(sa: f64, ct: f64, p: f64) -> Result<f64> {
+/// The raio alpha/beta (75-term polynomial approximation)
+///
+/// # Arguments
+///
+/// * `sa`: Absolute Salinity \[ g kg-1 \]
+/// * `ct`: Conservative Temperature (ITS-90) \[ deg C \]
+/// * `p`: sea pressure \[ dbar \] (i.e. absolute pressure - 10.1325 dbar)
+///
+/// # Example:
+/// ```
+/// use gsw::volume::alpha_on_beta;
+/// let ratio = alpha_on_beta(33.0, 10.0, 100.0).unwrap();
+/// assert!((ratio - 0.21698852133695548).abs() <= f64::EPSILON);
+/// ```
+pub fn alpha_on_beta(sa: f64, ct: f64, p: f64) -> Result<f64> {
     let s: f64 = non_dimensional_sa(sa)?;
     let tau: f64 = ct / GSW_CTU;
     let pi: f64 = non_dimensional_p(p);
