@@ -1047,6 +1047,42 @@ fn kappa(sa: f64, ct: f64, p: f64) -> Result<f64> {
     Ok(-1e-8 * v_p / v)
 }
 
+#[cfg(test)]
+mod test_kappa {
+    use super::{kappa, Error};
+
+    #[test]
+    // NaN input results in NaN output.
+    // Other libraries using GSW-rs might rely on this behavior to propagate
+    // and handle invalid elements.
+    fn nan() {
+        let u = kappa(f64::NAN, 1.0, 1.0).unwrap();
+        assert!(u.is_nan());
+
+        let u = kappa(1.0, f64::NAN, 1.0).unwrap();
+        assert!(u.is_nan());
+
+        let u = kappa(1.0, 1.0, f64::NAN).unwrap();
+        assert!(u.is_nan());
+    }
+
+    #[test]
+    fn negative_sa() {
+        let u = kappa(-0.1, 10.0, 100.0);
+
+        if cfg!(feature = "compat") {
+            assert!((u.unwrap() - 4.631281402194529e-10).abs() <= f64::EPSILON);
+        } else if cfg!(feature = "invalidasnan") {
+            assert!(u.unwrap().is_nan());
+        } else {
+            match u {
+                Err(Error::NegativeSalinity) => (),
+                _ => panic!("It should be Error::NegativeSalinity"),
+            }
+        }
+    }
+}
+
 /// Specific interal energy of seawater (75-term polynomial approximation)
 ///
 /// # Arguments
