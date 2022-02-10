@@ -293,6 +293,42 @@ fn alpha_on_beta(sa: f64, ct: f64, p: f64) -> Result<f64> {
     Ok(-v_ct * s / (20.0 * GSW_SFAC * v_sa))
 }
 
+#[cfg(test)]
+mod test_alpha_on_beta {
+    use super::{alpha_on_beta, Error};
+
+    #[test]
+    // NaN input results in NaN output.
+    // Other libraries using GSW-rs might rely on this behavior to propagate
+    // and handle invalid elements.
+    fn nan() {
+        let ratio = alpha_on_beta(f64::NAN, 1.0, 1.0).unwrap();
+        assert!(ratio.is_nan());
+
+        let ratio = alpha_on_beta(1.0, f64::NAN, 1.0).unwrap();
+        assert!(ratio.is_nan());
+
+        let ratio = alpha_on_beta(1.0, 1.0, f64::NAN).unwrap();
+        assert!(ratio.is_nan());
+    }
+
+    #[test]
+    fn negative_sa() {
+        let ratio = alpha_on_beta(-0.1, 10.0, 100.0);
+
+        if cfg!(feature = "compat") {
+            assert!((ratio.unwrap() - 0.1016043030015299).abs() <= f64::EPSILON);
+        } else if cfg!(feature = "invalidasnan") {
+            assert!(ratio.unwrap().is_nan());
+        } else {
+            match ratio {
+                Err(Error::NegativeSalinity) => (),
+                _ => panic!("It should be Error::NegativeSalinity"),
+            }
+        }
+    }
+}
+
 /// in-situ density, thermal expansion & saline contraction coefficients
 /// (75-term polynomial approximation)
 ///
