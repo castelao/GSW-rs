@@ -795,7 +795,7 @@ pub fn sigma4(sa: f64, ct: f64) -> Result<f64> {
 /// * `sa`: Absolute Salinity \[ g kg-1 \]
 /// * `ct`: Conservative Temperature (ITS-90) \[ deg C \]
 /// * `p`: sea pressure \[ dbar \] (i.e. absolute pressure - 10.1325 dbar)
-fn cabbeling(sa: f64, ct: f64, p: f64) -> Result<f64> {
+pub fn cabbeling(sa: f64, ct: f64, p: f64) -> Result<f64> {
     let (v_sa, v_ct, _) = specvol_first_derivatives(sa, ct, p)?;
     let (v_sa_sa, v_sa_ct, v_ct_ct, _, _) = specvol_second_derivatives(sa, ct, p)?;
 
