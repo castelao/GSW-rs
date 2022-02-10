@@ -810,6 +810,46 @@ fn cabbeling(sa: f64, ct: f64, p: f64) -> Result<f64> {
     Ok(alpha_ct + alpha_on_beta * (2.0 * alpha_sa - alpha_on_beta * beta_sa))
 }
 
+#[cfg(test)]
+mod test_cabbeling {
+    use super::{cabbeling, Error};
+
+    #[test]
+    // NaN input results in NaN output.
+    // Other libraries using GSW-rs might rely on this behavior to propagate
+    // and handle invalid elements.
+    fn nan() {
+        let u = cabbeling(f64::NAN, 1.0, 1.0).unwrap();
+        assert!(u.is_nan());
+
+        let u = cabbeling(1.0, f64::NAN, 1.0).unwrap();
+        assert!(u.is_nan());
+
+        let u = cabbeling(1.0, 1.0, f64::NAN).unwrap();
+        assert!(u.is_nan());
+    }
+
+    #[test]
+    fn negative_sa() {
+        let u = cabbeling(-0.1, 10.0, 100.0);
+
+        if cfg!(feature = "compat") {
+            assert!((u.unwrap() - 1.283699411753888e-5).abs() <= f64::EPSILON);
+        } else if cfg!(feature = "invalidasnan") {
+            assert!(u.unwrap().is_nan());
+        } else {
+            match u {
+                Err(Error::NegativeSalinity) => (),
+                _ => panic!("It should be Error::NegativeSalinity"),
+            }
+        }
+    }
+}
+
+fn thermobaric() {
+    unimplemented!()
+}
+
 /// Specific enthalpy of seawater (75-term polynomial approximation)
 ///
 /// # Arguments
