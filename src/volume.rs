@@ -859,6 +859,12 @@ pub fn sigma4(sa: f64, ct: f64) -> Result<f64> {
 /// * `sa`: Absolute Salinity \[ g kg-1 \]
 /// * `ct`: Conservative Temperature (ITS-90) \[ deg C \]
 /// * `p`: sea pressure \[ dbar \] (i.e. absolute pressure - 10.1325 dbar)
+/// # Example:
+/// ```
+/// use gsw::volume::cabbeling;
+/// let c_b = cabbeling(33.0, 10.0, 100.0).unwrap();
+/// assert!((c_b - 1.111181295081108e-5).abs() <= f64::EPSILON);
+/// ```
 pub fn cabbeling(sa: f64, ct: f64, p: f64) -> Result<f64> {
     let (v_sa, v_ct, _) = specvol_first_derivatives(sa, ct, p)?;
     let (v_sa_sa, v_sa_ct, v_ct_ct, _, _) = specvol_second_derivatives(sa, ct, p)?;
@@ -883,26 +889,26 @@ mod test_cabbeling {
     // Other libraries using GSW-rs might rely on this behavior to propagate
     // and handle invalid elements.
     fn nan() {
-        let u = cabbeling(f64::NAN, 1.0, 1.0).unwrap();
-        assert!(u.is_nan());
+        let c_b = cabbeling(f64::NAN, 1.0, 1.0).unwrap();
+        assert!(c_b.is_nan());
 
-        let u = cabbeling(1.0, f64::NAN, 1.0).unwrap();
-        assert!(u.is_nan());
+        let c_b = cabbeling(1.0, f64::NAN, 1.0).unwrap();
+        assert!(c_b.is_nan());
 
-        let u = cabbeling(1.0, 1.0, f64::NAN).unwrap();
-        assert!(u.is_nan());
+        let c_b = cabbeling(1.0, 1.0, f64::NAN).unwrap();
+        assert!(c_b.is_nan());
     }
 
     #[test]
     fn negative_sa() {
-        let u = cabbeling(-0.1, 10.0, 100.0);
+        let c_b = cabbeling(-0.1, 10.0, 100.0);
 
         if cfg!(feature = "compat") {
-            assert!((u.unwrap() - 1.283699411753888e-5).abs() <= f64::EPSILON);
+            assert!((c_b.unwrap() - 1.283699411753888e-5).abs() <= f64::EPSILON);
         } else if cfg!(feature = "invalidasnan") {
-            assert!(u.unwrap().is_nan());
+            assert!(c_b.unwrap().is_nan());
         } else {
-            match u {
+            match c_b {
                 Err(Error::NegativeSalinity) => (),
                 _ => panic!("It should be Error::NegativeSalinity"),
             }
