@@ -910,8 +910,61 @@ mod test_cabbeling {
     }
 }
 
-fn thermobaric() {
-    unimplemented!()
+/// Thermobaric coefficient (75-term polynomial approximation)
+///
+/// # Arguments
+///
+/// * `sa`: Absolute Salinity \[ g kg-1 \]
+/// * `ct`: Conservative Temperature (ITS-90) \[ deg C \]
+/// * `p`: sea pressure \[ dbar \] (i.e. absolute pressure - 10.1325 dbar)
+///
+/// # Example:
+/// ```
+/// use gsw::volume::thermobaric;
+/// let t_b = thermobaric(33.0, 10.0, 100.0).unwrap();
+/// assert!((t_b - 2.3569403670861866e-12).abs() <= f64::EPSILON);
+/// ```
+pub fn thermobaric(sa: f64, ct: f64, p: f64) -> Result<f64> {
+    let (v_sa, v_ct, _) = specvol_first_derivatives(sa, ct, p)?;
+    let (_, _, _, v_sa_p, v_ct_p) = specvol_second_derivatives(sa, ct, p)?;
+
+    Ok(rho(sa, ct, p)? * (v_ct_p - (v_ct / v_sa) * v_sa_p))
+}
+
+#[cfg(test)]
+mod test_thermobaric {
+    use super::{thermobaric, Error};
+
+    #[test]
+    // NaN input results in NaN output.
+    // Other libraries using GSW-rs might rely on this behavior to propagate
+    // and handle invalid elements.
+    fn nan() {
+        let t_b = thermobaric(f64::NAN, 1.0, 1.0).unwrap();
+        assert!(t_b.is_nan());
+
+        let t_b = thermobaric(1.0, f64::NAN, 1.0).unwrap();
+        assert!(t_b.is_nan());
+
+        let t_b = thermobaric(1.0, 1.0, f64::NAN).unwrap();
+        assert!(t_b.is_nan());
+    }
+
+    #[test]
+    fn negative_sa() {
+        let t_b = thermobaric(-0.1, 10.0, 100.0);
+
+        if cfg!(feature = "compat") {
+            assert!((t_b.unwrap() - 1.283699411753888e-5).abs() <= f64::EPSILON);
+        } else if cfg!(feature = "invalidasnan") {
+            assert!(t_b.unwrap().is_nan());
+        } else {
+            match t_b {
+                Err(Error::NegativeSalinity) => (),
+                _ => panic!("It should be Error::NegativeSalinity"),
+            }
+        }
+    }
 }
 
 /// Specific enthalpy of seawater (75-term polynomial approximation)
