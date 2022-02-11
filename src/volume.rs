@@ -762,6 +762,20 @@ pub fn specvol_anom_standard(sa: f64, ct: f64, p: f64) -> Result<f64> {
     Ok(specvol(sa, ct, p)? - crate::gsw_internal_funcs::specvol_sso_0(p))
 }
 
+#[cfg(test)]
+mod test_specvol_anom_standard {
+    use super::{specvol_anom_standard, GSW_SSO};
+
+    #[test]
+    /// This anomaly should be zero for SSO & CT=0 at any depth
+    fn test_specvol_anom_standard_at_standard() {
+        let p_to_test: [f64; 5] = [0., 10., 100., 1000., 5000.];
+        for p in p_to_test.iter().cloned() {
+            assert!((specvol_anom_standard(GSW_SSO, 0.0, p).unwrap() - 0.0).abs() < f64::EPSILON);
+        }
+    }
+}
+
 /// Potential density anomaly with reference to sea pressure of 0 dbar
 /// (75-term polynomial approximation)
 ///
@@ -1387,16 +1401,7 @@ pub fn ct_maxdensity(sa: f64, p: f64) -> Result<f64> {
 
 #[cfg(test)]
 mod tests {
-    use super::{alpha, beta, specvol, specvol_anom_standard, GSW_SSO};
-
-    #[test]
-    /// This anomaly should be zero for SSO & CT=0 at any depth
-    fn test_specvol_anom_standard_at_standard() {
-        let p_to_test: [f64; 5] = [0., 10., 100., 1000., 5000.];
-        for p in p_to_test.iter().cloned() {
-            assert!((specvol_anom_standard(GSW_SSO, 0.0, p).unwrap() - 0.0).abs() < f64::EPSILON);
-        }
-    }
+    use super::{alpha, beta, specvol};
 
     #[test]
     fn test_negative_sa() {
