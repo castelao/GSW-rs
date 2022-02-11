@@ -44,7 +44,10 @@ std = ["thiserror"]
 name = "gsw"
 
 [profile.dev]
-panic = "abort"
+# Avoid setting this because it requires any binary/lib linking to gsw-rs
+# to also use panic = "abort"
+# https://twitter.com/alilleybrinker/status/1391129543071526914
+#panic = "abort"
 
 [package.metadata.capi]
 # Configures the minimum required cargo-c version. Trying to run with an
