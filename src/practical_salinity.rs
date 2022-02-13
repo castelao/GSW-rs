@@ -39,7 +39,7 @@ pub fn sp_from_c(cndc: f64, t90: f64, p: f64) -> Result<f64> {
         cndc / GSW_C3515
     };
 
-    Ok(sp_from_r(r, t90, p)?)
+    sp_from_r(r, t90, p)
 }
 
 #[cfg(test)]
