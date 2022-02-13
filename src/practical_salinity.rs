@@ -280,7 +280,7 @@ pub fn r_from_sp(sp: f64, t90: f64, p: f64) -> Result<f64> {
                             + x * x * (P12 + x * P17)
                             + P8 * x
                             + t68 * (P9 + x * (P13 + x * P18) + t68 * (P14 + P19 * x + P20 * t68))))
-    } else if sp >= 0.25 && sp < 9.0 {
+    } else if (0.25..9.0).contains(&sp) {
         Q0 + x
             * (Q1
                 + Q4 * t68
@@ -292,7 +292,7 @@ pub fn r_from_sp(sp: f64, t90: f64, p: f64) -> Result<f64> {
                             + x * x * (Q12 + x * Q17)
                             + Q8 * x
                             + t68 * (Q9 + x * (Q13 + x * Q18) + t68 * (Q14 + Q19 * x + Q20 * t68))))
-    } else if sp >= 0.003 && sp < 0.25 {
+    } else if (0.003..0.25).contains(&sp) {
         S0 + x
             * (S1
                 + S4 * t68
