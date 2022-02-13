@@ -335,7 +335,7 @@ pub fn r_from_sp(sp: f64, t90: f64, p: f64) -> Result<f64> {
         dsp_drtx = dsp_drtx
             + A0 * 800.0 * rtx * (1.5 + 2.0 * x) / (part1 * part1)
             + B0 * ft68 * (10.0 + sqrty * (20.0 + 30.0 * sqrty)) / (part2 * part2);
-        dsp_drtx = hill_ratio * dsp_drtx;
+        dsp_drtx *= hill_ratio;
     }
 
     // One iteration through the modified Newton-Raphson method (McDougall and
@@ -380,7 +380,7 @@ pub fn r_from_sp(sp: f64, t90: f64, p: f64) -> Result<f64> {
             + A0 * 800.0 * rtxm * (1.5e0 + 2.0 * x) / (part1 * part1)
             + B0 * ft68 * (10.0 + sqrty * (20.0 + 30.0 * sqrty)) / (part2 * part2);
         let hill_ratio = hill_ratio_at_sp2(t90);
-        dsp_drtx = hill_ratio * dsp_drtx;
+        dsp_drtx *= hill_ratio;
     }
 
     // The line below is where Rtx is updated at the end of the one full
@@ -400,7 +400,7 @@ pub fn r_from_sp(sp: f64, t90: f64, p: f64) -> Result<f64> {
         let hill_ratio = hill_ratio_at_sp2(t90);
         sp_est = hill_ratio * sp_hill_raw;
     }
-    rtx = rtx - (sp_est - sp) / dsp_drtx;
+    rtx -= (sp_est - sp) / dsp_drtx;
 
     // Now go from Rtx to Rt and then to the conductivity ratio R at pressure p.
     let rt = rtx * rtx;
