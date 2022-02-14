@@ -236,6 +236,7 @@ mod test_sp_from_r {
     }
 }
 
+#[allow(clippy::manual_range_contains)]
 /// Conductivity ratio from Practical Salinity
 ///
 /// # Arguments
