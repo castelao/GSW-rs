@@ -27,6 +27,7 @@ pub const GSW_C3515: f64 = 42.914_0;
 
 /// Conversion factor deciBar to Pascal
 pub const DB2PA: f64 = 1.0e4;
+pub const PA2DB: f64 = 1.0e-4;
 
 /// One standard atmosphere [Pa]
 pub const GSW_P0: f64 = 101_325.0;
