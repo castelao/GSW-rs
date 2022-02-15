@@ -776,6 +776,197 @@ mod test_specvol_anom_standard {
     }
 }
 
+/// First order derivatives of density
+/// (75-term polynomial approximation)
+///
+/// # Arguments
+///
+/// * `sa`: Absolute Salinity \[ g kg-1 \]
+/// * `ct`: Conservative Temperature (ITS-90) \[ deg C \]
+/// * `p`: sea pressure \[ dbar \] (i.e. absolute pressure - 10.1325 dbar)
+/// # Example:
+/// ```
+/// use gsw::volume::rho_first_derivatives;
+/// let (drho_dsa, drho_dct, drho_dp) = rho_first_derivatives(32.0, 10.0, 100.0).unwrap();
+/// assert!((drho_dsa - 0.7727213082442861).abs() <= f64::EPSILON);
+/// assert!((drho_dct + 0.16509831546108913).abs() <= f64::EPSILON);
+/// assert!((drho_dp - 4.519571131716803e-07 ).abs() <= f64::EPSILON);
+/// ```
+pub fn rho_first_derivatives(sa: f64, ct: f64, p: f64) -> Result<(f64, f64, f64)> {
+    let s: f64 = non_dimensional_sa(sa)?;
+    let tau: f64 = ct / GSW_CTU;
+    let pi: f64 = non_dimensional_p(p);
+
+    // Specific Volume
+    let v = V000
+        + s * (V100 + s * (V200 + s * (V300 + s * (V400 + s * (V500 + s * V600)))))
+        + tau
+            * (V010
+                + s * (V110 + s * (V210 + s * (V310 + s * (V410 + s * V510))))
+                + tau
+                    * (V020
+                        + s * (V120 + s * (V220 + s * (V320 + s * V420)))
+                        + tau
+                            * (V030
+                                + s * (V130 + s * (V230 + s * V330))
+                                + tau
+                                    * (V040
+                                        + s * (V140 + s * V240)
+                                        + tau * (V050 + s * V150 + tau * V060)))))
+        + pi * (V001
+            + s * (V101 + s * (V201 + s * (V301 + s * (V401 + s * V501))))
+            + tau
+                * (V011
+                    + s * (V111 + s * (V211 + s * (V311 + s * V411)))
+                    + tau
+                        * (V021
+                            + s * (V121 + s * (V221 + s * V321))
+                            + tau
+                                * (V031
+                                    + s * (V131 + s * V231)
+                                    + tau * (V041 + s * V141 + tau * V051))))
+            + pi * (V002
+                + s * (V102 + s * (V202 + s * (V302 + s * V402)))
+                + tau
+                    * (V012
+                        + s * (V112 + s * (V212 + s * V312))
+                        + tau
+                            * (V022
+                                + s * (V122 + s * V222)
+                                + tau * (V032 + s * V132 + tau * V042)))
+                + pi * (V003
+                    + s * (V103 + s * V203)
+                    + tau * (V013 + s * V113 + tau * V023)
+                    + pi * (V004 + s * V104 + tau * V014 + pi * (V005 + pi * V006)))));
+
+    let rho2 = 1.0 / (v * v);
+
+    let v_sa = B000
+        + s * (B100 + s * (B200 + s * (B300 + s * (B400 + B500 * s))))
+        + tau
+            * (B010
+                + s * (B110 + s * (B210 + s * (B310 + B410 * s)))
+                + tau
+                    * (B020
+                        + s * (B120 + s * (B220 + B320 * s))
+                        + tau
+                            * (B030
+                                + s * (B130 + B230 * s)
+                                + tau * (B040 + B140 * s + B050 * tau))))
+        + pi * (B001
+            + s * (B101 + s * (B201 + s * (B301 + B401 * s)))
+            + tau
+                * (B011
+                    + s * (B111 + s * (B211 + B311 * s))
+                    + tau * (B021 + s * (B121 + B221 * s) + tau * (B031 + B131 * s + B041 * tau)))
+            + pi * (B002
+                + s * (B102 + s * (B202 + B302 * s))
+                + tau * (B012 + s * (B112 + B212 * s) + tau * (B022 + B122 * s + B032 * tau))
+                + pi * (B003 + B103 * s + B013 * tau + B004 * pi)));
+
+    let drho_dsa = -rho2 * 0.5 * GSW_SFAC * v_sa / s;
+
+    let v_ct = A000
+        + s * (A100 + s * (A200 + s * (A300 + s * (A400 + A500 * s))))
+        + tau
+            * (A010
+                + s * (A110 + s * (A210 + s * (A310 + A410 * s)))
+                + tau
+                    * (A020
+                        + s * (A120 + s * (A220 + A320 * s))
+                        + tau
+                            * (A030
+                                + s * (A130 + A230 * s)
+                                + tau * (A040 + A140 * s + A050 * tau))))
+        + pi * (A001
+            + s * (A101 + s * (A201 + s * (A301 + A401 * s)))
+            + tau
+                * (A011
+                    + s * (A111 + s * (A211 + A311 * s))
+                    + tau * (A021 + s * (A121 + A221 * s) + tau * (A031 + A131 * s + A041 * tau)))
+            + pi * (A002
+                + s * (A102 + s * (A202 + A302 * s))
+                + tau * (A012 + s * (A112 + A212 * s) + tau * (A022 + A122 * s + A032 * tau))
+                + pi * (A003 + A103 * s + A013 * tau + A004 * pi)));
+
+    let drho_dct = -rho2 * 0.025 * v_ct;
+
+    let v_p = C000
+        + s * (C100 + s * (C200 + s * (C300 + s * (C400 + C500 * s))))
+        + tau
+            * (C010
+                + s * (C110 + s * (C210 + s * (C310 + C410 * s)))
+                + tau
+                    * (C020
+                        + s * (C120 + s * (C220 + C320 * s))
+                        + tau
+                            * (C030
+                                + s * (C130 + C230 * s)
+                                + tau * (C040 + C140 * s + C050 * tau))))
+        + pi * (C001
+            + s * (C101 + s * (C201 + s * (C301 + C401 * s)))
+            + tau
+                * (C011
+                    + s * (C111 + s * (C211 + C311 * s))
+                    + tau * (C021 + s * (C121 + C221 * s) + tau * (C031 + C131 * s + C041 * tau)))
+            + pi * (C002
+                + s * (C102 + C202 * s)
+                + tau * (C012 + C112 * s + C022 * tau)
+                + pi * (C003 + C103 * s + C013 * tau + pi * (C004 + C005 * pi))));
+
+    let drho_dp = -rho2 * 1e-4 * PA2DB * v_p;
+
+    Ok((drho_dsa, drho_dct, drho_dp))
+}
+
+#[cfg(test)]
+mod test_rho_first_derivatives {
+    use super::{rho_first_derivatives, Error};
+
+    #[test]
+    // NaN input results in NaN output.
+    // Other libraries using GSW-rs might rely on this behavior to propagate
+    // and handle invalid elements.
+    fn nan() {
+        let (drho_dsa, drho_dct, drho_dp) = rho_first_derivatives(f64::NAN, 1.0, 1.0).unwrap();
+        assert!(drho_dsa.is_nan());
+        assert!(drho_dct.is_nan());
+        assert!(drho_dp.is_nan());
+
+        let (drho_dsa, drho_dct, drho_dp) = rho_first_derivatives(1.0, f64::NAN, 1.0).unwrap();
+        assert!(drho_dsa.is_nan());
+        assert!(drho_dct.is_nan());
+        assert!(drho_dp.is_nan());
+
+        let (drho_dsa, drho_dct, drho_dp) = rho_first_derivatives(1.0, 1.0, f64::NAN).unwrap();
+        assert!(drho_dsa.is_nan());
+        assert!(drho_dct.is_nan());
+        assert!(drho_dp.is_nan());
+    }
+
+    #[test]
+    fn negative_sa() {
+        let ans = rho_first_derivatives(-0.1, 10.0, 100.0);
+
+        if cfg!(feature = "compat") {
+            let (drho_dsa, drho_dct, drho_dp) = ans.unwrap();
+            assert!((drho_dsa - 0.7824180513504084).abs() <= f64::EPSILON);
+            assert!((drho_dct + 0.07949704076327348).abs() <= f64::EPSILON);
+            assert!((drho_dp - 4.776954345523257e-7).abs() <= f64::EPSILON);
+        } else if cfg!(feature = "invalidasnan") {
+            let (drho_dsa, drho_dct, drho_dp) = ans.unwrap();
+            assert!(drho_dsa.is_nan());
+            assert!(drho_dct.is_nan());
+            assert!(drho_dp.is_nan());
+        } else {
+            match ans {
+                Err(Error::NegativeSalinity) => (),
+                _ => panic!(),
+            }
+        }
+    }
+}
+
 /// Potential density anomaly with reference to sea pressure of 0 dbar
 /// (75-term polynomial approximation)
 ///
