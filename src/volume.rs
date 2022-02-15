@@ -1743,10 +1743,6 @@ pub fn sa_from_rho(rho: f64, ct: f64, p: f64) -> Result<f64> {
     Ok(sa)
 }
 
-fn ct_from_rho() {
-    unimplemented!()
-}
-
 /// Conservative Temperature of maximum density of seawater
 /// (75-term polynomial approximation)
 ///
