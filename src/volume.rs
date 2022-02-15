@@ -642,7 +642,7 @@ mod test_specvol_second_derivatives {
         } else {
             match ans {
                 Err(Error::NegativeSalinity) => (),
-                _ => assert!(false),
+                _ => panic!("It should be Error::NegativeSalinity"),
             }
         }
     }
@@ -1579,7 +1579,7 @@ mod test_internal_energy {
         } else {
             match u {
                 Err(Error::NegativeSalinity) => (),
-                _ => assert!(false),
+                _ => panic!("It should be Error::NegativeSalinity"),
             }
         }
     }
@@ -1689,7 +1689,7 @@ mod test_dynamic_enthalpy {
         } else {
             match h_hat {
                 Err(Error::NegativeSalinity) => (),
-                _ => assert!(false),
+                _ => panic!("It should be Error::NegativeSalinity"),
             }
         }
     }
