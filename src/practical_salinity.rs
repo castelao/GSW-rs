@@ -82,7 +82,7 @@ mod test_sp_from_c {
                 Err(Error::Undefined) => (),
                 // S_p < 0
                 Err(Error::NegativeSalinity) => (),
-                _ => assert!(false),
+                _ => panic!("can't reach other errors"),
             }
         }
     }
@@ -131,7 +131,7 @@ mod test_c_from_sp {
         let cndc = c_from_sp(-0.1, 10.0, 100.0);
         match cndc {
             Err(Error::NegativeSalinity) => (),
-            _ => assert!(false),
+            _ => panic!("can't reach other errors"),
         }
     }
 
@@ -143,7 +143,7 @@ mod test_c_from_sp {
         let cndc = c_from_sp(42.1, 10.0, 100.0);
         match cndc {
             Err(Error::Undefined) => (),
-            _ => assert!(false),
+            _ => panic!("can't reach other errors"),
         }
     }
 }
@@ -537,7 +537,7 @@ mod test_sp_salinometer {
                 Err(Error::Undefined) => (),
                 // S_p < 0
                 Err(Error::NegativeSalinity) => (),
-                _ => assert!(false),
+                _ => panic!("can't reach other errors"),
             }
         }
     }

@@ -1199,8 +1199,9 @@ pub fn enthalpy(sa: f64, ct: f64, p: f64) -> Result<f64> {
 /// assert!((h_diff - 975.1311809188919).abs() <= f64::EPSILON);
 /// ```
 pub fn enthalpy_diff(sa: f64, ct: f64, p_shallow: f64, p_deep: f64) -> Result<f64> {
-    return Ok(enthalpy(sa, ct, p_deep)? - enthalpy(sa, ct, p_shallow)?);
+    Ok(enthalpy(sa, ct, p_deep)? - enthalpy(sa, ct, p_shallow)?)
 
+    /*
     let s: f64 = non_dimensional_sa(sa)?;
     let tau: f64 = ct / GSW_CTU;
     let pi_shallow: f64 = non_dimensional_p(p_shallow);
@@ -1269,6 +1270,7 @@ pub fn enthalpy_diff(sa: f64, ct: f64, p_shallow: f64, p_deep: f64) -> Result<f6
                                     + pi_deep * (part_5 + pi_deep * (H006 + H007 * pi_deep))))));
 
     Ok((h_hat_deep - h_hat_shallow) * DB2PA * 1e4)
+    */
 }
 
 #[cfg(test)]
