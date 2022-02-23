@@ -184,6 +184,7 @@ mod test_rho {
         assert!(density.unwrap().is_nan());
     }
 }
+
 /// Thermal expansion coefficient with respect to Conservative Temperature
 /// (75-term polynomial approximation)
 ///
@@ -192,6 +193,10 @@ mod test_rho {
 /// * `sa`: Absolute Salinity \[ g kg-1 \]
 /// * `ct`: Conservative Temperature (ITS-90) \[ deg C \]
 /// * `p`: sea pressure \[ dbar \] (i.e. absolute pressure - 10.1325 dbar)
+///
+/// # Returns
+///
+/// Thermal expansion coefficient [ 1/K ] with respect to Conservative Temperature
 ///
 pub fn alpha(sa: f64, ct: f64, p: f64) -> Result<f64> {
     let xs: f64 = non_dimensional_sa(sa)?;
@@ -227,6 +232,10 @@ pub fn alpha(sa: f64, ct: f64, p: f64) -> Result<f64> {
 /// * `ct`: Conservative Temperature (ITS-90) \[ deg C \]
 /// * `p`: sea pressure \[ dbar \] (i.e. absolute pressure - 10.1325 dbar)
 ///
+/// # Returns
+///
+/// Saline (i.e. haline) contraction [ kg/g ] coefficient at constant
+/// Conservative Temperature
 pub fn beta(sa: f64, ct: f64, p: f64) -> Result<f64> {
     let xs: f64 = non_dimensional_sa(sa)?;
     let ys: f64 = ct / GSW_CTU;
@@ -373,6 +382,8 @@ pub fn rho_alpha_beta(sa: f64, ct: f64, p: f64) -> Result<(f64, f64, f64)> {
     Ok((rho, alpha, beta))
 }
 
+/// Specific volume, thermal expansion & saline contraction coefficients
+/// (75-term polynomial approximation)
 ///
 /// # Arguments
 ///
@@ -380,6 +391,13 @@ pub fn rho_alpha_beta(sa: f64, ct: f64, p: f64) -> Result<(f64, f64, f64)> {
 /// * `ct`: Conservative Temperature (ITS-90) \[ deg C \]
 /// * `p`: sea pressure \[ dbar \] (i.e. absolute pressure - 10.1325 dbar)
 ///
+/// # Returns
+///
+/// * Specific volume \[m3 kg-1\]
+/// * Thermal expansion coefficient [ 1/K ] with respect to Conservative
+///   Temperature
+/// * Saline (i.e. haline) contraction [ kg/g ] coefficient at constant
+///   Conservative Temperature
 pub fn specvol_alpha_beta(sa: f64, ct: f64, p: f64) -> Result<(f64, f64, f64)> {
     let specvol = specvol(sa, ct, p)?;
     let alpha = alpha(sa, ct, p)?;
