@@ -1300,7 +1300,10 @@ mod test_enthalpy_diff {
         let h_diff = enthalpy_diff(-0.1, 10.0, 0.0, 100.0);
 
         if cfg!(feature = "compat") {
-            assert!((h_diff.unwrap() - 1000.0132803364188).abs() <= f64::EPSILON);
+            assert_eq!(
+                h_diff.unwrap(),
+                enthalpy_diff(0.0, 10.0, 0.0, 100.0).unwrap()
+            )
         } else if cfg!(feature = "invalidasnan") {
             assert!(h_diff.unwrap().is_nan());
         } else {
