@@ -252,7 +252,7 @@ pub fn beta(sa: f64, ct: f64, p: f64) -> Result<f64> {
     Ok(-v_sa * 0.5 * GSW_SFAC / (specvol(sa, ct, p)? * xs))
 }
 
-/// The raio alpha/beta (75-term polynomial approximation)
+/// The ratio alpha/beta (75-term polynomial approximation)
 ///
 /// # Arguments
 ///
