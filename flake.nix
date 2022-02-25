@@ -66,6 +66,8 @@
             cargo-c
             cargo-asm
             cargo-outdated
+            cargo-criterion
+            ripgrep
 
             (python39.withPackages (ps: with ps; [ virtualenv setuptools mypy tox ]))
           ];
