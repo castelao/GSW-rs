@@ -371,3 +371,40 @@ fn sound_speed() {
         }
     }
 }
+
+// kappa
+
+#[test]
+#[cfg(not(windows))]
+fn internal_energy() {
+    let mut input = File::open("tests/data/gsw_validation.bin").expect("Unable to open file");
+    let mut contents = vec![];
+    input
+        .read_to_end(&mut contents)
+        .expect("Failed to read content");
+
+    let out: DataRef = from_bytes(&contents).unwrap();
+
+    let p = out.data2d.get(&String::from("p_chck_cast")).unwrap();
+    let sa = out.data2d.get(&String::from("SA_chck_cast")).unwrap();
+    let ct = out.data2d.get(&String::from("CT_chck_cast")).unwrap();
+    let internal_energy = out.data2d.get(&String::from("internal_energy")).unwrap();
+    let tol = if cfg!(feature = "compat") || (f64::EPSILON > 1e-10) {
+        // f64::EPSILON
+        1e-11
+    } else {
+        1e-10
+    };
+    for i in 0..3 {
+        for j in 0..45 {
+            if !internal_energy[i][j].is_nan() {
+                assert!(
+                    (gsw::volume::internal_energy(sa[i][j], ct[i][j], p[i][j]).unwrap()
+                        - internal_energy[i][j])
+                        .abs()
+                        <= tol
+                );
+            }
+        }
+    }
+}
