@@ -130,7 +130,157 @@ fn specvol_anom_standard() {
 
 #[test]
 #[cfg(not(windows))]
-fn rho() {
+fn sigma0() {
+    let mut input = File::open("tests/data/gsw_validation.bin").expect("Unable to open file");
+    let mut contents = vec![];
+    input
+        .read_to_end(&mut contents)
+        .expect("Failed to read content");
+
+    let out: DataRef = from_bytes(&contents).unwrap();
+
+    let sa = out.data2d.get(&String::from("SA_chck_cast")).unwrap();
+    let ct = out.data2d.get(&String::from("CT_chck_cast")).unwrap();
+    let sigma0 = out.data2d.get(&String::from("sigma0")).unwrap();
+    for i in 0..3 {
+        for j in 0..45 {
+            if !sigma0[i][j].is_nan() {
+                assert_eq!(
+                    gsw::volume::sigma0(sa[i][j], ct[i][j]).unwrap(),
+                    sigma0[i][j]
+                );
+                assert!(
+                    (gsw::volume::sigma0(sa[i][j], ct[i][j]).unwrap() - sigma0[i][j]).abs()
+                        <= f64::EPSILON
+                );
+            }
+        }
+    }
+}
+
+#[test]
+#[cfg(not(windows))]
+fn sigma1() {
+    let mut input = File::open("tests/data/gsw_validation.bin").expect("Unable to open file");
+    let mut contents = vec![];
+    input
+        .read_to_end(&mut contents)
+        .expect("Failed to read content");
+
+    let out: DataRef = from_bytes(&contents).unwrap();
+
+    let sa = out.data2d.get(&String::from("SA_chck_cast")).unwrap();
+    let ct = out.data2d.get(&String::from("CT_chck_cast")).unwrap();
+    let sigma1 = out.data2d.get(&String::from("sigma1")).unwrap();
+    for i in 0..3 {
+        for j in 0..45 {
+            if !sigma1[i][j].is_nan() {
+                assert_eq!(
+                    gsw::volume::sigma1(sa[i][j], ct[i][j]).unwrap(),
+                    sigma1[i][j]
+                );
+                assert!(
+                    (gsw::volume::sigma1(sa[i][j], ct[i][j]).unwrap() - sigma1[i][j]).abs()
+                        <= f64::EPSILON
+                );
+            }
+        }
+    }
+}
+
+#[test]
+#[cfg(not(windows))]
+fn sigma2() {
+    let mut input = File::open("tests/data/gsw_validation.bin").expect("Unable to open file");
+    let mut contents = vec![];
+    input
+        .read_to_end(&mut contents)
+        .expect("Failed to read content");
+
+    let out: DataRef = from_bytes(&contents).unwrap();
+
+    let sa = out.data2d.get(&String::from("SA_chck_cast")).unwrap();
+    let ct = out.data2d.get(&String::from("CT_chck_cast")).unwrap();
+    let sigma2 = out.data2d.get(&String::from("sigma2")).unwrap();
+    for i in 0..3 {
+        for j in 0..45 {
+            if !sigma2[i][j].is_nan() {
+                assert_eq!(
+                    gsw::volume::sigma2(sa[i][j], ct[i][j]).unwrap(),
+                    sigma2[i][j]
+                );
+                assert!(
+                    (gsw::volume::sigma2(sa[i][j], ct[i][j]).unwrap() - sigma2[i][j]).abs()
+                        <= f64::EPSILON
+                );
+            }
+        }
+    }
+}
+
+#[test]
+#[cfg(not(windows))]
+fn sigma3() {
+    let mut input = File::open("tests/data/gsw_validation.bin").expect("Unable to open file");
+    let mut contents = vec![];
+    input
+        .read_to_end(&mut contents)
+        .expect("Failed to read content");
+
+    let out: DataRef = from_bytes(&contents).unwrap();
+
+    let sa = out.data2d.get(&String::from("SA_chck_cast")).unwrap();
+    let ct = out.data2d.get(&String::from("CT_chck_cast")).unwrap();
+    let sigma3 = out.data2d.get(&String::from("sigma3")).unwrap();
+    for i in 0..3 {
+        for j in 0..45 {
+            if !sigma3[i][j].is_nan() {
+                assert_eq!(
+                    gsw::volume::sigma3(sa[i][j], ct[i][j]).unwrap(),
+                    sigma3[i][j]
+                );
+                assert!(
+                    (gsw::volume::sigma3(sa[i][j], ct[i][j]).unwrap() - sigma3[i][j]).abs()
+                        <= f64::EPSILON
+                );
+            }
+        }
+    }
+}
+
+#[test]
+#[cfg(not(windows))]
+fn sigma4() {
+    let mut input = File::open("tests/data/gsw_validation.bin").expect("Unable to open file");
+    let mut contents = vec![];
+    input
+        .read_to_end(&mut contents)
+        .expect("Failed to read content");
+
+    let out: DataRef = from_bytes(&contents).unwrap();
+
+    let sa = out.data2d.get(&String::from("SA_chck_cast")).unwrap();
+    let ct = out.data2d.get(&String::from("CT_chck_cast")).unwrap();
+    let sigma4 = out.data2d.get(&String::from("sigma4")).unwrap();
+    for i in 0..3 {
+        for j in 0..45 {
+            if !sigma4[i][j].is_nan() {
+                assert_eq!(
+                    gsw::volume::sigma4(sa[i][j], ct[i][j]).unwrap(),
+                    sigma4[i][j]
+                );
+                assert!(
+                    (gsw::volume::sigma4(sa[i][j], ct[i][j]).unwrap() - sigma4[i][j]).abs()
+                        <= f64::EPSILON
+                );
+            }
+        }
+    }
+}
+
+#[test]
+#[cfg(not(windows))]
+fn dynamic_enthalpy() {
     let mut input = File::open("tests/data/gsw_validation.bin").expect("Unable to open file");
     let mut contents = vec![];
     input
