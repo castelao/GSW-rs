@@ -16,6 +16,34 @@ struct DataRef {
 
 #[test]
 #[cfg(not(windows))]
+fn specvol() {
+    let mut input = File::open("tests/data/gsw_validation.bin").expect("Unable to open file");
+    let mut contents = vec![];
+    input
+        .read_to_end(&mut contents)
+        .expect("Failed to read content");
+
+    let out: DataRef = from_bytes(&contents).unwrap();
+
+    let p = out.data2d.get(&String::from("p_chck_cast")).unwrap();
+    let sa = out.data2d.get(&String::from("SA_chck_cast")).unwrap();
+    let ct = out.data2d.get(&String::from("CT_chck_cast")).unwrap();
+    let specvol = out.data2d.get(&String::from("specvol")).unwrap();
+    for i in 0..3 {
+        for j in 0..45 {
+            if !specvol[i][j].is_nan() {
+                assert!(
+                    (gsw::volume::specvol(sa[i][j], ct[i][j], p[i][j]).unwrap() - specvol[i][j])
+                        .abs()
+                        <= f64::EPSILON
+                );
+            }
+        }
+    }
+}
+
+#[test]
+#[cfg(not(windows))]
 fn alpha() {
     let mut input = File::open("tests/data/gsw_validation.bin").expect("Unable to open file");
     let mut contents = vec![];
