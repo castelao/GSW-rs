@@ -1713,7 +1713,7 @@ pub fn sa_from_rho(rho: f64, ct: f64, p: f64) -> Result<f64> {
     // First guess, a linear ratio
     let sa = 50.0 * (v_lab - v_0) / (v_50 - v_0);
 
-    if !(0.0..=50.0).contains(&sa) {
+    if (sa < 0.0) | (sa > 50.0) {
         if cfg!(feature = "invalidasnan") {
             return Ok(f64::NAN);
         } else {
@@ -1734,7 +1734,7 @@ pub fn sa_from_rho(rho: f64, ct: f64, p: f64) -> Result<f64> {
         let sa_mean = 0.5 * (sa + sa_old);
         let (v_sa, _, _) = specvol_first_derivatives(sa_mean, ct, p)?;
         let sa = sa_old - delta_v / v_sa;
-        if !(0.0..=50.0).contains(&sa) {
+        if (sa < 0.0) | (sa > 50.0) {
             if cfg!(feature = "invalidasnan") {
                 return Ok(f64::NAN);
             } else {
@@ -1743,6 +1743,26 @@ pub fn sa_from_rho(rho: f64, ct: f64, p: f64) -> Result<f64> {
         }
     }
     Ok(sa)
+}
+
+#[cfg(test)]
+mod test_sa_from_rho {
+    use super::sa_from_rho;
+
+    #[test]
+    // NaN input results in NaN output.
+    // Other libraries using GSW-rs might rely on this behavior to propagate
+    // and handle invalid elements.
+    fn nan() {
+        let v = sa_from_rho(f64::NAN, 1.0, 1.0);
+        assert!(v.unwrap().is_nan());
+
+        let v = sa_from_rho(1.0, f64::NAN, 1.0);
+        assert!(v.unwrap().is_nan());
+
+        let v = sa_from_rho(1.0, 1.0, f64::NAN);
+        assert!(v.unwrap().is_nan());
+    }
 }
 
 /// Conservative Temperature of maximum density of seawater
