@@ -1767,6 +1767,7 @@ mod test_dynamic_enthalpy {
     }
 }
 
+#[allow(clippy::manual_range_contains)]
 /// Absolute salinity of seawater from given density, Conservative
 /// Temperature, and pressure.
 ///
