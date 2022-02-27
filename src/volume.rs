@@ -1771,6 +1771,12 @@ mod test_dynamic_enthalpy {
 /// Absolute salinity of seawater from given density, Conservative
 /// Temperature, and pressure.
 ///
+/// # Arguments
+///
+/// * `rho`: in-situ density \[ kg m-3 \]
+/// * `ct`: Conservative Temperature (ITS-90) \[ deg C \]
+/// * `p`: sea pressure \[ dbar \] (i.e. absolute pressure - 10.1325 dbar)
+///
 /// # Example
 /// ```
 /// use gsw::volume::sa_from_rho;
