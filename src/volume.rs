@@ -475,6 +475,54 @@ pub fn specvol_first_derivatives(sa: f64, ct: f64, p: f64) -> Result<(f64, f64, 
     Ok((v_sa, v_ct, v_p))
 }
 
+#[cfg(test)]
+mod test_specvol_first_derivatives {
+    use super::{specvol_first_derivatives, Error};
+
+    #[test]
+    // NaN input results in NaN output.
+    // Other libraries using GSW-rs might rely on this behavior to propagate
+    // and handle invalid elements.
+    fn nan() {
+        let (dsa, dct, dp) = specvol_first_derivatives(f64::NAN, 1.0, 1.0).unwrap();
+        assert!(dsa.is_nan());
+        assert!(dct.is_nan());
+        assert!(dp.is_nan());
+
+        let (dsa, dct, dp) = specvol_first_derivatives(1.0, f64::NAN, 1.0).unwrap();
+        assert!(dsa.is_nan());
+        assert!(dct.is_nan());
+        assert!(dp.is_nan());
+
+        let (dsa, dct, dp) = specvol_first_derivatives(1.0, 1.0, f64::NAN).unwrap();
+        assert!(dsa.is_nan());
+        assert!(dct.is_nan());
+        assert!(dp.is_nan());
+    }
+
+    #[test]
+    fn negative_sa() {
+        let ans = specvol_first_derivatives(-0.1, 10.0, 100.0);
+
+        if cfg!(feature = "compat") {
+            let (dsa, dct, dp) = ans.unwrap();
+            assert!((dsa + 7.820648830135304e-7).abs() <= f64::EPSILON);
+            assert!((dct - 7.946115734056278e-8).abs() <= f64::EPSILON);
+            assert!((dp + 4.774798120959369e-13).abs() <= f64::EPSILON);
+        } else if cfg!(feature = "invalidasnan") {
+            let (dsa, dct, dp) = ans.unwrap();
+            assert!(dsa.is_nan());
+            assert!(dct.is_nan());
+            assert!(dp.is_nan());
+        } else {
+            match ans {
+                Err(Error::NegativeSalinity) => (),
+                _ => panic!("It should be Error::NegativeSalinity"),
+            }
+        }
+    }
+}
+
 /// Second order derivatives of specific volume
 /// (75-term polynomial approximation)
 ///
