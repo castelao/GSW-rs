@@ -131,6 +131,12 @@ mod test_specvol {
             );
         }
     }
+
+    #[test]
+    fn extreme_values_of_sa() {
+        assert!((specvol(0., 10., 100.0).unwrap() - 9.997742842214592e-4).abs() <= f64::EPSILON);
+        assert!((specvol(50., 10., 100.0).unwrap() - 9.625729186157327e-4).abs() <= f64::EPSILON);
+    }
 }
 
 /// in-situ density
