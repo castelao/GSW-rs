@@ -1770,6 +1770,13 @@ mod test_dynamic_enthalpy {
 /// Absolute salinity of seawater from given density, Conservative
 /// Temperature, and pressure.
 ///
+/// # Example
+/// ```
+/// use gsw::volume::sa_from_rho;
+/// let sa = sa_from_rho(1025.0, 10.0, 100.0).unwrap();
+/// assert!((sa - 32.05688743050942).abs() <= f64::EPSILON);
+/// ```
+///
 /// # Notes:
 ///
 /// - According to the Matlab GSW toolbox, after two iterations of this
