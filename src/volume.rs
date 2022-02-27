@@ -1841,10 +1841,10 @@ mod test_sa_from_rho {
         let v = sa_from_rho(f64::NAN, 1.0, 1.0);
         assert!(v.unwrap().is_nan());
 
-        let v = sa_from_rho(1.0, f64::NAN, 1.0);
+        let v = sa_from_rho(1000.0, f64::NAN, 1.0);
         assert!(v.unwrap().is_nan());
 
-        let v = sa_from_rho(1.0, 1.0, f64::NAN);
+        let v = sa_from_rho(1000.0, 1.0, f64::NAN);
         assert!(v.unwrap().is_nan());
     }
 }
