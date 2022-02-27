@@ -383,6 +383,15 @@ pub fn specvol_alpha_beta(sa: f64, ct: f64, p: f64) -> Result<(f64, f64, f64)> {
 /// * `sa`: Absolute Salinity \[ g kg-1 \]
 /// * `ct`: Conservative Temperature (ITS-90) \[ deg C \]
 /// * `p`: sea pressure \[ dbar \] (i.e. absolute pressure - 10.1325 dbar)
+///
+/// # Example:
+/// ```
+/// use gsw::volume::specvol_first_derivatives;
+/// let (dvdsa, dvdct, dvdp) = specvol_first_derivatives(32.0, 10.0, 100.0).unwrap();
+/// assert!((dvdsa + 7.355503539675526e-07).abs() <= f64::EPSILON);
+/// assert!((dvdct - 1.5715643283187364e-07).abs() <= f64::EPSILON);
+/// assert!((dvdp + 4.3021618664421085e-13).abs() <= f64::EPSILON);
+/// ```
 pub fn specvol_first_derivatives(sa: f64, ct: f64, p: f64) -> Result<(f64, f64, f64)> {
     let s: f64 = non_dimensional_sa(sa)?;
     let tau: f64 = ct / GSW_CTU;
