@@ -1781,7 +1781,7 @@ pub fn sa_from_rho(rho: f64, ct: f64, p: f64) -> Result<f64> {
     let v_50 = specvol(50.0, ct, p)?;
 
     // First guess, a linear ratio
-    let sa = 50.0 * (v_lab - v_0) / (v_50 - v_0);
+    let mut sa = 50.0 * (v_lab - v_0) / (v_50 - v_0);
 
     if (sa < 0.0) | (sa > 50.0) {
         if cfg!(feature = "invalidasnan") {
@@ -1792,7 +1792,7 @@ pub fn sa_from_rho(rho: f64, ct: f64, p: f64) -> Result<f64> {
     }
 
     // First guess of dv/dSA
-    let v_sa: f64 = (v_50 - v_0) / 50.0;
+    let v_sa = (v_50 - v_0) / 50.0;
 
     // Modified Newton-Raphson iterative optimization
     for _ in 0..2 {
@@ -1800,10 +1800,10 @@ pub fn sa_from_rho(rho: f64, ct: f64, p: f64) -> Result<f64> {
         let delta_v = specvol(sa_old, ct, p)? - v_lab;
         // this is half way through the modified N-R method (McDougall and
         // Wotherspoon, 2012, appud Matlab GSW implementation)
-        let sa = sa_old - delta_v / v_sa;
+        sa = sa_old - delta_v / v_sa;
         let sa_mean = 0.5 * (sa + sa_old);
         let (v_sa, _, _) = specvol_first_derivatives(sa_mean, ct, p)?;
-        let sa = sa_old - delta_v / v_sa;
+        sa = sa_old - delta_v / v_sa;
         if (sa < 0.0) | (sa > 50.0) {
             if cfg!(feature = "invalidasnan") {
                 return Ok(f64::NAN);
