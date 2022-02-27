@@ -44,6 +44,13 @@ fn non_dimensional_sa(sa: f64) -> Result<f64> {
 ///
 /// * `specvol`: specific volume \[m3 kg-1\]
 ///
+/// # Example:
+/// ```
+/// use gsw::volume::specvol;
+/// let v = specvol(32.0, 10.0, 100.0).unwrap();
+/// assert!((v - 0.0009756515980668401).abs() <= f64::EPSILON);
+/// ```
+///
 /// Note that the coefficients v(i,j,k) follow the convention in the original
 /// paper, which is different from the convention used in the C-library.
 ///
