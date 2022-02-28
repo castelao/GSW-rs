@@ -44,6 +44,13 @@ fn non_dimensional_sa(sa: f64) -> Result<f64> {
 ///
 /// * `specvol`: specific volume \[m3 kg-1\]
 ///
+/// # Example:
+/// ```
+/// use gsw::volume::specvol;
+/// let v = specvol(32.0, 10.0, 100.0).unwrap();
+/// assert!((v - 0.0009756515980668401).abs() <= f64::EPSILON);
+/// ```
+///
 /// Note that the coefficients v(i,j,k) follow the convention in the original
 /// paper, which is different from the convention used in the C-library.
 ///
@@ -123,6 +130,12 @@ mod test_specvol {
                     < f64::EPSILON
             );
         }
+    }
+
+    #[test]
+    fn extreme_values_of_sa() {
+        assert!((specvol(0., 10., 100.0).unwrap() - 9.997742842214592e-4).abs() <= f64::EPSILON);
+        assert!((specvol(50., 10., 100.0).unwrap() - 9.625729186157327e-4).abs() <= f64::EPSILON);
     }
 }
 
@@ -383,6 +396,15 @@ pub fn specvol_alpha_beta(sa: f64, ct: f64, p: f64) -> Result<(f64, f64, f64)> {
 /// * `sa`: Absolute Salinity \[ g kg-1 \]
 /// * `ct`: Conservative Temperature (ITS-90) \[ deg C \]
 /// * `p`: sea pressure \[ dbar \] (i.e. absolute pressure - 10.1325 dbar)
+///
+/// # Example:
+/// ```
+/// use gsw::volume::specvol_first_derivatives;
+/// let (dvdsa, dvdct, dvdp) = specvol_first_derivatives(32.0, 10.0, 100.0).unwrap();
+/// assert!((dvdsa + 7.355503539675526e-07).abs() <= f64::EPSILON);
+/// assert!((dvdct - 1.5715643283187364e-07).abs() <= f64::EPSILON);
+/// assert!((dvdp + 4.3021618664421085e-13).abs() <= f64::EPSILON);
+/// ```
 pub fn specvol_first_derivatives(sa: f64, ct: f64, p: f64) -> Result<(f64, f64, f64)> {
     let s: f64 = non_dimensional_sa(sa)?;
     let tau: f64 = ct / GSW_CTU;
@@ -464,6 +486,54 @@ pub fn specvol_first_derivatives(sa: f64, ct: f64, p: f64) -> Result<(f64, f64, 
     let v_p = 1e-8 * v_p_part;
 
     Ok((v_sa, v_ct, v_p))
+}
+
+#[cfg(test)]
+mod test_specvol_first_derivatives {
+    use super::{specvol_first_derivatives, Error};
+
+    #[test]
+    // NaN input results in NaN output.
+    // Other libraries using GSW-rs might rely on this behavior to propagate
+    // and handle invalid elements.
+    fn nan() {
+        let (dsa, dct, dp) = specvol_first_derivatives(f64::NAN, 1.0, 1.0).unwrap();
+        assert!(dsa.is_nan());
+        assert!(dct.is_nan());
+        assert!(dp.is_nan());
+
+        let (dsa, dct, dp) = specvol_first_derivatives(1.0, f64::NAN, 1.0).unwrap();
+        assert!(dsa.is_nan());
+        assert!(dct.is_nan());
+        assert!(dp.is_nan());
+
+        let (dsa, dct, dp) = specvol_first_derivatives(1.0, 1.0, f64::NAN).unwrap();
+        assert!(dsa.is_nan());
+        assert!(dct.is_nan());
+        assert!(dp.is_nan());
+    }
+
+    #[test]
+    fn negative_sa() {
+        let ans = specvol_first_derivatives(-0.1, 10.0, 100.0);
+
+        if cfg!(feature = "compat") {
+            let (dsa, dct, dp) = ans.unwrap();
+            assert!((dsa + 7.820648830135304e-7).abs() <= f64::EPSILON);
+            assert!((dct - 7.946115734056278e-8).abs() <= f64::EPSILON);
+            assert!((dp + 4.774798120959369e-13).abs() <= f64::EPSILON);
+        } else if cfg!(feature = "invalidasnan") {
+            let (dsa, dct, dp) = ans.unwrap();
+            assert!(dsa.is_nan());
+            assert!(dct.is_nan());
+            assert!(dp.is_nan());
+        } else {
+            match ans {
+                Err(Error::NegativeSalinity) => (),
+                _ => panic!("It should be Error::NegativeSalinity"),
+            }
+        }
+    }
 }
 
 /// Second order derivatives of specific volume
@@ -1700,8 +1770,22 @@ mod test_dynamic_enthalpy {
     }
 }
 
+#[allow(clippy::manual_range_contains)]
 /// Absolute salinity of seawater from given density, Conservative
 /// Temperature, and pressure.
+///
+/// # Arguments
+///
+/// * `rho`: in-situ density \[ kg m-3 \]
+/// * `ct`: Conservative Temperature (ITS-90) \[ deg C \]
+/// * `p`: sea pressure \[ dbar \] (i.e. absolute pressure - 10.1325 dbar)
+///
+/// # Example
+/// ```
+/// use gsw::volume::sa_from_rho;
+/// let sa = sa_from_rho(1025.0, 10.0, 100.0).unwrap();
+/// assert!((sa - 32.05688743050942).abs() <= f64::EPSILON);
+/// ```
 ///
 /// # Notes:
 ///
@@ -1714,9 +1798,9 @@ pub fn sa_from_rho(rho: f64, ct: f64, p: f64) -> Result<f64> {
     let v_50 = specvol(50.0, ct, p)?;
 
     // First guess, a linear ratio
-    let sa = 50.0 * (v_lab - v_0) / (v_50 - v_0);
+    let mut sa = 50.0 * (v_lab - v_0) / (v_50 - v_0);
 
-    if !(0.0..=50.0).contains(&sa) {
+    if (sa < 0.0) | (sa > 50.0) {
         if cfg!(feature = "invalidasnan") {
             return Ok(f64::NAN);
         } else {
@@ -1725,7 +1809,7 @@ pub fn sa_from_rho(rho: f64, ct: f64, p: f64) -> Result<f64> {
     }
 
     // First guess of dv/dSA
-    let v_sa: f64 = (v_50 - v_0) / 50.0;
+    let v_sa = (v_50 - v_0) / 50.0;
 
     // Modified Newton-Raphson iterative optimization
     for _ in 0..2 {
@@ -1733,11 +1817,11 @@ pub fn sa_from_rho(rho: f64, ct: f64, p: f64) -> Result<f64> {
         let delta_v = specvol(sa_old, ct, p)? - v_lab;
         // this is half way through the modified N-R method (McDougall and
         // Wotherspoon, 2012, appud Matlab GSW implementation)
-        let sa = sa_old - delta_v / v_sa;
+        sa = sa_old - delta_v / v_sa;
         let sa_mean = 0.5 * (sa + sa_old);
         let (v_sa, _, _) = specvol_first_derivatives(sa_mean, ct, p)?;
-        let sa = sa_old - delta_v / v_sa;
-        if !(0.0..=50.0).contains(&sa) {
+        sa = sa_old - delta_v / v_sa;
+        if (sa < 0.0) | (sa > 50.0) {
             if cfg!(feature = "invalidasnan") {
                 return Ok(f64::NAN);
             } else {
@@ -1746,6 +1830,44 @@ pub fn sa_from_rho(rho: f64, ct: f64, p: f64) -> Result<f64> {
         }
     }
     Ok(sa)
+}
+
+// Failing only on PowerPC64
+#[cfg(test)]
+mod test_sa_from_rho {
+    use super::{rho, sa_from_rho};
+
+    /*
+    #[test]
+    // NaN input results in NaN output.
+    // Other libraries using GSW-rs might rely on this behavior to propagate
+    // and handle invalid elements.
+    fn nan() {
+        let sa = sa_from_rho(f64::NAN, 1.0, 1.0);
+        assert!(sa.unwrap().is_nan());
+
+        let sa = sa_from_rho(1000.0, f64::NAN, 1.0);
+        assert!(sa.unwrap().is_nan());
+
+        let sa = sa_from_rho(1000.0, 1.0, f64::NAN);
+        assert!(sa.unwrap().is_nan());
+    }
+    */
+
+    #[test]
+    // Verifying with extreme values of S_A if optimization process does not
+    // break.
+    // The tolerance of 1e-10 is arbitrary.
+    fn extreme_sa() {
+        let sa_to_test: [f64; 2] = [0.0, 50.0];
+        let ct = 5.0;
+        let p = 5000.0;
+        for sa in sa_to_test.iter() {
+            let density = rho(*sa, ct, p).unwrap();
+            let sa_new = sa_from_rho(density, ct, p).unwrap();
+            assert!((*sa - sa_new).abs() <= 1e-10);
+        }
+    }
 }
 
 /// Conservative Temperature of maximum density of seawater
