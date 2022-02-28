@@ -2,6 +2,7 @@
 
   inputs = {
     nixpkgs.url = "github:NixOS/nixpkgs/nixpkgs-unstable";
+    utils.url = "github:numtide/flake-utils";
 
     rust-overlay = {
       url = "github:oxalica/rust-overlay";
@@ -11,31 +12,47 @@
       };
     };
 
-    utils.url = "github:numtide/flake-utils";
+    naersk = {
+      url = "github:nix-community/naersk";
+      inputs = {
+        nixpkgs.follows = "nixpkgs";
+        flake-utils.follows = "utils";
+      };
+    };
   };
 
-  outputs = { self, nixpkgs, rust-overlay, utils }:
+  outputs = { self, nixpkgs, naersk, rust-overlay, utils }:
     utils.lib.eachDefaultSystem (system:
       let
         overlays = [ (import rust-overlay) ];
         pkgs = import nixpkgs {
           inherit system overlays;
         };
-        rustVersion = pkgs.rust-bin.stable.latest.default.override {
+        rust = pkgs.rust-bin.stable.latest.default.override {
           #extensions = [ "rust-src" ];
           #targets = [ "x86_64-unknown-linux-musl" ];
           targets = [ "wasm32-wasi" "wasm32-unknown-unknown" "wasm32-unknown-emscripten" ];
         };
+        naersk-lib = naersk.lib."${system}".override {
+          cargo = rust;
+          rustc = rust;
+        };
       in
+
       with pkgs;
       {
+        defaultPackage = naersk-lib.buildPackage {
+          pname = "gsw";
+          root = ./.;
+        };
+
         devShell = mkShell {
           nativeBuildInputs = [
             clang_13
           ];
 
           buildInputs = [
-            rustVersion
+            rust
             openssl
             pkgconfig
 
