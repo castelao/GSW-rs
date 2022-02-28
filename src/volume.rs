@@ -1830,27 +1830,42 @@ pub fn sa_from_rho(rho: f64, ct: f64, p: f64) -> Result<f64> {
 }
 
 // Failing only on PowerPC64
-/*
 #[cfg(test)]
 mod test_sa_from_rho {
-    use super::sa_from_rho;
+    use super::{rho, sa_from_rho};
 
+    /*
     #[test]
     // NaN input results in NaN output.
     // Other libraries using GSW-rs might rely on this behavior to propagate
     // and handle invalid elements.
     fn nan() {
-        let v = sa_from_rho(f64::NAN, 1.0, 1.0);
-        assert!(v.unwrap().is_nan());
+        let sa = sa_from_rho(f64::NAN, 1.0, 1.0);
+        assert!(sa.unwrap().is_nan());
 
-        let v = sa_from_rho(1000.0, f64::NAN, 1.0);
-        assert!(v.unwrap().is_nan());
+        let sa = sa_from_rho(1000.0, f64::NAN, 1.0);
+        assert!(sa.unwrap().is_nan());
 
-        let v = sa_from_rho(1000.0, 1.0, f64::NAN);
-        assert!(v.unwrap().is_nan());
+        let sa = sa_from_rho(1000.0, 1.0, f64::NAN);
+        assert!(sa.unwrap().is_nan());
+    }
+    */
+
+    #[test]
+    // Verifying with extreme values of S_A if optimization process does not
+    // break.
+    // The tolerance of 1e-10 is arbitrary.
+    fn extreme_sa() {
+        let sa_to_test: [f64; 2] = [0.0, 50.0];
+        let ct = 5.0;
+        let p = 5000.0;
+        for sa in sa_to_test.iter() {
+            let density = rho(*sa, ct, p).unwrap();
+            let sa_new = sa_from_rho(density, ct, p).unwrap();
+            assert!((*sa - sa_new).abs() <= 1e-10);
+        }
     }
 }
-*/
 
 /// Conservative Temperature of maximum density of seawater
 /// (75-term polynomial approximation)
