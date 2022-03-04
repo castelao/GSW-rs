@@ -292,7 +292,7 @@ fn dynamic_enthalpy() {
 
 #[test]
 #[cfg(not(windows))]
-fn specvol() {
+fn rho() {
     let mut input = File::open("tests/data/gsw_validation.bin").expect("Unable to open file");
     let mut contents = vec![];
     input
@@ -304,14 +304,18 @@ fn specvol() {
     let p = out.data2d.get(&String::from("p_chck_cast")).unwrap();
     let sa = out.data2d.get(&String::from("SA_chck_cast")).unwrap();
     let ct = out.data2d.get(&String::from("CT_chck_cast")).unwrap();
-    let specvol = out.data2d.get(&String::from("specvol")).unwrap();
+    let rho = out.data2d.get(&String::from("rho")).unwrap();
+    let tol = if cfg!(feature = "compat") || (f64::EPSILON > 1e-12) {
+        f64::EPSILON
+    } else {
+        1e-12
+    };
     for i in 0..3 {
         for j in 0..45 {
-            if !specvol[i][j].is_nan() {
+            if !rho[i][j].is_nan() {
                 assert!(
-                    (gsw::volume::specvol(sa[i][j], ct[i][j], p[i][j]).unwrap() - specvol[i][j])
-                        .abs()
-                        <= f64::EPSILON
+                    (gsw::volume::rho(sa[i][j], ct[i][j], p[i][j]).unwrap() - rho[i][j]).abs()
+                        <= tol
                 );
             }
         }
