@@ -142,16 +142,12 @@ fn sigma0() {
     let sa = out.data2d.get(&String::from("SA_chck_cast")).unwrap();
     let ct = out.data2d.get(&String::from("CT_chck_cast")).unwrap();
     let sigma0 = out.data2d.get(&String::from("sigma0")).unwrap();
+    let tol = 1e-12;
     for i in 0..3 {
         for j in 0..45 {
             if !sigma0[i][j].is_nan() {
-                assert_eq!(
-                    gsw::volume::sigma0(sa[i][j], ct[i][j]).unwrap(),
-                    sigma0[i][j]
-                );
                 assert!(
-                    (gsw::volume::sigma0(sa[i][j], ct[i][j]).unwrap() - sigma0[i][j]).abs()
-                        <= f64::EPSILON
+                    (gsw::volume::sigma0(sa[i][j], ct[i][j]).unwrap() - sigma0[i][j]).abs() <= tol
                 );
             }
         }
@@ -172,16 +168,12 @@ fn sigma1() {
     let sa = out.data2d.get(&String::from("SA_chck_cast")).unwrap();
     let ct = out.data2d.get(&String::from("CT_chck_cast")).unwrap();
     let sigma1 = out.data2d.get(&String::from("sigma1")).unwrap();
+    let tol = 1e-12;
     for i in 0..3 {
         for j in 0..45 {
             if !sigma1[i][j].is_nan() {
-                assert_eq!(
-                    gsw::volume::sigma1(sa[i][j], ct[i][j]).unwrap(),
-                    sigma1[i][j]
-                );
                 assert!(
-                    (gsw::volume::sigma1(sa[i][j], ct[i][j]).unwrap() - sigma1[i][j]).abs()
-                        <= f64::EPSILON
+                    (gsw::volume::sigma1(sa[i][j], ct[i][j]).unwrap() - sigma1[i][j]).abs() <= tol
                 );
             }
         }
@@ -202,16 +194,12 @@ fn sigma2() {
     let sa = out.data2d.get(&String::from("SA_chck_cast")).unwrap();
     let ct = out.data2d.get(&String::from("CT_chck_cast")).unwrap();
     let sigma2 = out.data2d.get(&String::from("sigma2")).unwrap();
+    let tol = 1e-12;
     for i in 0..3 {
         for j in 0..45 {
             if !sigma2[i][j].is_nan() {
-                assert_eq!(
-                    gsw::volume::sigma2(sa[i][j], ct[i][j]).unwrap(),
-                    sigma2[i][j]
-                );
                 assert!(
-                    (gsw::volume::sigma2(sa[i][j], ct[i][j]).unwrap() - sigma2[i][j]).abs()
-                        <= f64::EPSILON
+                    (gsw::volume::sigma2(sa[i][j], ct[i][j]).unwrap() - sigma2[i][j]).abs() <= tol
                 );
             }
         }
@@ -232,16 +220,12 @@ fn sigma3() {
     let sa = out.data2d.get(&String::from("SA_chck_cast")).unwrap();
     let ct = out.data2d.get(&String::from("CT_chck_cast")).unwrap();
     let sigma3 = out.data2d.get(&String::from("sigma3")).unwrap();
+    let tol = 1e-12;
     for i in 0..3 {
         for j in 0..45 {
             if !sigma3[i][j].is_nan() {
-                assert_eq!(
-                    gsw::volume::sigma3(sa[i][j], ct[i][j]).unwrap(),
-                    sigma3[i][j]
-                );
                 assert!(
-                    (gsw::volume::sigma3(sa[i][j], ct[i][j]).unwrap() - sigma3[i][j]).abs()
-                        <= f64::EPSILON
+                    (gsw::volume::sigma3(sa[i][j], ct[i][j]).unwrap() - sigma3[i][j]).abs() <= tol
                 );
             }
         }
@@ -262,16 +246,12 @@ fn sigma4() {
     let sa = out.data2d.get(&String::from("SA_chck_cast")).unwrap();
     let ct = out.data2d.get(&String::from("CT_chck_cast")).unwrap();
     let sigma4 = out.data2d.get(&String::from("sigma4")).unwrap();
+    let tol = 1e-12;
     for i in 0..3 {
         for j in 0..45 {
             if !sigma4[i][j].is_nan() {
-                assert_eq!(
-                    gsw::volume::sigma4(sa[i][j], ct[i][j]).unwrap(),
-                    sigma4[i][j]
-                );
                 assert!(
-                    (gsw::volume::sigma4(sa[i][j], ct[i][j]).unwrap() - sigma4[i][j]).abs()
-                        <= f64::EPSILON
+                    (gsw::volume::sigma4(sa[i][j], ct[i][j]).unwrap() - sigma4[i][j]).abs() <= tol
                 );
             }
         }
