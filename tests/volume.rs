@@ -435,3 +435,37 @@ fn dynamic_enthalpy() {
         }
     }
 }
+
+#[test]
+#[cfg(not(windows))]
+fn sa_from_rho() {
+    let mut input = File::open("tests/data/gsw_validation.bin").expect("Unable to open file");
+    let mut contents = vec![];
+    input
+        .read_to_end(&mut contents)
+        .expect("Failed to read content");
+
+    let out: DataRef = from_bytes(&contents).unwrap();
+
+    let rho = out.data2d.get(&String::from("rho")).unwrap();
+    let p = out.data2d.get(&String::from("p_chck_cast")).unwrap();
+    let ct = out.data2d.get(&String::from("CT_chck_cast")).unwrap();
+    let sa_from_rho = out.data2d.get(&String::from("SA_from_rho")).unwrap();
+    let tol = if cfg!(feature = "compat") || (f64::EPSILON > 1e-12) {
+        f64::EPSILON
+    } else {
+        1e-12
+    };
+    for i in 0..3 {
+        for j in 0..45 {
+            if !sa_from_rho[i][j].is_nan() {
+                assert!(
+                    (gsw::volume::sa_from_rho(rho[i][j], ct[i][j], p[i][j]).unwrap()
+                        - sa_from_rho[i][j])
+                        .abs()
+                        <= tol
+                );
+            }
+        }
+    }
+}
