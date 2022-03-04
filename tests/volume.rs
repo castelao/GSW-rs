@@ -258,9 +258,10 @@ fn sigma4() {
     }
 }
 
-#[test]
-#[cfg(not(windows))]
-fn dynamic_enthalpy() {
+// Must use p_chck_cast_shallow & p_chck_cast_deep
+//#[test]
+//#[cfg(not(windows))]
+fn enthalpy_diff() {
     let mut input = File::open("tests/data/gsw_validation.bin").expect("Unable to open file");
     let mut contents = vec![];
     input
@@ -272,17 +273,24 @@ fn dynamic_enthalpy() {
     let p = out.data2d.get(&String::from("p_chck_cast")).unwrap();
     let sa = out.data2d.get(&String::from("SA_chck_cast")).unwrap();
     let ct = out.data2d.get(&String::from("CT_chck_cast")).unwrap();
-    let rho = out.data2d.get(&String::from("rho")).unwrap();
-    let tol = if cfg!(feature = "compat") || (f64::EPSILON > 1e-12) {
-        f64::EPSILON
+    let enthalpy_diff = out.data2d.get(&String::from("enthalpy_diff")).unwrap();
+    let tol = if cfg!(feature = "compat") || (f64::EPSILON > 1e-10) {
+        // f64::EPSILON
+        1e-11
     } else {
-        1e-12
+        1e-10
     };
     for i in 0..3 {
         for j in 0..45 {
-            if !rho[i][j].is_nan() {
+            if !enthalpy_diff[i][j].is_nan() {
+                assert_eq!(
+                    gsw::volume::enthalpy_diff(sa[i][j], ct[i][j], p[i][j], 0.0).unwrap(),
+                    enthalpy_diff[i][j]
+                );
                 assert!(
-                    (gsw::volume::rho(sa[i][j], ct[i][j], p[i][j]).unwrap() - rho[i][j]).abs()
+                    (gsw::volume::enthalpy_diff(sa[i][j], ct[i][j], p[i][j], 0.0).unwrap()
+                        - enthalpy_diff[i][j])
+                        .abs()
                         <= tol
                 );
             }
