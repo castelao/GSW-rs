@@ -65,6 +65,7 @@
             cargo-watch
             cargo-c
             cargo-asm
+            cargo-outdated
 
             (python39.withPackages (ps: with ps; [ virtualenv setuptools mypy tox ]))
           ];
