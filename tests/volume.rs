@@ -259,8 +259,9 @@ fn sigma4() {
 }
 
 // Must use p_chck_cast_shallow & p_chck_cast_deep
-//#[test]
-//#[cfg(not(windows))]
+/*
+#[test]
+#[cfg(not(windows))]
 fn enthalpy_diff() {
     let mut input = File::open("tests/data/gsw_validation.bin").expect("Unable to open file");
     let mut contents = vec![];
@@ -297,6 +298,7 @@ fn enthalpy_diff() {
         }
     }
 }
+*/
 
 #[test]
 #[cfg(not(windows))]
