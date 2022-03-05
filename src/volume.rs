@@ -1222,7 +1222,7 @@ mod test_thermobaric {
         let t_b = thermobaric(-0.1, 10.0, 100.0);
 
         if cfg!(feature = "compat") {
-            assert!((t_b.unwrap() - 1.283699411753888e-5).abs() <= f64::EPSILON);
+            assert!((t_b.unwrap() - 2.570609257054766e-12).abs() <= f64::EPSILON);
         } else if cfg!(feature = "invalidasnan") {
             assert!(t_b.unwrap().is_nan());
         } else {
