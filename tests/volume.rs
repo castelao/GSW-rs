@@ -10,8 +10,9 @@ struct DataRef {
     version: String<8>,
     src: String<32>,
     src_md5: String<32>,
-    data_x: FnvIndexMap<String<24>, Vec<f64, 3>, 4>,
-    data2d: FnvIndexMap<String<24>, Vec<Vec<f64, 45>, 3>, 64>,
+    scalar: FnvIndexMap<String<64>, f64, 2>,
+    data_x: FnvIndexMap<String<64>, Vec<f64, 3>, 2>,
+    data2d: FnvIndexMap<String<64>, Vec<Vec<f64, 45>, 3>, 32>,
 }
 
 #[test]
@@ -45,7 +46,8 @@ fn specvol() {
 #[test]
 #[cfg(not(windows))]
 fn alpha() {
-    let mut input = File::open("tests/data/gsw_validation.bin").expect("Unable to open file");
+    let mut input =
+        File::open("tests/data/gsw_volume_validation.bin").expect("Unable to open file");
     let mut contents = vec![];
     input
         .read_to_end(&mut contents)
@@ -72,7 +74,8 @@ fn alpha() {
 #[test]
 #[cfg(not(windows))]
 fn beta() {
-    let mut input = File::open("tests/data/gsw_validation.bin").expect("Unable to open file");
+    let mut input =
+        File::open("tests/data/gsw_volume_validation.bin").expect("Unable to open file");
     let mut contents = vec![];
     input
         .read_to_end(&mut contents)
@@ -303,7 +306,8 @@ fn enthalpy_diff() {
 #[test]
 #[cfg(not(windows))]
 fn rho() {
-    let mut input = File::open("tests/data/gsw_validation.bin").expect("Unable to open file");
+    let mut input =
+        File::open("tests/data/gsw_volume_validation.bin").expect("Unable to open file");
     let mut contents = vec![];
     input
         .read_to_end(&mut contents)
