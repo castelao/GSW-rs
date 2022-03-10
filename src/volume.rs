@@ -1037,6 +1037,99 @@ mod test_rho_first_derivatives {
     }
 }
 
+/// Second order derivatives of density (75-term polynomial approximation)
+///
+/// # Arguments
+///
+/// * `sa`: Absolute Salinity \[ g kg-1 \]
+/// * `ct`: Conservative Temperature (ITS-90) \[ deg C \]
+/// * `p`: sea pressure \[ dbar \] (i.e. absolute pressure - 10.1325 dbar)
+///
+/// # Example:
+/// ```
+/// use gsw::volume::rho_second_derivatives;
+/// let (dsds, dsdt, dtdt, dsdp, dtdp) = rho_second_derivatives(32.0, 10.0, 100.0).unwrap();
+/// assert!((dsds - 0.0001259760985890476).abs() <= f64::EPSILON);
+/// assert!((dsdt + 0.002603337785720922).abs() <= f64::EPSILON);
+/// assert!((dtdt + 0.010331290447124985).abs() <= f64::EPSILON);
+/// assert!((dsdp + 1.0368197591928267e-09).abs() <= f64::EPSILON);
+/// assert!((dtdp + 2.1999866528036205e-09).abs() <= f64::EPSILON);
+/// ```
+pub fn rho_second_derivatives(sa: f64, ct: f64, p: f64) -> Result<(f64, f64, f64, f64, f64)> {
+    let rec_v = 1.0 / specvol(sa, ct, p)?;
+    let rec_v2 = rec_v * rec_v;
+    let rec_v3 = rec_v2 * rec_v;
+
+    let (v_sa, v_ct, v_p) = specvol_first_derivatives(sa, ct, p)?;
+    let (v_sa_sa, v_sa_ct, v_ct_ct, v_sa_p, v_ct_p) = specvol_second_derivatives(sa, ct, p)?;
+
+    let rho_sa_sa = -v_sa_sa * rec_v2 + 2.0 * v_sa * v_sa * rec_v3;
+    let rho_sa_ct = -v_sa_ct * rec_v2 + 2.0 * v_sa * v_ct * rec_v3;
+    let rho_ct_ct = -v_ct_ct * rec_v2 + 2.0 * v_ct * v_ct * rec_v3;
+    let rho_sa_p = -v_sa_p * rec_v2 + 2.0 * v_sa * v_p * rec_v3;
+    let rho_ct_p = -v_ct_p * rec_v2 + 2.0 * v_ct * v_p * rec_v3;
+
+    Ok((rho_sa_sa, rho_sa_ct, rho_ct_ct, rho_sa_p, rho_ct_p))
+}
+
+#[cfg(test)]
+mod test_rho_second_derivatives {
+    use super::{rho_second_derivatives, Error};
+
+    #[test]
+    // NaN input results in NaN output.
+    // Other libraries using GSW-rs might rely on this behavior to propagate
+    // and handle invalid elements.
+    fn nan() {
+        let (dsds, dsdt, dtdt, dsdp, dtdp) = rho_second_derivatives(f64::NAN, 1.0, 1.0).unwrap();
+        assert!(dsds.is_nan());
+        assert!(dsdt.is_nan());
+        assert!(dtdt.is_nan());
+        assert!(dsdp.is_nan());
+        assert!(dtdp.is_nan());
+
+        let (dsds, dsdt, dtdt, dsdp, dtdp) = rho_second_derivatives(1.0, f64::NAN, 1.0).unwrap();
+        assert!(dsds.is_nan());
+        assert!(dsdt.is_nan());
+        assert!(dtdt.is_nan());
+        assert!(dsdp.is_nan());
+        assert!(dtdp.is_nan());
+
+        let (dsds, dsdt, dtdt, dsdp, dtdp) = rho_second_derivatives(1.0, 1.0, f64::NAN).unwrap();
+        assert!(dsds.is_nan());
+        assert!(dsdt.is_nan());
+        assert!(dtdt.is_nan());
+        assert!(dsdp.is_nan());
+        assert!(dtdp.is_nan());
+    }
+
+    #[test]
+    fn negative_sa() {
+        let ans = rho_second_derivatives(-0.1, 10.0, 100.0);
+
+        if cfg!(feature = "compat") {
+            let (dsds, dsdt, dtdt, dsdp, dtdp) = ans.unwrap();
+            assert!((dsds + 0.0029494917846421727).abs() <= f64::EPSILON);
+            assert!((dsdt + 0.002823621816038968).abs() <= f64::EPSILON);
+            assert!((dtdt + 0.012235659145787038).abs() <= f64::EPSILON);
+            assert!((dsdp + 4.931177453122352e-10).abs() <= f64::EPSILON);
+            assert!((dtdp + 2.5210867303103827e-9).abs() <= f64::EPSILON);
+        } else if cfg!(feature = "invalidasnan") {
+            let (dsds, dsdt, dtdt, dsdp, dtdp) = ans.unwrap();
+            assert!(dsds.is_nan());
+            assert!(dsdt.is_nan());
+            assert!(dtdt.is_nan());
+            assert!(dsdp.is_nan());
+            assert!(dtdp.is_nan());
+        } else {
+            match ans {
+                Err(Error::NegativeSalinity) => (),
+                _ => panic!(),
+            }
+        }
+    }
+}
+
 /// Potential density anomaly with reference to sea pressure of 0 dbar
 /// (75-term polynomial approximation)
 ///
