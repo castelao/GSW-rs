@@ -279,8 +279,7 @@ fn enthalpy_diff() {
     let ct = out.data2d.get(&String::from("CT_chck_cast")).unwrap();
     let enthalpy_diff = out.data2d.get(&String::from("enthalpy_diff")).unwrap();
     let tol = if cfg!(feature = "compat") || (f64::EPSILON > 1e-10) {
-        // f64::EPSILON
-        1e-11
+        f64::EPSILON
     } else {
         1e-10
     };
