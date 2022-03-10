@@ -718,6 +718,27 @@ mod test_specvol_second_derivatives {
     }
 }
 
+// v_SA_wrt_h, v_h
+///
+/// # Example:
+/// ```
+/// use gsw::volume::specvol_first_derivatives_wrt_enthalpy;
+/// let (v_sa_wrt_h, v_h) = specvol_first_derivatives_wrt_enthalpy(32.0, 10.0, 100.0).unwrap();
+///
+/// assert!((v_sa_wrt_h + 7.35521369799294e-7).abs() <= f64::EPSILON);
+/// assert!((v_h - 3.936760589121538e-11).abs() <= f64::EPSILON);
+/// ```
+pub fn specvol_first_derivatives_wrt_enthalpy(sa: f64, ct: f64, p: f64) -> Result<(f64, f64)> {
+    let (v_sa, v_ct, _) = specvol_first_derivatives(sa, ct, p)?;
+    let (h_sa, h_ct) = enthalpy_first_derivatives(sa, ct, p)?;
+
+    let rec_h_ct = 1.0 / h_ct;
+    let v_sa_wrt_h = v_sa - (v_ct * h_sa) * rec_h_ct;
+    let v_h = v_ct * rec_h_ct;
+
+    Ok((v_sa_wrt_h, v_h))
+}
+
 /// Specific volume anomaly (75-term polynomial approximation)
 ///
 /// # Arguments
