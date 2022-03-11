@@ -1,0 +1,27 @@
+name: "Build legacy Nix package on Ubuntu"
+
+on:
+  push:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Cache nix store
+        id: cache-nix
+        uses: actions/cache@v2
+        with:
+          path: |
+            ~/.nix-portable/store
+            ~/bin/nix-portable
+          key: nix-${{ hashFiles('shell.nix') }}-${{ hashFiles('nix/**') }}-v009
+
+      - name: Install nix-portable
+        if: steps.cache-nix.outputs.cache-hit != 'true'
+        run: |
+          mkdir ~/bin
+          wget -qO ~/bin/nix-portable https://github.com/DavHau/nix-portable/releases/download/v009/nix-portable
+          chmod +x ~/bin/nix-portable
+      - run: ~/bin/nix-portable nix-build . -A defaultPackage.x86_64-linux
