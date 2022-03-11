@@ -739,6 +739,34 @@ pub fn specvol_first_derivatives_wrt_enthalpy(sa: f64, ct: f64, p: f64) -> Resul
     Ok((v_sa_wrt_h, v_h))
 }
 
+/// Second second order derivatives of volume specific
+/// with respect to enthalpy
+/// (75-term polynomial approximation)
+pub fn specvol_second_derivatives_wrt_enthalpy(
+    sa: f64,
+    ct: f64,
+    p: f64,
+) -> Result<(f64, f64, f64)> {
+    let (_, v_ct, _) = specvol_first_derivatives(sa, ct, p)?;
+    let (h_sa, h_ct) = enthalpy_first_derivatives(sa, ct, p)?;
+
+    let (v_sa_sa, v_sa_ct, v_ct_ct, _, _) = specvol_second_derivatives(sa, ct, p)?;
+    let (h_sa_sa, h_sa_ct, h_ct_ct) = enthalpy_second_derivatives(sa, ct, p)?;
+
+    let rec_h_ct = 1.0 / h_ct;
+    let rec_h_ct2 = rec_h_ct * rec_h_ct;
+
+    let v_h_h = (v_ct_ct * h_ct - h_ct_ct * v_ct) * (rec_h_ct2 * rec_h_ct);
+
+    let v_sa_h = (v_sa_ct * h_ct - v_ct * h_sa_ct) * rec_h_ct2 - h_sa * v_h_h;
+
+    let v_sa_sa_wrt_h = v_sa_sa
+        - (h_ct * (v_sa_ct * h_sa - v_ct * h_sa_sa) + v_ct * h_sa * h_sa_ct) * rec_h_ct2
+        - h_sa * v_sa_h;
+
+    Ok((v_sa_sa_wrt_h, v_sa_h, v_h_h))
+}
+
 /// Specific volume anomaly (75-term polynomial approximation)
 ///
 /// # Arguments
