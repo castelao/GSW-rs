@@ -2001,6 +2001,86 @@ pub fn enthalpy_first_derivatives(sa: f64, ct: f64, p: f64) -> Result<(f64, f64)
     Ok((h_sa, h_ct))
 }
 
+/// Second derivatives of enthalphy  (75-term polynomial approximation)
+pub fn enthalpy_second_derivatives(sa: f64, ct: f64, p: f64) -> Result<(f64, f64, f64)> {
+    let s: f64 = non_dimensional_sa(sa)?;
+    let tau: f64 = ct / GSW_CTU;
+    let pi: f64 = non_dimensional_p(p);
+
+    let s2 = s * s;
+
+    let dynamic_h_sa_sa_part = pi
+        * (-H101
+            + s2 * (3.0 * H301 + s * (8.0 * H401 + s * (15.0 * H501 + 24.0 * H601 * s)))
+            + tau
+                * (-H111
+                    + s2 * (3.0 * H311 + s * (8.0 * H411 + 15.0 * H511 * s))
+                    + tau
+                        * (-H121
+                            + s2 * (3.0 * H321 + 8.0 * H421 * s)
+                            + tau * (-H131 + 3.0 * H331 * s2 + tau * (-H141 - H151 * tau))))
+            + pi * (-H102
+                + s2 * (3.0 * H302 + s * (8.0 * H402 + 15.0 * H502 * s))
+                + tau
+                    * (-H112
+                        + s2 * (3.0 * H312 + 8.0 * H412 * s)
+                        + tau * (-H122 + 3.0 * H322 * s2 + tau * (-H132 - H142 * tau)))
+                + pi * (s2 * (8.0 * H403 * s + 3.0 * H313 * tau)
+                    + pi * (-H103
+                        + 3.0 * H303 * s2
+                        + tau * (-H113 + tau * (-H123 - H133 * tau))
+                        + pi * (-H104 - H114 * tau - H105 * pi)))));
+    let h_sa_sa = 1e8 * 0.25 * GSW_SFAC * dynamic_h_sa_sa_part / (s * s * s);
+
+    let dynamic_h_sa_ct_part = pi
+        * (H111
+            + s * (2.0 * H211 + s * (3.0 * H311 + s * (4.0 * H411 + 5.0 * H511 * s)))
+            + tau
+                * (2.0 * H121
+                    + s * (4.0 * H221 + s * (6.0 * H321 + 8.0 * H421 * s))
+                    + tau
+                        * (3.0 * H131
+                            + s * (6.0 * H231 + 9.0 * H331 * s)
+                            + tau * (4.0 * H141 + 8.0 * H241 * s + 5.0 * H151 * tau)))
+            + pi * (H112
+                + s * (2.0 * H212 + s * (3.0 * H312 + 4.0 * H412 * s))
+                + tau
+                    * (2.0 * H122
+                        + s * (4.0 * H222 + 6.0 * H322 * s)
+                        + tau * (3.0 * H132 + 6.0 * H232 * s + 4.0 * H142 * tau))
+                + pi * (H113
+                    + s * (2.0 * H213 + 3.0 * H313 * s)
+                    + tau * (2.0 * H123 + 4.0 * H223 * s + 3.0 * H133 * tau)
+                    + H114 * pi)));
+
+    let h_sa_ct = 1e8 * 0.025 * 0.5 * GSW_SFAC * dynamic_h_sa_ct_part / s;
+
+    let dynamic_h_ct_ct_part = pi
+        * (2.0 * H021
+            + s * (2.0 * H121 + s * (2.0 * H221 + s * (2.0 * H321 + 2.0 * H421 * s)))
+            + tau
+                * (6.0 * H031
+                    + s * (6.0 * H131 + s * (6.0 * H231 + 6.0 * H331 * s))
+                    + tau
+                        * (12.0 * H041
+                            + s * (12.0 * H141 + 12.0 * H241 * s)
+                            + tau * (20.0 * H051 + 20.0 * H151 * s + 30.0 * H061 * tau)))
+            + pi * (2.0 * H022
+                + s * (2.0 * H122 + s * (2.0 * H222 + 2.0 * H322 * s))
+                + tau
+                    * (6.0 * H032
+                        + s * (6.0 * H132 + 6.0 * H232 * s)
+                        + tau * (12.0 * H042 + 12.0 * H142 * s + 20.0 * H052 * tau))
+                + pi * (2.0 * H023
+                    + s * (2.0 * H123 + 2.0 * H223 * s)
+                    + tau * (6.0 * H133 * s + 6.0 * H033 + 12.0 * H043 * tau)
+                    + 2.0 * H024 * pi)));
+
+    let h_ct_ct = 1e8 * 6.25e-4 * dynamic_h_ct_ct_part;
+
+    Ok((h_sa_sa, h_sa_ct, h_ct_ct))
+}
+
 #[allow(clippy::manual_range_contains)]
 /// Absolute salinity of seawater from given density, Conservative
 /// Temperature, and pressure.
