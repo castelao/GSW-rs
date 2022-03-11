@@ -718,6 +718,55 @@ mod test_specvol_second_derivatives {
     }
 }
 
+// v_SA_wrt_h, v_h
+///
+/// # Example:
+/// ```
+/// use gsw::volume::specvol_first_derivatives_wrt_enthalpy;
+/// let (v_sa_wrt_h, v_h) = specvol_first_derivatives_wrt_enthalpy(32.0, 10.0, 100.0).unwrap();
+///
+/// assert!((v_sa_wrt_h + 7.35521369799294e-7).abs() <= f64::EPSILON);
+/// assert!((v_h - 3.936760589121538e-11).abs() <= f64::EPSILON);
+/// ```
+pub fn specvol_first_derivatives_wrt_enthalpy(sa: f64, ct: f64, p: f64) -> Result<(f64, f64)> {
+    let (v_sa, v_ct, _) = specvol_first_derivatives(sa, ct, p)?;
+    let (h_sa, h_ct) = enthalpy_first_derivatives(sa, ct, p)?;
+
+    let rec_h_ct = 1.0 / h_ct;
+    let v_sa_wrt_h = v_sa - (v_ct * h_sa) * rec_h_ct;
+    let v_h = v_ct * rec_h_ct;
+
+    Ok((v_sa_wrt_h, v_h))
+}
+
+/// Second second order derivatives of volume specific
+/// with respect to enthalpy
+/// (75-term polynomial approximation)
+pub fn specvol_second_derivatives_wrt_enthalpy(
+    sa: f64,
+    ct: f64,
+    p: f64,
+) -> Result<(f64, f64, f64)> {
+    let (_, v_ct, _) = specvol_first_derivatives(sa, ct, p)?;
+    let (h_sa, h_ct) = enthalpy_first_derivatives(sa, ct, p)?;
+
+    let (v_sa_sa, v_sa_ct, v_ct_ct, _, _) = specvol_second_derivatives(sa, ct, p)?;
+    let (h_sa_sa, h_sa_ct, h_ct_ct) = enthalpy_second_derivatives(sa, ct, p)?;
+
+    let rec_h_ct = 1.0 / h_ct;
+    let rec_h_ct2 = rec_h_ct * rec_h_ct;
+
+    let v_h_h = (v_ct_ct * h_ct - h_ct_ct * v_ct) * (rec_h_ct2 * rec_h_ct);
+
+    let v_sa_h = (v_sa_ct * h_ct - v_ct * h_sa_ct) * rec_h_ct2 - h_sa * v_h_h;
+
+    let v_sa_sa_wrt_h = v_sa_sa
+        - (h_ct * (v_sa_ct * h_sa - v_ct * h_sa_sa) + v_ct * h_sa * h_sa_ct) * rec_h_ct2
+        - h_sa * v_sa_h;
+
+    Ok((v_sa_sa_wrt_h, v_sa_h, v_h_h))
+}
+
 /// Specific volume anomaly (75-term polynomial approximation)
 ///
 /// # Arguments
@@ -1028,6 +1077,99 @@ mod test_rho_first_derivatives {
             assert!(drho_dsa.is_nan());
             assert!(drho_dct.is_nan());
             assert!(drho_dp.is_nan());
+        } else {
+            match ans {
+                Err(Error::NegativeSalinity) => (),
+                _ => panic!(),
+            }
+        }
+    }
+}
+
+/// Second order derivatives of density (75-term polynomial approximation)
+///
+/// # Arguments
+///
+/// * `sa`: Absolute Salinity \[ g kg-1 \]
+/// * `ct`: Conservative Temperature (ITS-90) \[ deg C \]
+/// * `p`: sea pressure \[ dbar \] (i.e. absolute pressure - 10.1325 dbar)
+///
+/// # Example:
+/// ```
+/// use gsw::volume::rho_second_derivatives;
+/// let (dsds, dsdt, dtdt, dsdp, dtdp) = rho_second_derivatives(32.0, 10.0, 100.0).unwrap();
+/// assert!((dsds - 0.0001259760985890476).abs() <= f64::EPSILON);
+/// assert!((dsdt + 0.002603337785720922).abs() <= f64::EPSILON);
+/// assert!((dtdt + 0.010331290447124985).abs() <= f64::EPSILON);
+/// assert!((dsdp + 1.0368197591928267e-09).abs() <= f64::EPSILON);
+/// assert!((dtdp + 2.1999866528036205e-09).abs() <= f64::EPSILON);
+/// ```
+pub fn rho_second_derivatives(sa: f64, ct: f64, p: f64) -> Result<(f64, f64, f64, f64, f64)> {
+    let rec_v = 1.0 / specvol(sa, ct, p)?;
+    let rec_v2 = rec_v * rec_v;
+    let rec_v3 = rec_v2 * rec_v;
+
+    let (v_sa, v_ct, v_p) = specvol_first_derivatives(sa, ct, p)?;
+    let (v_sa_sa, v_sa_ct, v_ct_ct, v_sa_p, v_ct_p) = specvol_second_derivatives(sa, ct, p)?;
+
+    let rho_sa_sa = -v_sa_sa * rec_v2 + 2.0 * v_sa * v_sa * rec_v3;
+    let rho_sa_ct = -v_sa_ct * rec_v2 + 2.0 * v_sa * v_ct * rec_v3;
+    let rho_ct_ct = -v_ct_ct * rec_v2 + 2.0 * v_ct * v_ct * rec_v3;
+    let rho_sa_p = -v_sa_p * rec_v2 + 2.0 * v_sa * v_p * rec_v3;
+    let rho_ct_p = -v_ct_p * rec_v2 + 2.0 * v_ct * v_p * rec_v3;
+
+    Ok((rho_sa_sa, rho_sa_ct, rho_ct_ct, rho_sa_p, rho_ct_p))
+}
+
+#[cfg(test)]
+mod test_rho_second_derivatives {
+    use super::{rho_second_derivatives, Error};
+
+    #[test]
+    // NaN input results in NaN output.
+    // Other libraries using GSW-rs might rely on this behavior to propagate
+    // and handle invalid elements.
+    fn nan() {
+        let (dsds, dsdt, dtdt, dsdp, dtdp) = rho_second_derivatives(f64::NAN, 1.0, 1.0).unwrap();
+        assert!(dsds.is_nan());
+        assert!(dsdt.is_nan());
+        assert!(dtdt.is_nan());
+        assert!(dsdp.is_nan());
+        assert!(dtdp.is_nan());
+
+        let (dsds, dsdt, dtdt, dsdp, dtdp) = rho_second_derivatives(1.0, f64::NAN, 1.0).unwrap();
+        assert!(dsds.is_nan());
+        assert!(dsdt.is_nan());
+        assert!(dtdt.is_nan());
+        assert!(dsdp.is_nan());
+        assert!(dtdp.is_nan());
+
+        let (dsds, dsdt, dtdt, dsdp, dtdp) = rho_second_derivatives(1.0, 1.0, f64::NAN).unwrap();
+        assert!(dsds.is_nan());
+        assert!(dsdt.is_nan());
+        assert!(dtdt.is_nan());
+        assert!(dsdp.is_nan());
+        assert!(dtdp.is_nan());
+    }
+
+    #[test]
+    fn negative_sa() {
+        let ans = rho_second_derivatives(-0.1, 10.0, 100.0);
+
+        if cfg!(feature = "compat") {
+            let (dsds, dsdt, dtdt, dsdp, dtdp) = ans.unwrap();
+            assert!((dsds + 0.0029494917846421727).abs() <= f64::EPSILON);
+            assert!((dsdt + 0.002823621816038968).abs() <= f64::EPSILON);
+            assert!((dtdt + 0.012235659145787038).abs() <= f64::EPSILON);
+            assert!((dsdp + 4.931177453122352e-10).abs() <= f64::EPSILON);
+            assert!((dtdp + 2.5210867303103827e-9).abs() <= f64::EPSILON);
+        } else if cfg!(feature = "invalidasnan") {
+            let (dsds, dsdt, dtdt, dsdp, dtdp) = ans.unwrap();
+            assert!(dsds.is_nan());
+            assert!(dsdt.is_nan());
+            assert!(dtdt.is_nan());
+            assert!(dsdp.is_nan());
+            assert!(dtdp.is_nan());
         } else {
             match ans {
                 Err(Error::NegativeSalinity) => (),
@@ -1660,6 +1802,41 @@ mod test_internal_energy {
     }
 }
 
+/// first derivatives of specific interal energy of seawater
+/// (75-term polynomial approximation)
+pub fn internal_energy_first_derivatives(sa: f64, ct: f64, p: f64) -> Result<(f64, f64, f64)> {
+    let pa = DB2PA * p + GSW_P0;
+    let (h_sa, h_ct) = enthalpy_first_derivatives(sa, ct, p)?;
+    let v = specvol(sa, ct, p)?;
+    let (v_sa, v_ct, v_p) = specvol_first_derivatives(sa, ct, p)?;
+
+    let u_sa = h_sa - pa * v_sa;
+    let u_ct = h_ct - pa * v_ct;
+    let u_p = v - pa * v_p;
+
+    Ok((u_sa, u_ct, u_p))
+}
+
+/// Second derivatives of specific interal energy of seawater
+/// (75-term polynomial approximation)
+pub fn internal_energy_second_derivatives(
+    sa: f64,
+    ct: f64,
+    p: f64,
+) -> Result<(f64, f64, f64, f64, f64)> {
+    let pa = DB2PA * p + GSW_P0;
+    let (h_sa_sa, h_sa_ct, h_ct_ct) = enthalpy_second_derivatives(sa, ct, p)?;
+    let (v_sa_sa, v_sa_ct, v_ct_ct, v_sa_p, v_ct_p) = specvol_second_derivatives(sa, ct, p)?;
+
+    let u_sa_sa = h_sa_sa - pa * v_sa_sa;
+    let u_sa_ct = h_sa_ct - pa * v_sa_ct;
+    let u_ct_ct = h_ct_ct - pa * v_ct_ct;
+    let u_sa_p = -pa * v_sa_p;
+    let u_ct_p = -pa * v_ct_p;
+
+    Ok((u_sa_sa, u_sa_ct, u_ct_ct, u_sa_p, u_ct_p))
+}
+
 /// Dynamic enthalpy of seawater (75-term polynomial approximation)
 ///
 /// # Arguments
@@ -1768,6 +1945,168 @@ mod test_dynamic_enthalpy {
             }
         }
     }
+}
+
+/// First derivatives of enthalphy  (75-term polynomial approximation)
+///
+/// # Arguments
+///
+/// * `sa`: Absolute Salinity \[ g kg-1 \]
+/// * `ct`: Conservative Temperature (ITS-90) \[ deg C \]
+/// * `p`: sea pressure \[ dbar \] (i.e. absolute pressure - 10.1325 dbar)
+///
+/// # Example:
+/// ```
+/// use gsw::volume::enthalpy_first_derivatives;
+/// let (h_sa, h_ct) = enthalpy_first_derivatives(32.0, 10.0, 100.0).unwrap();
+/// assert!((h_sa + 0.7362441175296252).abs() <= f64::EPSILON);
+/// assert!((h_ct - 3992.0241344150936).abs() <= f64::EPSILON);
+/// ```
+pub fn enthalpy_first_derivatives(sa: f64, ct: f64, p: f64) -> Result<(f64, f64)> {
+    let s: f64 = non_dimensional_sa(sa)?;
+    let tau: f64 = ct / GSW_CTU;
+    let pi: f64 = non_dimensional_p(p);
+
+    let dynamic_h_sa_part = pi
+        * (H101
+            + s * (2.0 * H201
+                + s * (3.0 * H301 + s * (4.0 * H401 + s * (5.0 * H501 + 6.0 * H601 * s))))
+            + tau
+                * (H111
+                    + s * (2.0 * H211 + s * (3.0 * H311 + s * (4.0 * H411 + 5.0 * H511 * s)))
+                    + tau
+                        * (H121
+                            + s * (2.0 * H221 + s * (3.0 * H321 + 4.0 * H421 * s))
+                            + tau
+                                * (H131
+                                    + s * (2.0 * H231 + 3.0 * H331 * s)
+                                    + tau * (H141 + 2.0 * H241 * s + H151 * tau))))
+            + pi * (H102
+                + s * (2.0 * H202 + s * (3.0 * H302 + s * (4.0 * H402 + 5.0 * H502 * s)))
+                + tau
+                    * (H112
+                        + s * (2.0 * H212 + s * (3.0 * H312 + 4.0 * H412 * s))
+                        + tau
+                            * (H122
+                                + s * (2.0 * H222 + 3.0 * H322 * s)
+                                + tau * (H132 + 2.0 * H232 * s + H142 * tau)))
+                + pi * (H103
+                    + s * (2.0 * H203 + s * (3.0 * H303 + 4.0 * H403 * s))
+                    + tau
+                        * (H113
+                            + s * (2.0 * H213 + 3.0 * H313 * s)
+                            + tau * (H123 + 2.0 * H223 * s + H133 * tau))
+                    + pi * (H104 + 2.0 * H204 * s + H114 * tau + H105 * pi))));
+
+    let h_sa = 1e8 * 0.5 * GSW_SFAC * dynamic_h_sa_part / s;
+
+    let dynamic_h_ct_part = pi
+        * (H011
+            + s * (H111 + s * (H211 + s * (H311 + s * (H411 + H511 * s))))
+            + tau
+                * (2.0 * (H021 + s * (H121 + s * (H221 + s * (H321 + H421 * s))))
+                    + tau
+                        * (3.0 * (H031 + s * (H131 + s * (H231 + H331 * s)))
+                            + tau
+                                * (4.0 * (H041 + s * (H141 + H241 * s))
+                                    + tau * (5.0 * (H051 + H151 * s) + 6.0 * H061 * tau))))
+            + pi * (H012
+                + s * (H112 + s * (H212 + s * (H312 + H412 * s)))
+                + tau
+                    * (2.0 * (H022 + s * (H122 + s * (H222 + H322 * s)))
+                        + tau
+                            * (3.0 * (H032 + s * (H132 + H232 * s))
+                                + tau * (4.0 * (H042 + H142 * s) + 5.0 * H052 * tau)))
+                + pi * (H013
+                    + s * (H113 + s * (H213 + H313 * s))
+                    + tau
+                        * (2.0 * (H023 + s * (H123 + H223 * s))
+                            + tau * (3.0 * (H033 + H133 * s) + 4.0 * H043 * tau))
+                    + pi * (H014 + H114 * s + 2.0 * H024 * tau + H015 * pi))));
+
+    let h_ct = GSW_CP0 + 1e8 * 0.025 * dynamic_h_ct_part;
+
+    Ok((h_sa, h_ct))
+}
+
+/// Second derivatives of enthalphy  (75-term polynomial approximation)
+pub fn enthalpy_second_derivatives(sa: f64, ct: f64, p: f64) -> Result<(f64, f64, f64)> {
+    let s: f64 = non_dimensional_sa(sa)?;
+    let tau: f64 = ct / GSW_CTU;
+    let pi: f64 = non_dimensional_p(p);
+
+    let s2 = s * s;
+
+    let dynamic_h_sa_sa_part = pi
+        * (-H101
+            + s2 * (3.0 * H301 + s * (8.0 * H401 + s * (15.0 * H501 + 24.0 * H601 * s)))
+            + tau
+                * (-H111
+                    + s2 * (3.0 * H311 + s * (8.0 * H411 + 15.0 * H511 * s))
+                    + tau
+                        * (-H121
+                            + s2 * (3.0 * H321 + 8.0 * H421 * s)
+                            + tau * (-H131 + 3.0 * H331 * s2 + tau * (-H141 - H151 * tau))))
+            + pi * (-H102
+                + s2 * (3.0 * H302 + s * (8.0 * H402 + 15.0 * H502 * s))
+                + tau
+                    * (-H112
+                        + s2 * (3.0 * H312 + 8.0 * H412 * s)
+                        + tau * (-H122 + 3.0 * H322 * s2 + tau * (-H132 - H142 * tau)))
+                + pi * (s2 * (8.0 * H403 * s + 3.0 * H313 * tau)
+                    + pi * (-H103
+                        + 3.0 * H303 * s2
+                        + tau * (-H113 + tau * (-H123 - H133 * tau))
+                        + pi * (-H104 - H114 * tau - H105 * pi)))));
+    let h_sa_sa = 1e8 * 0.25 * GSW_SFAC * dynamic_h_sa_sa_part / (s * s * s);
+
+    let dynamic_h_sa_ct_part = pi
+        * (H111
+            + s * (2.0 * H211 + s * (3.0 * H311 + s * (4.0 * H411 + 5.0 * H511 * s)))
+            + tau
+                * (2.0 * H121
+                    + s * (4.0 * H221 + s * (6.0 * H321 + 8.0 * H421 * s))
+                    + tau
+                        * (3.0 * H131
+                            + s * (6.0 * H231 + 9.0 * H331 * s)
+                            + tau * (4.0 * H141 + 8.0 * H241 * s + 5.0 * H151 * tau)))
+            + pi * (H112
+                + s * (2.0 * H212 + s * (3.0 * H312 + 4.0 * H412 * s))
+                + tau
+                    * (2.0 * H122
+                        + s * (4.0 * H222 + 6.0 * H322 * s)
+                        + tau * (3.0 * H132 + 6.0 * H232 * s + 4.0 * H142 * tau))
+                + pi * (H113
+                    + s * (2.0 * H213 + 3.0 * H313 * s)
+                    + tau * (2.0 * H123 + 4.0 * H223 * s + 3.0 * H133 * tau)
+                    + H114 * pi)));
+
+    let h_sa_ct = 1e8 * 0.025 * 0.5 * GSW_SFAC * dynamic_h_sa_ct_part / s;
+
+    let dynamic_h_ct_ct_part = pi
+        * (2.0 * H021
+            + s * (2.0 * H121 + s * (2.0 * H221 + s * (2.0 * H321 + 2.0 * H421 * s)))
+            + tau
+                * (6.0 * H031
+                    + s * (6.0 * H131 + s * (6.0 * H231 + 6.0 * H331 * s))
+                    + tau
+                        * (12.0 * H041
+                            + s * (12.0 * H141 + 12.0 * H241 * s)
+                            + tau * (20.0 * H051 + 20.0 * H151 * s + 30.0 * H061 * tau)))
+            + pi * (2.0 * H022
+                + s * (2.0 * H122 + s * (2.0 * H222 + 2.0 * H322 * s))
+                + tau
+                    * (6.0 * H032
+                        + s * (6.0 * H132 + 6.0 * H232 * s)
+                        + tau * (12.0 * H042 + 12.0 * H142 * s + 20.0 * H052 * tau))
+                + pi * (2.0 * H023
+                    + s * (2.0 * H123 + 2.0 * H223 * s)
+                    + tau * (6.0 * H133 * s + 6.0 * H033 + 12.0 * H043 * tau)
+                    + 2.0 * H024 * pi)));
+
+    let h_ct_ct = 1e8 * 6.25e-4 * dynamic_h_ct_ct_part;
+
+    Ok((h_sa_sa, h_sa_ct, h_ct_ct))
 }
 
 #[allow(clippy::manual_range_contains)]
