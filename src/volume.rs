@@ -1789,6 +1789,26 @@ pub fn internal_energy_first_derivatives(sa: f64, ct: f64, p: f64) -> Result<(f6
     Ok((u_sa, u_ct, u_p))
 }
 
+/// Second derivatives of specific interal energy of seawater
+/// (75-term polynomial approximation)
+pub fn internal_energy_second_derivatives(
+    sa: f64,
+    ct: f64,
+    p: f64,
+) -> Result<(f64, f64, f64, f64, f64)> {
+    let pa = DB2PA * p + GSW_P0;
+    let (h_sa_sa, h_sa_ct, h_ct_ct) = enthalpy_second_derivatives(sa, ct, p)?;
+    let (v_sa_sa, v_sa_ct, v_ct_ct, v_sa_p, v_ct_p) = specvol_second_derivatives(sa, ct, p)?;
+
+    let u_sa_sa = h_sa_sa - pa * v_sa_sa;
+    let u_sa_ct = h_sa_ct - pa * v_sa_ct;
+    let u_ct_ct = h_ct_ct - pa * v_ct_ct;
+    let u_sa_p = -pa * v_sa_p;
+    let u_ct_p = -pa * v_ct_p;
+
+    Ok((u_sa_sa, u_sa_ct, u_ct_ct, u_sa_p, u_ct_p))
+}
+
 /// Dynamic enthalpy of seawater (75-term polynomial approximation)
 ///
 /// # Arguments
