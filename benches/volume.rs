@@ -72,11 +72,9 @@ fn volume(c: &mut Criterion) {
         })
     });
 
-    /*
-       c.bench_function("sa_from_rho", |b| {
-            b.iter(|| volume::sa_from_rho(black_box(30.0), black_box(30.0), black_box(30.0)).unwrap())
-        });
-    */
+    c.bench_function("sa_from_rho", |b| {
+        b.iter(|| volume::sa_from_rho(black_box(1024.0), black_box(10.0), black_box(10.0)).unwrap())
+    });
 
     c.bench_function("specvol_first_derivatives", |b| {
         b.iter(|| {
