@@ -251,7 +251,7 @@ jobs:
           toolchain: stable
           override: true
 
-      - run: cargo build --locked --features cbindgen
+      - run: cargo build --features cbindgen
 
       - name: check if headers have the same content
         run: |
