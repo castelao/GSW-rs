@@ -12,6 +12,26 @@ We presented about goals and progress (as of Apr 2022) at the
 
 Currently the minimum supported Rust version is 1.57.0
 
+## Features
+
+From the Cargo Book: "Cargo 'features' provide a mechanism to express
+conditional compilation and optional dependencies.". The features defined in
+GSW-rs are:
+
+- capi: Include the C-API so that GSW-rs can be accessed as it was a
+        C-library. For instance, the other GSW implementations based on
+        GSW-C could be linked with GSW-rs instead by using this feature.
+- compat: Reproduces the GSW-Matlab implementation for compatibility.
+- invalidasnan: Returns NaN values on failure. The default behavior is to
+                return an error.
+- nodgdz: Ignores vertical variations of gravity, i.e. no dependency on z.
+          This might be useful on some numerical models.
+- std: Activate the Rust standard library. The default implementation does not
+       rely on std so it can run in embedded systems.
+
+For example, to compile it compatible with the official Matlab library:
+cargo build --features compat
+
 ## License
 
 Licensed under either of
