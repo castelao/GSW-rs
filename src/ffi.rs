@@ -83,6 +83,33 @@ pub unsafe extern "C" fn gsw_rho_alpha_beta(
 }
 
 #[no_mangle]
+pub unsafe extern "C" fn gsw_rho_second_derivatives(
+    sa: f64,
+    ct: f64,
+    p: f64,
+    rho_sa_sa: *mut f64,
+    rho_sa_ct: *mut f64,
+    rho_ct_ct: *mut f64,
+    rho_sa_p: *mut f64,
+    rho_ct_p: *mut f64,
+) {
+    let (sa_sa, sa_ct, ct_ct, sa_p, ct_p) = crate::volume::rho_second_derivatives(sa, ct, p)
+        .unwrap_or((
+            GSW_INVALID_VALUE,
+            GSW_INVALID_VALUE,
+            GSW_INVALID_VALUE,
+            GSW_INVALID_VALUE,
+            GSW_INVALID_VALUE,
+        ));
+
+    *rho_sa_sa = sa_sa;
+    *rho_sa_ct = sa_ct;
+    *rho_ct_ct = ct_ct;
+    *rho_sa_p = sa_p;
+    *rho_ct_p = ct_p;
+}
+
+#[no_mangle]
 pub unsafe extern "C" fn gsw_sigma0(sa: f64, ct: f64) -> f64 {
     crate::volume::sigma0(sa, ct).unwrap_or(GSW_INVALID_VALUE)
 }
@@ -108,13 +135,68 @@ pub unsafe extern "C" fn gsw_sigma4(sa: f64, ct: f64) -> f64 {
 }
 
 #[no_mangle]
+pub unsafe extern "C" fn gsw_cabbeling(sa: f64, ct: f64, p: f64) -> f64 {
+    crate::volume::cabbeling(sa, ct, p).unwrap_or(GSW_INVALID_VALUE)
+}
+
+#[no_mangle]
 pub unsafe extern "C" fn gsw_sound_speed(sa: f64, ct: f64, p: f64) -> f64 {
     crate::volume::sound_speed(sa, ct, p).unwrap_or(GSW_INVALID_VALUE)
 }
 
 #[no_mangle]
+pub unsafe extern "C" fn gsw_specvol_first_derivatives_wrt_enthalpy(
+    sa: f64,
+    ct: f64,
+    p: f64,
+    v_sa: *mut f64,
+    v_h: *mut f64,
+) {
+    let (sa, h) = crate::volume::specvol_first_derivatives_wrt_enthalpy(sa, ct, p)
+        .unwrap_or((GSW_INVALID_VALUE, GSW_INVALID_VALUE));
+
+    *v_sa = sa;
+    *v_h = h;
+}
+
+#[no_mangle]
 pub unsafe extern "C" fn gsw_dynamic_enthalpy(sa: f64, ct: f64, p: f64) -> f64 {
     crate::volume::dynamic_enthalpy(sa, ct, p).unwrap_or(GSW_INVALID_VALUE)
+}
+
+#[no_mangle]
+pub unsafe extern "C" fn gsw_enthalpy_first_derivatives(
+    sa: f64,
+    ct: f64,
+    p: f64,
+    h_sa: *mut f64,
+    h_ct: *mut f64,
+) {
+    let (s, c) = crate::volume::enthalpy_first_derivatives(sa, ct, p)
+        .unwrap_or((GSW_INVALID_VALUE, GSW_INVALID_VALUE));
+
+    *h_sa = s;
+    *h_ct = c;
+}
+
+#[no_mangle]
+pub unsafe extern "C" fn gsw_enthalpy_second_derivatives(
+    sa: f64,
+    ct: f64,
+    p: f64,
+    h_sa_sa: *mut f64,
+    h_sa_ct: *mut f64,
+    h_ct_ct: *mut f64,
+) {
+    let (sa_sa, sa_ct, ct_ct) = crate::volume::enthalpy_second_derivatives(sa, ct, p).unwrap_or((
+        GSW_INVALID_VALUE,
+        GSW_INVALID_VALUE,
+        GSW_INVALID_VALUE,
+    ));
+
+    *h_sa_sa = sa_sa;
+    *h_sa_ct = sa_ct;
+    *h_ct_ct = ct_ct;
 }
 
 #[no_mangle]
@@ -167,6 +249,23 @@ pub unsafe extern "C" fn gsw_specvol_second_derivatives(
     *v_ct_ct = ct_ct;
     *v_sa_p = sa_p;
     *v_ct_p = ct_p;
+}
+
+#[no_mangle]
+pub unsafe extern "C" fn gsw_specvol_second_derivatives_wrt_enthalpy(
+    sa: f64,
+    ct: f64,
+    p: f64,
+    v_sa_sa: *mut f64,
+    v_sa_h: *mut f64,
+    v_h_h: *mut f64,
+) {
+    let (sa_sa, sa_h, h_h) = crate::volume::specvol_second_derivatives_wrt_enthalpy(sa, ct, p)
+        .unwrap_or((GSW_INVALID_VALUE, GSW_INVALID_VALUE, GSW_INVALID_VALUE));
+
+    *v_sa_sa = sa_sa;
+    *v_sa_h = sa_h;
+    *v_h_h = h_h;
 }
 
 #[no_mangle]
@@ -298,12 +397,6 @@ pub unsafe extern "C" fn gsw_alpha_wrt_t_ice(t: f64, p: f64) -> f64 {
 
 #[no_mangle]
 pub unsafe extern "C" fn gsw_beta_const_t_exact(sa: f64, t: f64, p: f64) -> f64 {
-    //unimplemented!()
-    f64::NAN
-}
-
-#[no_mangle]
-pub unsafe extern "C" fn gsw_cabbeling(sa: f64, ct: f64, p: f64) -> f64 {
     //unimplemented!()
     f64::NAN
 }
@@ -476,17 +569,6 @@ pub unsafe extern "C" fn gsw_enthalpy_first_derivatives_ct_exact(
 }
 
 #[no_mangle]
-pub unsafe extern "C" fn gsw_enthalpy_first_derivatives(
-    sa: f64,
-    ct: f64,
-    p: f64,
-    h_sa: *mut f64,
-    h_ct: *mut f64,
-) {
-    //unimplemented!()
-}
-
-#[no_mangle]
 pub unsafe extern "C" fn gsw_enthalpy_ice(t: f64, p: f64) -> f64 {
     //unimplemented!()
     f64::NAN
@@ -494,18 +576,6 @@ pub unsafe extern "C" fn gsw_enthalpy_ice(t: f64, p: f64) -> f64 {
 
 #[no_mangle]
 pub unsafe extern "C" fn gsw_enthalpy_second_derivatives_ct_exact(
-    sa: f64,
-    ct: f64,
-    p: f64,
-    h_sa_sa: *mut f64,
-    h_sa_ct: *mut f64,
-    h_ct_ct: *mut f64,
-) {
-    //unimplemented!()
-}
-
-#[no_mangle]
-pub unsafe extern "C" fn gsw_enthalpy_second_derivatives(
     sa: f64,
     ct: f64,
     p: f64,
@@ -1123,20 +1193,6 @@ pub unsafe extern "C" fn gsw_rho_ice(t: f64, p: f64) -> f64 {
 }
 
 #[no_mangle]
-pub unsafe extern "C" fn gsw_rho_second_derivatives(
-    sa: f64,
-    ct: f64,
-    p: f64,
-    rho_sa_sa: *mut f64,
-    rho_sa_ct: *mut f64,
-    rho_ct_ct: *mut f64,
-    rho_sa_p: *mut f64,
-    rho_ct_p: *mut f64,
-) {
-    //unimplemented!()
-}
-
-#[no_mangle]
 pub unsafe extern "C" fn gsw_rho_second_derivatives_wrt_enthalpy(
     sa: f64,
     ct: f64,
@@ -1268,32 +1324,9 @@ pub unsafe extern "C" fn gsw_sound_speed_t_exact(sa: f64, t: f64, p: f64) -> f64
 }
 
 #[no_mangle]
-pub unsafe extern "C" fn gsw_specvol_first_derivatives_wrt_enthalpy(
-    sa: f64,
-    ct: f64,
-    p: f64,
-    v_sa: *mut f64,
-    v_h: *mut f64,
-) {
-    //unimplemented!()
-}
-
-#[no_mangle]
 pub unsafe extern "C" fn gsw_specvol_ice(t: f64, p: f64) -> f64 {
     //unimplemented!()
     f64::NAN
-}
-
-#[no_mangle]
-pub unsafe extern "C" fn gsw_specvol_second_derivatives_wrt_enthalpy(
-    sa: f64,
-    ct: f64,
-    p: f64,
-    v_sa_sa: *mut f64,
-    v_sa_h: *mut f64,
-    v_h_h: *mut f64,
-) {
-    //unimplemented!()
 }
 
 #[no_mangle]
