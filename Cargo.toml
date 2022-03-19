@@ -24,6 +24,7 @@ heapless = "0.7"
 inline-c = "0.1"
 postcard = "0.7.0"
 serde = "1.0.126"
+criterion = "0.3"
 
 [build-dependencies]
 cbindgen = { version = "0.18.0", optional = true }
@@ -42,6 +43,7 @@ std = ["thiserror"]
 
 [lib]
 name = "gsw"
+bench = false
 
 [profile.dev]
 # Avoid setting this because it requires any binary/lib linking to gsw-rs
@@ -67,3 +69,7 @@ generation = false
 # Can be use to disable header generation completely.
 # This can be used when generating dynamic modules instead of an actual library.
 enabled = true
+
+[[bench]]
+name = "volume"
+harness = false
