@@ -18,7 +18,8 @@ struct DataRef {
 #[test]
 #[cfg(not(windows))]
 fn coriolis_parameter() {
-    let mut input = File::open("tests/data/gsw_earth_validation.bin").expect("Unable to open file");
+    let mut input =
+        File::open("convert_refdata/data/gsw_earth_validation.bin").expect("Unable to open file");
     let mut contents = vec![];
     input
         .read_to_end(&mut contents)
@@ -40,7 +41,8 @@ fn coriolis_parameter() {
 #[test]
 #[cfg(not(windows))]
 fn gravity() {
-    let mut input = File::open("tests/data/gsw_earth_validation.bin").expect("Unable to open file");
+    let mut input =
+        File::open("convert_refdata/data/gsw_earth_validation.bin").expect("Unable to open file");
     let mut contents = vec![];
     input
         .read_to_end(&mut contents)
