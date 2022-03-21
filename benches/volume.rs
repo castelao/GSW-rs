@@ -62,6 +62,10 @@ fn volume(c: &mut Criterion) {
         b.iter(|| volume::sigma4(black_box(10.0), black_box(10.0)).unwrap())
     });
 
+    c.bench_function("cabbeling", |b| {
+        b.iter(|| volume::cabbeling(black_box(10.0), black_box(10.0), black_box(10.0)).unwrap())
+    });
+
     c.bench_function("sound_speed", |b| {
         b.iter(|| volume::sound_speed(black_box(10.0), black_box(10.0), black_box(10.0)).unwrap())
     });
@@ -83,13 +87,34 @@ fn volume(c: &mut Criterion) {
         })
     });
 
+    c.bench_function("specvol_first_derivatives_wrt_enthalpy", |b| {
+        b.iter(|| {
+            volume::specvol_first_derivatives_wrt_enthalpy(
+                black_box(10.0),
+                black_box(10.0),
+                black_box(10.0),
+            )
+            .unwrap()
+        })
+    });
+
     c.bench_function("specvol_second_derivatives", |b| {
+        b.iter(|| {
+            volume::specvol_second_derivatives_wrt_enthalpy(
+                black_box(10.0),
+                black_box(10.0),
+                black_box(10.0),
+            )
+            .unwrap()
+        })
+    });
+
+    c.bench_function("specvol_second_derivatives_wrt_enthalpy", |b| {
         b.iter(|| {
             volume::specvol_second_derivatives(black_box(10.0), black_box(10.0), black_box(10.0))
                 .unwrap()
         })
     });
-
     c.bench_function("alpha_on_beta", |b| {
         b.iter(|| volume::alpha_on_beta(black_box(10.0), black_box(10.0), black_box(10.0)).unwrap())
     });
@@ -101,12 +126,33 @@ fn volume(c: &mut Criterion) {
         })
     });
 
+    c.bench_function("rho_second_derivatives", |b| {
+        b.iter(|| {
+            volume::rho_second_derivatives(black_box(10.0), black_box(10.0), black_box(10.0))
+                .unwrap()
+        })
+    });
+
     c.bench_function("thermobaric", |b| {
         b.iter(|| volume::thermobaric(black_box(10.0), black_box(10.0), black_box(10.0)).unwrap())
     });
 
     c.bench_function("enthalpy", |b| {
         b.iter(|| volume::enthalpy(black_box(10.0), black_box(10.0), black_box(10.0)).unwrap())
+    });
+
+    c.bench_function("enthalpy_first_derivatives", |b| {
+        b.iter(|| {
+            volume::enthalpy_first_derivatives(black_box(10.0), black_box(10.0), black_box(10.0))
+                .unwrap()
+        })
+    });
+
+    c.bench_function("enthalpy_second_derivatives", |b| {
+        b.iter(|| {
+            volume::enthalpy_second_derivatives(black_box(10.0), black_box(10.0), black_box(10.0))
+                .unwrap()
+        })
     });
 
     c.bench_function("enthalpy_diff", |b| {
@@ -128,6 +174,28 @@ fn volume(c: &mut Criterion) {
     c.bench_function("internal_energy", |b| {
         b.iter(|| {
             volume::internal_energy(black_box(10.0), black_box(10.0), black_box(10.0)).unwrap()
+        })
+    });
+
+    c.bench_function("internal_energy_first_derivatives", |b| {
+        b.iter(|| {
+            volume::internal_energy_first_derivatives(
+                black_box(10.0),
+                black_box(10.0),
+                black_box(10.0),
+            )
+            .unwrap()
+        })
+    });
+
+    c.bench_function("internal_energy_second_derivatives", |b| {
+        b.iter(|| {
+            volume::internal_energy_first_derivatives(
+                black_box(10.0),
+                black_box(10.0),
+                black_box(10.0),
+            )
+            .unwrap()
         })
     });
 
