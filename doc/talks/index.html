@@ -1,0 +1,605 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>SEA's 2022 - GSW-rs</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <link rel="stylesheet" href="./stylesheets/katex.min.css">
+    <link rel="stylesheet" href="./stylesheets/liminal.css">
+
+    <style>            
+        /* Overall styling for slide */
+        .remark-slide-content {
+            padding:0em 4em 0em 4em;
+            font-family: 'Georgia';
+            letter-spacing: 0.025em;
+        }
+     
+        /* Styling for level one header, #Text */
+        .remark-slide-content h1 {
+            font-size: 2.4em;
+            color: #606060;
+            font-weight: bold;
+            letter-spacing: 0.05em;
+        }
+        
+        /* Styling for level two header, ##Text */
+        .remark-slide-content h2 {
+            font-size: 1.55em;
+            color: #606060;
+            font-weight: bold;
+            letter-spacing: 0.05em;
+        }
+        
+        /* Styling for level three header, ###Text */
+        .remark-slide-content h3 {
+            font-size: 1.4em;
+            color: #606060;
+            font-weight: bold;
+            letter-spacing: 0.05em;
+        }
+
+        /* Styling for paragraphs and lists */
+        .remark-slide-content p,ol,ul {font-size: 1.2em;}
+
+        /* Styling for code blocks */
+        .remark-code,.remark-inline-code {font-family: 'Ubuntu Mono';}
+        
+        /* Styling for links */
+        a {text-decoration: none;color: #666666;}
+        /* Setting link properties is particular, do not change order below*/
+        a:visited {color: #666666}        
+        a:hover {color: #33AA99}
+        a:active,a#active {color: #FF9700;}
+        
+        /* Some special classes for the title slide */        
+        .title {
+            font-size: 2.4em;
+            color: #606060;
+            font-weight: bold;
+            letter-spacing: 0.05em;
+        }
+        
+        .author {
+            font-size: 1.4em;
+            color: #606060;
+            font-weight: bold;
+            letter-spacing: 0.02em;
+        }
+        
+        .coauthor {
+            font-size: 1.0em;
+            color: #606060;
+            font-weight: bold;
+            letter-spacing: 0.02em;
+        }
+        
+        .subtitle, .institution {
+            font-size: 1.0em;
+        }
+        
+        .date {
+            font-size: 1.0em;
+            font-style: italic;
+        }
+        
+        .note {
+            font-size: 0.8em;
+        }
+        
+        /* Other special classes */
+        .cite {
+            font-size: 0.8em;
+            color: #33AA99;
+            font-style: italic;
+        }
+        
+        .footnote {
+            position: absolute;
+            bottom: 2em;
+            left: 6em;
+            font-size: 0.7em;
+        }
+        
+        .caption {
+            font-size: 0.5em;
+            line-height: 10%;
+        }
+        
+    </style>
+</head>
+
+<body>
+    <textarea id="source">
+class: center, middle
+<br/><br/><br/><br/>                       
+.title[SEA's ISS 2022 - GSW-rs]     
+.subtitle[Gibbs Seawater Toolbox implemented in Rust for efficiency and robustnes]
+<br/><br/>                 
+.author[Guilherme Castelão]  
+.institution[Scripps Institution of Oceanography / SCOOT Science]      
+.author[Luiz Irber]  
+.institution[University of California Davis]  
+<br/><br/>
+.date[April 4, 2022]        
+<br/><br/>
+.note[Created with [{Liminal}](https://github.com/jonathanlilly/liminal) using [{Remark.js}](http://remarkjs.com/) + [{Markdown}](https://github.com/adam-p/markdown-here/wiki/Markdown-Cheatsheet) +  [{KaTeX}](https://katex.org)]
+
+<!-- Put the link to this slide here so people can follow -->
+slide: https://hackmd.io/@luizirber/SJ0JXPbMq#/
+---
+name: toc
+class: left
+#Table of Contents        
+      
+1. [Rust Intro](#rustintro)
+1. [Efficiency](#efficiency)
+1. [Crates.io](#crates)
+
+
+<!-- Comment out the next slide if you don't want the Table of Contents link -->         
+---
+layout: true  .toc[[&#10023;](#toc)]
+        
+---
+
+<!--
+Vision: We used Rust for GSW, and it was a good choice for this case for these
+ Why was Rust a good choice for GSW?
+
+https://www.infoq.com/presentations/rust-tradeoffs/
+https://smallcultfollowing.com/Rust-QCon.pdf
+
+- 5 min: light Rust intro
+  - drop-in replacement for GSW-C
+  - zero cost abstraction 
+- distributing: crates !!!
+- cargo test !!!
+  - unit
+  - validation/integration (MatLab scientific reference)
+- FFI -> cargo capi !!!
+- Replacing GSW-C in GSW-Python / GSW-R
+- cargo doc !!
+- cargo bench !!
+- no_std -> embedded !
+- features: compat, invalidasnan, !
+- Other applications:
+  - Iridium (Scripps): Direct-IP & RUDICS for Argo and Spray
+  - BUFR
+
+Closing slides:
+Other keywords for Rust. One single slide
+    - iterators como exemplo?
+    - rayon
+    - fearless concurency
+
+-> Link for community resource
+    - gitter.im
+-->
+
+
+---
+name: rustintro
+class: left  
+#Light Rust intro
+
+
+---
+name: efficiency
+class: left  
+#Goal: efficiency
+
+- low resources (embedded)
+- analysis ()
+
+[Rust vs gcc](https://benchmarksgame-team.pages.debian.net/benchmarksgame/fastest/rust.html)
+
+https://aws.amazon.com/blogs/opensource/sustainability-with-rust/
+
+---
+name: whatisliminal
+class: left  
+#Goal: robustness (maintenance, dependability)
+
+- error handling
+- testing and validation
+- documentation
+
+---
+name: whatisliminal
+class: left  
+#Goal: a drop-in replacement for GSW-C
+
+<!-- imagem testes do GSW-Python rodando -->
+
+<!-- imagem: setup.py com mods pra Rust -->
+
+--- 
+name: whatisliminal
+class: left  
+#Why Rust?
+
+---
+name: crates
+class: left  
+#Distributing crates.io
+
+```shell
+$ cargo search gsw
+gsw = "0.0.10"    # TEOS-10 v3.06.12 Gibbs Seawater Oceanographic Toolbox in Rust
+```
+https://crates.io/crates/gsw
+
+--
+
+How to use other crates?
+```shell=
+$ cat Cargo.toml
+
+[package]
+name = "gsw"
+...
+[dependencies]
+libm = "0.2.1"
+libc = { version = "0.2", optional = true }
+thiserror = { version = "1.0.24", optional = true }
+...
+```
+
+--
+
+```shell
+$ grep libm src/conversions.rs | head -n 1
+
+src/conversions.rs:    let x = libm::sin(lat * DEG2RAD);
+```
+
+---
+name: whatisliminal
+class: left  
+#cargo test - Unit
+
+[{src/volume.rs}](https://github.com/castelao/GSW-rs/blob/7b5c6b5ab2b61ed86585fffd69f6c780e8894706/src/volume.rs#L96)
+```shell=
+#[cfg(test)]
+mod test_specvol {
+    use super::specvol;
+
+    #[test]
+    // NaN input results in NaN output.
+    // Other libraries using GSW-rs might rely on this
+    // behavior to propagate and handle invalid elements.
+    fn nan() {
+        let v = specvol(f64::NAN, 1.0, 1.0);
+        assert!(v.unwrap().is_nan());
+    }
+
+    #[test]
+    // Test value from Roquet 2015 Appendix C.3, rounded to 9.732819628e-04
+    fn roquet2015() {
+        assert!((specvol(30., 10., 1000.0).unwrap() - 9.732819628e-04).abs() <= 5e-14);
+    }
+    ...
+}
+```
+
+---
+name: whatisliminal
+class: left  
+#Validation / Integration
+
+```shell=
+    hey
+```
+
+---
+name: whatisliminal
+class: left  
+#Doctest
+````shell=
+/// Specific volume of sea water (75-term polynomial approximation)
+///
+/// Calculates specific volume from Absolute Salinity, Conservative
+/// Temperature and pressure, using the computationally-efficient
+/// polynomial expression for specific volume (Roquet et al., 2014).
+///
+
+...
+
+///
+/// # Example:
+/// ```
+/// use gsw::volume::specvol;
+/// let v = specvol(32.0, 10.0, 100.0).unwrap();
+/// assert!((v - 0.0009756515980668401).abs() <= f64::EPSILON);
+/// ```
+///
+pub fn specvol(sa: f64, ct: f64, p: f64) -> Result<f64> {
+...
+}
+````
+
+---
+name: whatisliminal
+class: left  
+#FFI -> cargo capi !!!
+
+---
+name: whatisliminal
+class: left  
+#Replacing GSW-C in GSW-Python / GSW-R
+
+---
+name: whatisliminal
+class: left  
+#cargo doc - [{docs.rs/gsw}](https://docs.rs/gsw/0.0.10/gsw/volume/fn.specvol.html)
+
+````shell=
+/// Specific volume of sea water (75-term polynomial approximation)
+///
+/// Calculates specific volume from Absolute Salinity, Conservative
+/// Temperature and pressure, using the computationally-efficient
+/// polynomial expression for specific volume (Roquet et al., 2014).
+///
+/// # Arguments
+///
+/// * `sa`: Absolute Salinity \[ g kg-1 \]
+/// * `ct`: Conservative Temperature (ITS-90) \[ deg C \]
+/// * `p`: sea pressure \[ dbar \] (i.e. absolute pressure - 10.1325 dbar)
+///
+/// # Returns
+///
+/// * `specvol`: specific volume \[m3 kg-1\]
+///
+/// ...
+///
+pub fn specvol(sa: f64, ct: f64, p: f64) -> Result<f64> {
+  ...
+}
+````
+
+---
+name: whatisliminal
+class: left  
+#cargo bench !!
+<!--
+change | time_c | time_rs | units | function
+------ | ------ | ------- | ----- | --------
+  0.29 |  46.49 |   13.68 | ns/ns | c_from_sp
+  0.48 |  47.01 |   22.54 | ns/ns | enthalpy_second_derivatives
+  0.65 |  17.11 |   11.09 | ns/ns | z_from_p
+  0.67 |  47.65 |   31.82 | ns/ns | specvol_first_derivatives
+  0.84 |  12.13 |   10.22 | ns/ns | sigma0
+  0.84 |  46.64 |   39.28 | ns/ns | rho_first_derivatives
+  0.89 | 104.21 |   92.65 | ns/ns | rho_second_derivatives
+  0.92 |  41.16 |   37.72 | ns/ns | specvol_second_derivatives_wrt_enthalpy
+  0.98 |  14.04 |   13.76 | ns/ns | sp_from_c
+  1.03 |  24.12 |   24.87 | ns/ns | alpha_on_beta
+  1.05 | 104.96 |  110.00 | ns/ns | cabbeling
+  1.05 |  18.51 |   19.41 | ns/ns | specvol
+  1.06 |  31.66 |   33.55 | ns/ns | beta
+  1.06 |  39.53 |   41.99 | ns/ns | internal_energy
+  1.07 |  30.99 |   33.06 | ns/ns | alpha
+  1.07 |   6.18 |    6.63 | ns/ns | sp_salinometer
+  1.08 |  19.40 |   20.88 | ns/ns | dynamic_enthalpy
+  1.11 |  20.40 |   22.62 | ns/ns | specvol_anom_standard
+  1.12 |  27.75 |   31.15 | ns/ns | sound_speed
+  1.12 | 319.21 |  358.53 | ns/ns | ct_maxdensity
+  1.13 |  20.45 |   23.16 | ns/ns | rho
+  1.14 |  21.08 |   23.93 | ns/ns | sigma1
+  1.14 |  20.98 |   23.99 | ns/ns | sigma4
+  1.15 |  21.03 |   24.09 | ns/ns | sigma2
+  1.15 |  20.97 |   24.15 | ns/ns | sigma3
+  1.16 |  20.03 |   23.29 | ns/ns | enthalpy
+  1.17 |  25.38 |   29.76 | ns/ns | enthalpy_first_derivatives
+  1.19 |  24.64 |   29.42 | ns/ns | kappa
+  1.22 |  55.09 |   67.28 | ns/ns | specvol_first_derivatives_wrt_enthalpy
+  1.38 |  60.48 |   83.74 | ns/ns | thermobaric
+  1.53 |   1.77 |    2.70 | ns/ns | specvol_sso_0
+  1.65 |  26.92 |   44.30 | ns/ns | enthalpy_diff
+  2.31 |  41.81 |   96.62 | ns/ns | rho_alpha_beta
+  2.39 |  39.77 |   94.91 | ns/ns | specvol_alpha_beta
+  2.95 |  41.12 |  121.48 | ns/ns | specvol_second_derivatives
+  4.31 |  42.04 |  181.29 | ns/ns | sa_from_rho
+-->
+
+change | time_c | time_rs | units | function
+------ | ------ | ------- | ----- | --------
+  0.29 |  46.49 |   13.68 | ns/ns | c_from_sp
+  0.48 |  47.01 |   22.54 | ns/ns | enthalpy_second_derivatives
+  0.65 |  17.11 |   11.09 | ns/ns | z_from_p
+  0.67 |  47.65 |   31.82 | ns/ns | specvol_first_derivatives
+  0.84 |  12.13 |   10.22 | ns/ns | sigma0
+  0.84 |  46.64 |   39.28 | ns/ns | rho_first_derivatives
+  0.89 | 104.21 |   92.65 | ns/ns | rho_second_derivatives
+  0.92 |  41.16 |   37.72 | ns/ns | specvol_second_derivatives_wrt_enthalpy
+
+change | time_c | time_rs | units | function
+------ | ------ | ------- | ----- | --------
+  4.31 |  42.04 |  181.29 | ns/ns | sa_from_rho
+  2.95 |  41.12 |  121.48 | ns/ns | specvol_second_derivatives
+  2.39 |  39.77 |   94.91 | ns/ns | specvol_alpha_beta
+  2.31 |  41.81 |   96.62 | ns/ns | rho_alpha_beta
+  1.65 |  26.92 |   44.30 | ns/ns | enthalpy_diff
+  1.53 |   1.77 |    2.70 | ns/ns | specvol_sso_0
+  1.38 |  60.48 |   83.74 | ns/ns | thermobaric
+  1.22 |  55.09 |   67.28 | ns/ns | specvol_first_derivatives_wrt_enthalpy
+
+---
+name: whatisliminal
+class: left  
+#no_std -> embedded !
+
+---
+name: whatisliminal
+class: left  
+#Features: Choose your flavor
+
+Strategy decisions on compilation time
+
+compat: Reproduce Matlab's implementation
+  - $S_A[S_A < 0] = 0$
+
+  - `const`: Explicit definition
+    - without compromising performance
+    - and matching reference notation
+
+```rust
+/// SSO: Standard Ocean Reference Salinity [ g/kg ].
+pub const GSW_SSO: f64 = 35.16504;
+
+/// uPS: unit conversion factor for salinities (Millero et al., 2008) [g/kg]
+/// Reference Salinity SR is uPS times Practical Salinity SP.
+pub const GSW_UPS: f64 = GSW_SSO / 35.0;
+
+/// sfac  =  1/(40*gsw_ups) ~ 0.024882667558461472
+pub const GSW_SFAC: f64 = if cfg!(feature = "compat") {
+    0.0248826675584615
+} else {
+    1.0 / (40.0 * GSW_UPS)
+};
+```
+
+
+invalidasnan:
+  - $S_A[S_A < 0] = NaN$
+
+nodgdz: No vertical variation on gravity, useful for numerical modeling
+
+capi
+
+std
+
+---
+name: whatisliminal
+class: left  
+#Other applications
+
+- Other applications:
+  - Iridium (Scripps): Direct-IP & RUDICS for Argo and Spray
+  - BUFR
+
+
+---
+name: whatisliminal
+class: left  
+#We have a collaborative session
+
+please prepare laptop or smartphone to join!
+
+---
+name: whatisliminal
+class: left  
+#Community and references (closing slide)
+
+GSW-rs where to learn more and how to contribute?
+  - github
+
+How to learn more about Rust
+  - Reading: The Book, Rust for rustaceans, ...
+
+Link for community resource
+    - gitter.im
+
+---
+name: whatisliminal
+class: left  
+#Random ideas:
+- Steep learning curve vs compile protect against mistakes
+- Is important to me
+- Capture errors on compiling time
+- dbg??
+- Mention Cython??
+- Mention PyOxide??
+---
+name: whatisliminal
+class: left  
+#We nees Ferris!!!
+
+![](https://rustacean.net/assets/rustacean-orig-noshadow.png)
+
+<!--
+---
+
+
+```graphviz
+digraph {
+  compound=true
+  rankdir=RL
+
+  graph [ fontname="Source Sans Pro", fontsize=20 ];
+  node [ fontname="Source Sans Pro", fontsize=18];
+  edge [ fontname="Source Sans Pro", fontsize=12 ];
+
+
+  subgraph core {
+    c [label="Hackmd-it \ncore"] [shape=box]
+  }
+  
+  c -> sync [ltail=session lhead=session]
+
+  subgraph cluster1 {
+     concentrate=true
+    a [label="Text source\nGithub, Gitlab, ..."] [shape=box]
+    b [label="HackMD Editor"] [shape=box]
+    sync [label="sync" shape=plaintext ]
+    b -> sync  [dir="both"]
+    sync -> a [dir="both"]
+    label="An edit session"
+  }
+}
+```
+
+---
+
+<style>
+code.blue {
+  color: #337AB7 !important;
+}
+code.orange {
+  color: #F7A004 !important;
+}
+</style>
+
+- <code class="orange">onMessage('event')</code>: Register event listener
+- <code class="blue">sendMessage('event')</code>: Trigger event
+
+---
+
+
+```typescript
+// in background script
+const fakeLogin = async () => true
+
+channel.answer('isLogin', async () => {
+  return await fakeLogin()
+})
+```
+
+<br>
+
+```typescript
+// in inject script
+const isLogin = await channel.callBackground('isLogin')
+console.log(isLogin) //-> true
+```
+
+---
+class: middle, center
+#  That's All!
+
+Have fun!
+
+[{GSW-rs}](https://github.com/castelao/GSW-rs)
+
+<img style="width:60%"  src="https://rustacean.net/assets/rustacean-flat-happy.png">
+ 
+    </textarea>
+    <script src="./javascript/remark-latest.min.js" type="text/javascript"></script>
+    <script defer src="./javascript/katex.min.js"></script>
+    <script defer src="./javascript/auto-render.min.js"></script>
+    <!-- Call remark.js and KaTeX with liminal default settings -->
+    <script type="text/javascript" src="./javascript/call-javascript.js">
+</script>
+       
+</body>
+</html>
