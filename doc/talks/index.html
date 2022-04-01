@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>SEA's 2022 - GSW-rs</title>
+    <title>SEA's ISS 2022 - GSW-rs</title>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
     <link rel="stylesheet" href="./stylesheets/katex.min.css">
     <link rel="stylesheet" href="./stylesheets/liminal.css">
@@ -112,35 +112,20 @@
     <textarea id="source">
 class: center, middle
 <br/><br/><br/><br/>                       
-.title[SEA's ISS 2022 - GSW-rs]     
-.subtitle[Gibbs Seawater Toolbox implemented in Rust for efficiency and robustnes]
+.title[GSW-rs]   
+.subtitle[Gibbs Seawater Toolbox implemented in Rust for efficiency and robustnes]  
 <br/><br/>                 
 .author[Guilherme Castelão]  
-.institution[Scripps Institution of Oceanography / SCOOT Science]      
+.institution[Scripps Institution of Oceanography]  
 .author[Luiz Irber]  
 .institution[University of California Davis]  
 <br/><br/>
-.date[April 4, 2022]        
+.date[April 4, 2022 - SEA's ISS 2022]   
 <br/><br/>
 .note[Created with [{Liminal}](https://github.com/jonathanlilly/liminal) using [{Remark.js}](http://remarkjs.com/) + [{Markdown}](https://github.com/adam-p/markdown-here/wiki/Markdown-Cheatsheet) +  [{KaTeX}](https://katex.org)]
 
 <!-- Put the link to this slide here so people can follow -->
-slide: https://hackmd.io/@luizirber/SJ0JXPbMq#/
----
-name: toc
-class: left
-#Table of Contents        
-      
-1. [Rust Intro](#rustintro)
-1. [Efficiency](#efficiency)
-1. [Crates.io](#crates)
-
-
-<!-- Comment out the next slide if you don't want the Table of Contents link -->         
----
-layout: true  .toc[[&#10023;](#toc)]
-        
----
+slide: https://LINK TO PRESENTATION
 
 <!--
 Vision: We used Rust for GSW, and it was a good choice for this case for these
@@ -176,17 +161,38 @@ Other keywords for Rust. One single slide
     - gitter.im
 -->
 
+---
+name: whatisgsw
+class: left
+#Gibbs Seawater Toolbox
 
+blabal
+
+<!-- Why did we pick Rust for this? -->
+---
+name: wishlist
+class: left  
+#Our wishlist for Scientific Computing
+- Embedded
+- Package manager: Reuse = speed coding
+- Interoperable: Work with existing system
+- Robustness:
+- Code for human and the compiler takes care of optimize
+- Integrated testing system
+
+-- 
+
+Rust!!!
+
+<!-- What is Rust? -->
 ---
 name: rustintro
 class: left  
 #Light Rust intro
 
+<!-- Maybe limit to a light intro here and save good longer points to the end -->
 
----
-name: efficiency
-class: left  
-#Goal: efficiency
+##Goal: efficiency
 
 - low resources (embedded)
 - analysis ()
@@ -195,28 +201,82 @@ class: left
 
 https://aws.amazon.com/blogs/opensource/sustainability-with-rust/
 
----
-name: whatisliminal
-class: left  
-#Goal: robustness (maintenance, dependability)
+##Goal: robustness (maintenance, dependability)
 
 - error handling
 - testing and validation
 - documentation
 
----
-name: whatisliminal
-class: left  
-#Goal: a drop-in replacement for GSW-C
+##Goal: a drop-in replacement for GSW-C
 
 <!-- imagem testes do GSW-Python rodando -->
 
 <!-- imagem: setup.py com mods pra Rust -->
 
---- 
-name: whatisliminal
-class: left  
-#Why Rust?
+
+<!-- Certainly simplify this tree. What to keep? -->
+---
+name: tree
+class: left
+#Pacakge structure
+```shell
+$ tree -L 2
+├── CITATION.cff
+├── Cargo.lock
+├── Cargo.toml
+├── LICENSE-APACHE
+├── LICENSE-MIT
+├── README.md
+├── assets
+│       └── gswteos-10.h
+├── benches
+│   └── volume.rs
+├── build.rs
+├── cbindgen.toml
+├── convert_refdata
+│   ├── Cargo.toml
+│   ├── data
+│   ├── src
+│   └── tmp
+├── default.nix
+├── examples
+│   └── usage-from-c
+├── flake.lock
+├── flake.nix
+├── gsw_data_v3_0.nc
+├── include
+│   └── gswteos-10.h
+├── shell.nix
+├── src
+│   ├── conversions.rs
+│   ├── earth.rs
+│   ├── error.rs
+│   ├── errors.rs
+│   ├── ffi.rs
+│   ├── freezing.rs
+│   ├── geostrophy.rs
+│   ├── gsw_internal_const.rs
+│   ├── gsw_internal_funcs.rs
+│   ├── gsw_sp_coefficients.rs
+│   ├── gsw_specvol_coefficients.rs
+│   ├── lib.rs
+│   ├── misc.rs
+│   ├── practical_salinity.rs
+│   ├── volume.rs
+│   └── volume_exact.rs
+├── talks
+├── target
+│   ├── CACHEDIR.TAG
+│   ├── debug
+│   └── tmp
+├── tests
+│   ├── data
+│   ├── earth.rs
+│   └── volume.rs
+└── utils
+    ├── gen_stubs.py
+    └── gsw-py-patch
+```
 
 ---
 name: crates
@@ -227,6 +287,7 @@ class: left
 $ cargo search gsw
 gsw = "0.0.10"    # TEOS-10 v3.06.12 Gibbs Seawater Oceanographic Toolbox in Rust
 ```
+
 https://crates.io/crates/gsw
 
 --
@@ -254,7 +315,7 @@ src/conversions.rs:    let x = libm::sin(lat * DEG2RAD);
 ```
 
 ---
-name: whatisliminal
+name: unittest
 class: left  
 #cargo test - Unit
 
@@ -283,10 +344,11 @@ mod test_specvol {
 ```
 
 ---
-name: whatisliminal
-class: left  
-#Validation / Integration
+name: validationtest
+class: left
+#cargo test - Validation / Integration
 
+[{tests/volume.rs}](https://github.com/castelao/GSW-rs/blob/main/tests/volume.rs)
 ```shell=
     hey
 ```
