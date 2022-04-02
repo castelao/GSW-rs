@@ -219,8 +219,11 @@ https://aws.amazon.com/blogs/opensource/sustainability-with-rust/
 name: tree
 class: left
 #Package structure
+
+.left-column[
 ```shell
 $ tree -L 2
+.
 ├── Cargo.toml
 ├── README.md
 ├── assets
@@ -236,6 +239,12 @@ $ tree -L 2
 │   └── tests/
 ├── examples
 │   └── usage-from-c/
+```
+]
+
+.right-column[
+```shell
+.
 ├── src
 │   ├── conversions.rs
 │   ├── earth.rs
@@ -256,6 +265,7 @@ $ tree -L 2
     ├── gen_stubs.py
     └── gsw-py-patch
 ```
+]
 
 ---
 name: crates
