@@ -111,16 +111,17 @@
 <body>
     <textarea id="source">
 class: center, middle
-<br/><br/><br/><br/>                       
-.title[GSW-rs]   
-.subtitle[Gibbs Seawater Toolbox implemented in Rust for efficiency and robustnes]  
+<br/><br/>
+.title[Gibbs Seawater - Rust]   
+.subtitle[GSW Toolbox implemented in Rust for efficiency and robustnes]  
 <br/><br/>                 
 .author[Guilherme Castelão]  
-.institution[Scripps Institution of Oceanography]  
+.institution[Scripps Institution of Oceanography - UCSD]  
+<br/>
 .author[Luiz Irber]  
 .institution[University of California Davis]  
 <br/><br/>
-.date[April 4, 2022 - SEA's ISS 2022]   
+.date[April 4, 2022 - [SEA's ISS](https://sea.ucar.edu)]   
 <br/><br/>
 .note[Created with [{Liminal}](https://github.com/jonathanlilly/liminal) using [{Remark.js}](http://remarkjs.com/) + [{Markdown}](https://github.com/adam-p/markdown-here/wiki/Markdown-Cheatsheet) +  [{KaTeX}](https://katex.org)]
 
@@ -166,23 +167,49 @@ name: whatisgsw
 class: left
 #Gibbs Seawater Toolbox
 
-blabal
+TEOS-10
+
+http://www.teos-10.org
+
+TEOS-10 is based on a Gibbs function formulation from which all thermodynamic properties of seawater (density, enthalpy, entropy sound speed, etc.) can be derived in a thermodynamically consistent manner. TEOS-10 was adopted by the Intergovernmental Oceanographic Commission at its 25th Assembly in June 2009 to replace EOS-80 as the official description of seawater and ice properties in marine science.
+
+A notable use is on estimating density of the seawater.
+
+- Toolbox available on MatLab, FORTRAN, C, C++,
+- Wrapper around C libary for: Julia, PHP, Python, R
+- Scientific development focused on MatLab.
+- C library tries to reproduce MatLab.
 
 <!-- Why did we pick Rust for this? -->
 ---
 name: wishlist
 class: left  
 #Our wishlist for Scientific Computing
-- Embedded
-- Package manager: Reuse = speed coding
-- Interoperable: Work with existing system
-- Robustness:
-- Code for human and the compiler takes care of optimize
-- Integrated testing system
+Goal: Empower more onboard decision making, such as using Machine Learning, in Argo floats and Spray underwater gliders.
+--
 
--- 
+- **Embedded:** Use within firmware for microcontrollers;
+--
 
-Rust!!!
+- **Package manager:** Reuse = speed coding; Take advantage of others expertise;
+--
+
+- **Interoperable:** Work with existing system; Shall not require re-build everything;
+--
+
+- **Robustness:** Bugs on remote autonomous systems can be castrophic. A plus for robust concurent processing;
+--
+
+- **Testing/Validation:** Integrated testing system;
+--
+
+- **Readeable:** Code for human and leave for compiler to optimize it;
+--
+
+<br/>
+<center>
+  <img style="width:30%"  src="https://rustacean.net/assets/rustacean-flat-gesture.png">
+</center>
 
 <!-- What is Rust? -->
 ---
