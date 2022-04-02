@@ -42,7 +42,7 @@
         .remark-slide-content p,ol,ul {font-size: 1.2em;}
 
         /* Styling for code blocks */
-        .remark-code,.remark-inline-code {font-family: 'Ubuntu Mono';}
+        .remark-code,.remark-inline-code {font-family: 'SF Mono', monospace;}
         
         /* Styling for links */
         a {text-decoration: none;color: #666666;}
@@ -218,61 +218,40 @@ https://aws.amazon.com/blogs/opensource/sustainability-with-rust/
 ---
 name: tree
 class: left
-#Pacakge structure
+#Package structure
 ```shell
 $ tree -L 2
-├── CITATION.cff
-├── Cargo.lock
 ├── Cargo.toml
-├── LICENSE-APACHE
-├── LICENSE-MIT
 ├── README.md
 ├── assets
-│       └── gswteos-10.h
+│   └── gswteos-10.h
 ├── benches
-│   └── volume.rs
+│     └── volume.rs
 ├── build.rs
 ├── cbindgen.toml
 ├── convert_refdata
-│   ├── Cargo.toml
-│   ├── data
-│   ├── src
-│   └── tmp
-├── default.nix
+│   ├── Cargo.toml
+│   ├── data/
+│   ├── src/
+│   └── tests/
 ├── examples
-│   └── usage-from-c
-├── flake.lock
-├── flake.nix
-├── gsw_data_v3_0.nc
-├── include
-│   └── gswteos-10.h
-├── shell.nix
+│   └── usage-from-c/
 ├── src
-│   ├── conversions.rs
-│   ├── earth.rs
-│   ├── error.rs
-│   ├── errors.rs
-│   ├── ffi.rs
-│   ├── freezing.rs
-│   ├── geostrophy.rs
-│   ├── gsw_internal_const.rs
-│   ├── gsw_internal_funcs.rs
-│   ├── gsw_sp_coefficients.rs
-│   ├── gsw_specvol_coefficients.rs
-│   ├── lib.rs
-│   ├── misc.rs
-│   ├── practical_salinity.rs
-│   ├── volume.rs
-│   └── volume_exact.rs
-├── talks
-├── target
-│   ├── CACHEDIR.TAG
-│   ├── debug
-│   └── tmp
+│   ├── conversions.rs
+│   ├── earth.rs
+│   ├── error.rs
+│   ├── ffi.rs
+│   ├── gsw_internal_const.rs
+│   ├── gsw_internal_funcs.rs
+│   ├── gsw_sp_coefficients.rs
+│   ├── gsw_specvol_coefficients.rs
+│   ├── lib.rs
+│   ├── practical_salinity.rs
+│   └── volume.rs
 ├── tests
-│   ├── data
-│   ├── earth.rs
-│   └── volume.rs
+│   ├── data/
+│   ├── earth.rs
+│   └── volume.rs
 └── utils
     ├── gen_stubs.py
     └── gsw-py-patch
