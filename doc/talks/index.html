@@ -297,17 +297,14 @@ $ tree -L 2
 ---
 name: crates
 class: left  
-#Distributing crates.io
+#Distributing - [crates.io](https://crates.io/crates/gsw)
 
 ```shell
 $ cargo search gsw
-gsw = "0.0.10"    # TEOS-10 v3.06.12 Gibbs Seawater Oceanographic Toolbox in Rust
+gsw = "0.0.10"  # TEOS-10 Gibbs Seawater Oceanographic Toolbox in Rust
 ```
 
-https://crates.io/crates/gsw
-
 --
-
 How to use other crates?
 ```shell=
 $ cat Cargo.toml
@@ -331,12 +328,45 @@ src/conversions.rs:    let x = libm::sin(lat * DEG2RAD);
 ```
 
 ---
+name: cargo_doc
+class: left 
+#cargo doc - [docs.rs/gsw](https://docs.rs/gsw/0.0.10/gsw/volume/fn.specvol.html)
+
+As written in src/volume.rs, with the code itself.
+
+````shell=
+/// Specific volume of sea water (75-term polynomial approximation)
+///
+/// Calculates specific volume from Absolute Salinity, Conservative
+/// Temperature and pressure, using the computationally-efficient
+/// polynomial expression for specific volume (Roquet et al., 2014).
+///
+/// # Arguments
+///
+/// * `sa`: Absolute Salinity \[ g kg-1 \]
+/// * `ct`: Conservative Temperature (ITS-90) \[ deg C \]
+/// * `p`: sea pressure \[ dbar \] (i.e. absolute pressure - 10.1325 dbar)
+///
+/// # Returns
+///
+/// * `specvol`: specific volume \[m3 kg-1\]
+///
+/// ...
+///
+pub fn specvol(sa: f64, ct: f64, p: f64) -> Result<f64> {
+  ...
+}
+````
+
+---
 name: unittest
 class: left  
 #cargo test - Unit
 
 [{src/volume.rs}](https://github.com/castelao/GSW-rs/blob/7b5c6b5ab2b61ed86585fffd69f6c780e8894706/src/volume.rs#L96)
 ```shell=
+pub fn specvol(sa: f64, ct: f64, p: f64) -> Result<f64> {...}
+
 #[cfg(test)]
 mod test_specvol {
     use super::specvol;
@@ -362,7 +392,7 @@ mod test_specvol {
 ---
 name: validationtest
 class: left
-#cargo test - Validation / Integration
+#cargo test - Validation
 
 [{tests/volume.rs}](https://github.com/castelao/GSW-rs/blob/main/tests/volume.rs)
 ```shell=
@@ -405,35 +435,6 @@ class: left
 name: whatisliminal
 class: left  
 #Replacing GSW-C in GSW-Python / GSW-R
-
----
-name: whatisliminal
-class: left  
-#cargo doc - [{docs.rs/gsw}](https://docs.rs/gsw/0.0.10/gsw/volume/fn.specvol.html)
-
-````shell=
-/// Specific volume of sea water (75-term polynomial approximation)
-///
-/// Calculates specific volume from Absolute Salinity, Conservative
-/// Temperature and pressure, using the computationally-efficient
-/// polynomial expression for specific volume (Roquet et al., 2014).
-///
-/// # Arguments
-///
-/// * `sa`: Absolute Salinity \[ g kg-1 \]
-/// * `ct`: Conservative Temperature (ITS-90) \[ deg C \]
-/// * `p`: sea pressure \[ dbar \] (i.e. absolute pressure - 10.1325 dbar)
-///
-/// # Returns
-///
-/// * `specvol`: specific volume \[m3 kg-1\]
-///
-/// ...
-///
-pub fn specvol(sa: f64, ct: f64, p: f64) -> Result<f64> {
-  ...
-}
-````
 
 ---
 name: whatisliminal
