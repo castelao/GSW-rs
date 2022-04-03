@@ -652,35 +652,6 @@ class: left
 ---
 
 
-```graphviz
-digraph {
-  compound=true
-  rankdir=RL
-
-  graph [ fontname="Source Sans Pro", fontsize=20 ];
-  node [ fontname="Source Sans Pro", fontsize=18];
-  edge [ fontname="Source Sans Pro", fontsize=12 ];
-
-
-  subgraph core {
-    c [label="Hackmd-it \ncore"] [shape=box]
-  }
-  
-  c -> sync [ltail=session lhead=session]
-
-  subgraph cluster1 {
-     concentrate=true
-    a [label="Text source\nGithub, Gitlab, ..."] [shape=box]
-    b [label="HackMD Editor"] [shape=box]
-    sync [label="sync" shape=plaintext ]
-    b -> sync  [dir="both"]
-    sync -> a [dir="both"]
-    label="An edit session"
-  }
-}
-```
-
----
 
 <style>
 code.blue {
@@ -693,26 +664,6 @@ code.orange {
 
 - <code class="orange">onMessage('event')</code>: Register event listener
 - <code class="blue">sendMessage('event')</code>: Trigger event
-
----
-
-
-```typescript
-// in background script
-const fakeLogin = async () => true
-
-channel.answer('isLogin', async () => {
-  return await fakeLogin()
-})
-```
-
-<br>
-
-```typescript
-// in inject script
-const isLogin = await channel.callBackground('isLogin')
-console.log(isLogin) //-> true
-```
 
 ---
 class: middle, center
