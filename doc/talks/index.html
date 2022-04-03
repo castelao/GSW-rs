@@ -359,6 +359,33 @@ pub fn specvol(sa: f64, ct: f64, p: f64) -> Result<f64> {
 ````
 
 ---
+name: doctest
+class: left  
+#cargo test - Doctest
+````shell=
+/// Specific volume of sea water (75-term polynomial approximation)
+///
+/// Calculates specific volume from Absolute Salinity, Conservative
+/// Temperature and pressure, using the computationally-efficient
+/// polynomial expression for specific volume (Roquet et al., 2014).
+///
+
+...
+
+///
+/// # Example:
+/// ```
+/// use gsw::volume::specvol;
+/// let v = specvol(32.0, 10.0, 100.0).unwrap();
+/// assert!((v - 0.0009756515980668401).abs() <= f64::EPSILON);
+/// ```
+///
+pub fn specvol(sa: f64, ct: f64, p: f64) -> Result<f64> {
+...
+}
+````
+
+---
 name: unittest
 class: left  
 #cargo test - Unit
@@ -394,37 +421,62 @@ name: validationtest
 class: left
 #cargo test - Validation
 
-[{tests/volume.rs}](https://github.com/castelao/GSW-rs/blob/main/tests/volume.rs)
-```shell=
-    hey
+.left-column[
+]
+.right-column[
+```shell
+$ tree -L 2
+.
+├── Cargo.toml
+├── README.md
+├── build.rs
+├── convert_refdata
+│   ├── Cargo.toml
+│   ├── data/
+│   ├── src/
+│   └── tests/
+├── tests
+│   ├── data/
+│   ├── earth.rs
+│   └── volume.rs
+...
 ```
+]
+
+[{tests/volume.rs}](https://github.com/castelao/GSW-rs/blob/main/tests/volume.rs)
+
+https://github.com/castelao/GSW-rs/tree/main/convert_refdata
 
 ---
-name: whatisliminal
-class: left  
-#Doctest
-````shell=
-/// Specific volume of sea water (75-term polynomial approximation)
-///
-/// Calculates specific volume from Absolute Salinity, Conservative
-/// Temperature and pressure, using the computationally-efficient
-/// polynomial expression for specific volume (Roquet et al., 2014).
-///
-
+name: cargotest
+class:left
+# Running tests
+```shell
+$ cargo test
+cargo test
+    Finished test [unoptimized + debuginfo] target(s) in 0.14s
+     Running unittests (target/debug/deps/gsw-fe1efe8952eba1b5)
+running 53 tests
 ...
+test result: ok. 53 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
 
-///
-/// # Example:
-/// ```
-/// use gsw::volume::specvol;
-/// let v = specvol(32.0, 10.0, 100.0).unwrap();
-/// assert!((v - 0.0009756515980668401).abs() <= f64::EPSILON);
-/// ```
-///
-pub fn specvol(sa: f64, ct: f64, p: f64) -> Result<f64> {
+     Running tests/earth.rs (target/debug/deps/earth-445971b965eed566)
+running 2 tests
 ...
-}
-````
+test result: ok. 2 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running tests/volume.rs (target/debug/deps/volume-26d3c06ea78d8e71)
+running 14 tests
+...
+test result: ok. 14 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.01s
+
+   Doc-tests gsw
+running 27 tests
+...
+test result: ok. 27 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 2.47s
+
+```
+https://github.com/castelao/GSW-rs/actions/runs/2075234547
 
 ---
 name: whatisliminal
