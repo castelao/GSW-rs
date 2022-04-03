@@ -561,20 +561,72 @@ class: left
 #no_std -> embedded !
 
 ---
-name: whatisliminal
+name: features
 class: left  
-#Features: Choose your flavor
+#Features
 
-Strategy decisions on compilation time
+Choose your flavor on compilation time. E.x.: to include C-API:
+```shell
+$ cargo build --features capi
+```
 
-compat: Reproduce Matlab's implementation
-  - $S_A[S_A < 0] = 0$
+--
+Also allow strategy decisions:
+- GSW-Matlab
+```matlab
+% This line ensures that SA is non-negative.
+SA(SA < 0) = 0;
+```
 
-  - `const`: Explicit definition
-    - without compromising performance
-    - and matching reference notation
+--
 
-```rust
+- GSW-C
+```shell
+#define GSW_INVALID_VALUE       9e15
+```
+```shell
+/* This line ensures that SP is non-negative. */
+if (sp < 0.0) {
+    sp  = GSW_INVALID_VALUE;
+}
+```
+
+---
+name: compat
+class: left  
+#Features - compat
+
+To reproduce Matlab:
+
+```shell
+$ cargo build --features compat
+```
+
+```shell
+pub fn specvol(sa: f64, ct: f64, p: f64) -> Result<f64> {
+    let sa: f64 = if sa < 0.0 {
+        if cfg!(feature = "compat") {
+            0.0
+        } else if cfg!(feature = "invalidasnan") {
+            return Ok(f64::NAN);
+        } else {
+            return Err(Error::NegativeSalinity);
+        }
+    } else {
+        sa
+    };
+    ...
+}
+```
+
+---
+name: humanreadeable
+class: left
+#Write code for humans
+
+`const`: Explicit definition without compromising performance and matching reference notation.
+
+```shell
 /// SSO: Standard Ocean Reference Salinity [ g/kg ].
 pub const GSW_SSO: f64 = 35.16504;
 
@@ -590,16 +642,9 @@ pub const GSW_SFAC: f64 = if cfg!(feature = "compat") {
 };
 ```
 
-
-invalidasnan:
-  - $S_A[S_A < 0] = NaN$
-
-nodgdz: No vertical variation on gravity, useful for numerical modeling
-
-capi
-
-std
-
+Write code for humans and leave the optimization for the compiler.
+- Easier to compare with papers;
+- Easier to maintain and update scientific advances;
 ---
 name: whatisliminal
 class: left  
