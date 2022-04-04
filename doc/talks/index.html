@@ -664,17 +664,13 @@ name: embedded
 class: left  
 #Embedded - `no_std`
 
-Run on "Bare Metal" embedded systems, such as microcontrollers.
+- Run on "Bare Metal" embedded systems, such as microcontrollers.
 
-A `no_std`
+- With `#![no_std]` the crate links to the core-crate instead of the std-crate, thus it is platform-agnostic, lacking APIs for anything that involves platform integration.
 
-With `#![no_std]` the create links to the core-crate instead of the std-crate, thus it is platform-agnostic, lacking APIs for anything that involves platform integration.
+- Microcontrollers used for real-time operational systems and low energy consumption.
 
-Microcontrollers used for real-time operational systems and low energy consumption.
-
-Some platforms survived for more than 7 years operating non-stop, without any maintenance or re-charge.
-
-Use of libm for math operations and heap not available by default.
+- Use of libm for math operations and heap not available by default.
 
 ---
 name: features
