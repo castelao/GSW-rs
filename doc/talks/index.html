@@ -556,9 +556,21 @@ change | time_c | time_rs | units | function
   1.22 |  55.09 |   67.28 | ns/ns | specvol_first_derivatives_wrt_enthalpy
 
 ---
-name: whatisliminal
+name: embedded
 class: left  
-#no_std -> embedded !
+#Embedded - `no_std`
+
+Run on "Bare Metal" embedded systems, such as microcontrollers.
+
+A `no_std`
+
+With `#![no_std]` the create links to the core-crate instead of the std-crate, thus it is platform-agnostic, lacking APIs for anything that involves platform integration.
+
+Microcontrollers used for real-time operational systems and low energy consumption.
+
+Some platforms survived for more than 7 years operating non-stop, without any maintenance or re-charge.
+
+Use of libm for math operations and heap not available by default.
 
 ---
 name: features
@@ -650,10 +662,14 @@ name: whatisliminal
 class: left  
 #Other applications
 
-- Other applications:
-  - Iridium (Scripps): Direct-IP & RUDICS for Argo and Spray
-  - BUFR
+##Satellite Communications
+Iridium communications at Scripps Institution of Oceanography for Solo-II (Argo) and Spray (underwater gliders) have been running with a custom system written in Rust since 2017.
+- Fast response
+- Light process
+- Multi-Thread
 
+##BUFR
+An Open Source pure Rust library with a BUFR-dump (WIP).
 
 ---
 name: whatisliminal
