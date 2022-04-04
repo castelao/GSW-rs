@@ -2,6 +2,12 @@
 
 GSW for microcontrollers.
 
+## Talks
+
+We presented about goals and progress (as of Apr 2022) at the
+[SEA Improving Scientific Software 2022](https://sea.ucar.edu/conference/2022),
+[slides available here](https://github.com/castelao/GSW-rs/tree/talk_SEAS2022/doc/talks).
+
 ## Minimum supported Rust version
 
 Currently the minimum supported Rust version is 1.46.0
