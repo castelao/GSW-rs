@@ -436,6 +436,13 @@ class: left
 #cargo test - Validation
 
 .left-column[
+Matlab has a testing dataset that we use as our refrence.
+
+But that dataset is a matlab binary.
+
+We created an auxiliary crate ([convert_refdata](https://github.com/castelao/GSW-rs/tree/main/convert_refdata)) to convert the matlab dataset into a serialized binary.
+
+With a readeable dataset (heapless) we can write tests ([tests/volume.rs](https://github.com/castelao/GSW-rs/blob/main/tests/volume.rs)) to validate against the reference values.
 ]
 .right-column[
 ```shell
@@ -457,9 +464,6 @@ $ tree -L 2
 ```
 ]
 
-[{tests/volume.rs}](https://github.com/castelao/GSW-rs/blob/main/tests/volume.rs)
-
-https://github.com/castelao/GSW-rs/tree/main/convert_refdata
 
 ---
 name: cargotest
