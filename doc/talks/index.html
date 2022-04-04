@@ -42,7 +42,10 @@
         .remark-slide-content p,ol,ul {font-size: 1.2em;}
 
         /* Styling for code blocks */
-        .remark-code,.remark-inline-code {font-family: 'SF Mono', monospace;}
+        .remark-code,.remark-inline-code {
+            font-family: 'SF Mono', monospace;
+            font-size: 0.65em;
+        }
         
         /* Styling for links */
         a {text-decoration: none;color: #666666;}
@@ -194,7 +197,7 @@ Goal: Empower more onboard decision making, such as using Machine Learning, in A
 - **Package manager:** Reuse = speed coding; Take advantage of others expertise;
 --
 
-- **Interoperable:** Work with existing system; Shall not require re-build everything;
+- **Interoperable:** Work with existing systems; Partial integration avoids complete rewrites;
 --
 
 - **Robustness:** Bugs on remote autonomous systems can be catastrophic. A plus for robust concurrent processing;
@@ -215,10 +218,24 @@ Goal: Empower more onboard decision making, such as using Machine Learning, in A
 ---
 name: rustintro
 class: left  
-#Light Rust intro
+# Rust?
 
+System programming language (same realm as C)
+- High-level ergonomics and low-level control
+- Memory safety enforced by the compiler
+- Explicit error handling with the `Result` type
+
+Initially develop at Mozilla, increased adoption across industry
+- Integration within Firefox (large C++ codebase)
+- Iterative, not total rewrite
+- Minimize data races and other concurrency bugs
+
+Official book: https://doc.rust-lang.org/book/
+
+<!-- TODO LUIZ -->
 <!-- Maybe limit to a light intro here and save good longer points to the end -->
 
+<!--
 ##Goal: efficiency
 
 - low resources (embedded)
@@ -234,12 +251,7 @@ https://aws.amazon.com/blogs/opensource/sustainability-with-rust/
 - testing and validation
 - documentation
 
-##Goal: a drop-in replacement for GSW-C
-
-<!-- imagem testes do GSW-Python rodando -->
-
-<!-- imagem: setup.py com mods pra Rust -->
-
+-->
 
 <!-- Certainly simplify this tree. What to keep? -->
 ---
@@ -271,6 +283,7 @@ $ tree -L 2
 
 .right-column[
 ```shell
+
 .
 ├── src
 │   ├── conversions.rs
@@ -479,20 +492,34 @@ test result: ok. 27 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; fin
 https://github.com/castelao/GSW-rs/actions/runs/2075234547
 
 ---
-name: whatisliminal
+name: FFI
 class: left  
 #FFI -> cargo capi !!!
 
+<!-- TODO LUIZ -->
+
 ---
-name: whatisliminal
+name: other_languages
 class: left  
 #Replacing GSW-C in GSW-Python / GSW-R
 
+<!-- TODO LUIZ -->
+
+<!-- 
+##Goal: a drop-in replacement for GSW-C
+
+## imagem testes do GSW-Python rodando
+
+## imagem: setup.py com mods pra Rust
+-->
+
 ---
-name: whatisliminal
+name: bench
 class: left  
 #cargo bench !!
 <!--
+TODO LUIZ
+
 change | time_c | time_rs | units | function
 ------ | ------ | ------- | ----- | --------
   0.29 |  46.49 |   13.68 | ns/ns | c_from_sp
