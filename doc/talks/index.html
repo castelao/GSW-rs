@@ -345,7 +345,7 @@ name: cargo_doc
 class: left 
 #cargo doc - [docs.rs/gsw](https://docs.rs/gsw/0.0.10/gsw/volume/fn.specvol.html)
 
-As written in src/volume.rs, with the code itself.
+As written in src/volume.rs, near the function implementation.
 
 ````shell=
 /// Specific volume of sea water (75-term polynomial approximation)
@@ -401,7 +401,7 @@ pub fn specvol(sa: f64, ct: f64, p: f64) -> Result<f64> {
 ---
 name: unittest
 class: left  
-#cargo test - Unit
+#cargo test - Unit test
 
 [{src/volume.rs}](https://github.com/castelao/GSW-rs/blob/7b5c6b5ab2b61ed86585fffd69f6c780e8894706/src/volume.rs#L96)
 
@@ -493,11 +493,83 @@ test result: ok. 27 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; fin
 https://github.com/castelao/GSW-rs/actions/runs/2075234547
 
 ---
-name: FFI
+name: FFI-intro
 class: left  
-#FFI -> cargo capi !!!
+#FFI
+
+Generate C-compatible libraries
+- static or dynamic linking
+- `pkg-config` configuration
+
+
+---
+name: FFI-example
+class: left  
+#FFI
 
 <!-- TODO LUIZ -->
+
+[{src/ffi.rs}](https://github.com/castelao/GSW-rs/blob/7b5c6b5ab2b61ed86585fffd69f6c780e8894706/src/ffi.rs)
+```rust
+pub const GSW_INVALID_VALUE: f64 = 9e15;
+pub const GSW_ERROR_LIMIT: f64 = 1e10;
+
+#[no_mangle]
+pub unsafe extern "C" fn gsw_specvol(sa: f64, ct: f64, p: f64) -> f64 {
+    crate::volume::specvol(sa, ct, p).unwrap_or(GSW_INVALID_VALUE)
+}
+```
+
+[{assets/gswteos-10.rs}](https://github.com/castelao/GSW-rs/blob/7b5c6b5ab2b61ed86585fffd69f6c780e8894706/assets/gswteos-10.h)
+
+```c
+/* GSW TEOS-10 V3.05 definitions and prototypes. */
+
+#ifndef GSWTEOS_10_H
+#define GSWTEOS_10_H
+
+#define GSW_INVALID_VALUE 9e15
+#define GSW_ERROR_LIMIT 1e10
+
+#ifdef __cplusplus
+extern "C" {
+#endif // __cplusplus
+
+double gsw_specvol(double sa, double ct, double p);
+
+#ifdef __cplusplus
+} // extern "C"
+#endif // __cplusplus
+
+#endif /* GSWTEOS_10_H */
+```
+
+
+<!--
+```rust
+#[no_mangle]
+pub unsafe extern "C" fn gsw_rho_first_derivatives(
+    sa: f64,
+    ct: f64,
+    p: f64,
+    drho_dsa: *mut f64,
+    drho_dct: *mut f64,
+    drho_dp: *mut f64,
+) {
+    let (dsa, dct, dp) = crate::volume::rho_first_derivatives(sa, ct, p).unwrap_or((
+        GSW_INVALID_VALUE,
+        GSW_INVALID_VALUE,
+        GSW_INVALID_VALUE,
+    ));
+
+    *drho_dsa = dsa;
+    *drho_dct = dct;
+    *drho_dp = dp;
+}
+```
+-->
+
+
 
 ---
 name: other_languages
