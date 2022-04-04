@@ -44,6 +44,8 @@
         /* Styling for code blocks */
         .remark-code,.remark-inline-code {
             font-family: 'SF Mono', monospace;
+        }
+        .remark-code {
             font-size: 0.65em;
         }
         
@@ -505,6 +507,7 @@ Generate C-compatible libraries
 - static or dynamic linking
 - `pkg-config` configuration
 
+Using [{cargo-c}](https://github.com/lu-zero/cargo-c) for convenience
 
 ---
 name: FFI-example
@@ -548,7 +551,6 @@ double gsw_specvol(double sa, double ct, double p);
 #endif /* GSWTEOS_10_H */
 ```
 
-
 <!--
 ```rust
 #[no_mangle]
@@ -578,22 +580,86 @@ pub unsafe extern "C" fn gsw_rho_first_derivatives(
 ---
 name: other_languages
 class: left  
-#Replacing GSW-C in GSW-Python / GSW-R
+#Using in GSW-Python
 
-<!-- TODO LUIZ -->
+**Goal**: Run the `GSW-Python` test suite in CI
 
-<!-- 
-##Goal: a drop-in replacement for GSW-C
-
-## imagem testes do GSW-Python rodando
-
-## imagem: setup.py com mods pra Rust
--->
+Only change: [Patch `setup.py`](https://github.com/castelao/GSW-rs/blob/7b5c6b5ab2b61ed86585fffd69f6c780e8894706/utils/gsw-py-patch)
+to build with Rust instead
+- Same header file
+- Linking with `ufunc` optimizations in GSW-Python (for `numpy`)
+- Current status: 84 failed, 399 passed
+- (mostly failures from functions not implemented yet)
 
 ---
-name: bench
+name: bench_intro
 class: left  
-#cargo bench !!
+#Benchmarking
+
+- Using [criterion](https://bheisler.github.io/criterion.rs/book/index.html)
+- Also tracking in CI for regressions
+
+[`{benches/volume.rs}`](https://github.com/castelao/GSW-rs/blob/7b5c6b5ab2b61ed86585fffd69f6c780e8894706/benches/volume.rs)
+```rust
+use criterion::{black_box, criterion_group, criterion_main, Criterion};
+
+use gsw::{conversions, practical_salinity, volume};
+
+fn volume(c: &mut Criterion) {
+    c.bench_function("specvol", |b| {
+        b.iter(|| volume::specvol(black_box(10.0), black_box(10.0),
+                                  black_box(10.0)).unwrap())
+    });
+}
+
+criterion_group!(benches, volume);
+criterion_main!(benches);
+```
+
+```shell=
+$ cargo bench -- specvol
+
+specvol                 time:   [19.385 ns 19.402 ns 19.419 ns]
+Found 1 outliers among 100 measurements (1.00%)
+  1 (1.00%) high severe
+```
+
+---
+name: bench_c
+class: left  
+#Benchmarking
+
+In parallel: implementing benchmarks for `GSW-C` using https://github.com/google/benchmark
+- to check if they are in the same ballpark
+- focus on correctness at the moment, not performance
+
+```c
+#include <benchmark/benchmark.h>
+
+#include "gswteos-10.h"
+
+static void BM_specvol(benchmark::State& state) {
+  for (auto _  : state) {
+    gsw_specvol(10.0, 10.0, 10.0);
+  }
+}
+BENCHMARK(BM_specvol);
+```
+
+```shell=
+$ ./gsw_bench
+Running ./gsw_bench
+-------------------------------------------------------------------------------------
+Benchmark                                           Time             CPU   Iterations
+-------------------------------------------------------------------------------------
+BM_specvol                                       18.3 ns         18.3 ns     38028678
+```
+
+---
+name: bench_compare
+class: left  
+#Benchmarking
+
 <!--
 TODO LUIZ
 
@@ -637,6 +703,8 @@ change | time_c | time_rs | units | function
   4.31 |  42.04 |  181.29 | ns/ns | sa_from_rho
 -->
 
+Top 8 - Rust faster than C:
+
 change | time_c | time_rs | units | function
 ------ | ------ | ------- | ----- | --------
   0.29 |  46.49 |   13.68 | ns/ns | c_from_sp
@@ -647,6 +715,13 @@ change | time_c | time_rs | units | function
   0.84 |  46.64 |   39.28 | ns/ns | rho_first_derivatives
   0.89 | 104.21 |   92.65 | ns/ns | rho_second_derivatives
   0.92 |  41.16 |   37.72 | ns/ns | specvol_second_derivatives_wrt_enthalpy
+
+---
+name: bench_compare
+class: left  
+#Benchmarking
+
+Top 8 - C faster than Rust:
 
 change | time_c | time_rs | units | function
 ------ | ------ | ------- | ----- | --------
