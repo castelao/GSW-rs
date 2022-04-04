@@ -170,25 +170,25 @@ name: whatisgsw
 class: left
 #Gibbs Seawater Toolbox
 
-TEOS-10
+"TEOS-10 is based on a Gibbs function formulation from which all **thermodynamic properties of seawater** (density, enthalpy, entropy sound speed, etc.) can be derived in a thermodynamically **consistent** manner.
+TEOS-10 was adopted by the Intergovernmental Oceanographic Commission (**IOC**) at its 25th Assembly in June 2009 to replace EOS-80 as the official description of seawater and ice properties in marine science." [TEOS-10](http://www.teos-10.org)
 
-http://www.teos-10.org
+A notable use is on estimating density of the seawater from sensors measuring pressure, temperature, and conductivity.
 
-TEOS-10 is based on a Gibbs function formulation from which all thermodynamic properties of seawater (density, enthalpy, entropy sound speed, etc.) can be derived in a thermodynamically consistent manner. TEOS-10 was adopted by the Intergovernmental Oceanographic Commission at its 25th Assembly in June 2009 to replace EOS-80 as the official description of seawater and ice properties in marine science.
+--
 
-A notable use is on estimating density of the seawater.
-
-- Toolbox available on MatLab, FORTRAN, C/C++
-- Wrapper around C library for: Julia, PHP, Python, R
+Current state:
+- Toolbox available on MatLab, FORTRAN, C/C++, JS
+- Wrapper around C library: Haskell, Julia, Python, R, ...
 - Scientific development focused on MatLab.
-- C library tries to reproduce MatLab.
+- The C library almost reproduce MatLab.
 
 <!-- Why did we pick Rust for this? -->
 ---
 name: wishlist
 class: left  
-#Our wishlist for Scientific Computing
-Goal: Empower more onboard decision making, such as using Machine Learning, in Argo floats and Spray underwater gliders.
+##Our wishlist for Scientific Computing
+Motivation: Empower more onboard decision making, such as using Machine Learning, in Argo floats and Spray underwater gliders.
 --
 
 - **Embedded:** Use within firmware for microcontrollers;
@@ -200,7 +200,7 @@ Goal: Empower more onboard decision making, such as using Machine Learning, in A
 - **Interoperable:** Work with existing systems; Partial integration avoids complete rewrites;
 --
 
-- **Robustness:** Bugs on remote autonomous systems can be catastrophic. A plus for robust concurrent processing;
+- **Robustness:** Bugs on remote autonomous systems can be a catastrophic failure. A plus for robust concurrent processing;
 --
 
 - **Testing/Validation:** Integrated testing system;
@@ -404,6 +404,7 @@ class: left
 #cargo test - Unit
 
 [{src/volume.rs}](https://github.com/castelao/GSW-rs/blob/7b5c6b5ab2b61ed86585fffd69f6c780e8894706/src/volume.rs#L96)
+
 ```shell=
 pub fn specvol(sa: f64, ct: f64, p: f64) -> Result<f64> {...}
 
@@ -618,7 +619,6 @@ SA(SA < 0) = 0;
 ```
 
 --
-
 - GSW-C
 ```shell
 #define GSW_INVALID_VALUE       9e15
