@@ -186,11 +186,12 @@ Current state:
 - The C library almost reproduce MatLab.
 
 <!-- Why did we pick Rust for this? -->
+<!-- Emphasize motivation -->
 ---
 name: wishlist
 class: left  
 ##Our wishlist for Scientific Computing
-Motivation: Empower more onboard decision making, such as using Machine Learning, in Argo floats and Spray underwater gliders.
+Motivation: Enable more onboard decision making, such as using Machine Learning, in Argo floats and Spray underwater gliders.
 --
 
 - **Embedded:** Use within firmware for microcontrollers;
@@ -739,9 +740,9 @@ class: left
 
 - Run on "Bare Metal" embedded systems, such as microcontrollers.
 
-- With `#![no_std]` the crate links to the core-crate instead of the std-crate, thus it is platform-agnostic, lacking APIs for anything that involves platform integration.
-
 - Microcontrollers used for real-time operational systems and low energy consumption.
+
+- With `#![no_std]` the crate links to the core-crate instead of the std-crate, thus it is platform-agnostic, lacking APIs for anything that involves platform integration.
 
 - Use of libm for math operations and heap not available by default.
 
