@@ -1,0 +1,885 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>SEA's ISS 2022 - GSW-rs</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <link rel="stylesheet" href="./stylesheets/katex.min.css">
+    <link rel="stylesheet" href="./stylesheets/liminal.css">
+
+    <style>            
+        /* Overall styling for slide */
+        .remark-slide-content {
+            padding:0em 4em 0em 4em;
+            font-family: 'Georgia';
+            letter-spacing: 0.025em;
+        }
+     
+        /* Styling for level one header, #Text */
+        .remark-slide-content h1 {
+            font-size: 2.4em;
+            color: #606060;
+            font-weight: bold;
+            letter-spacing: 0.05em;
+        }
+        
+        /* Styling for level two header, ##Text */
+        .remark-slide-content h2 {
+            font-size: 1.55em;
+            color: #606060;
+            font-weight: bold;
+            letter-spacing: 0.05em;
+        }
+        
+        /* Styling for level three header, ###Text */
+        .remark-slide-content h3 {
+            font-size: 1.4em;
+            color: #606060;
+            font-weight: bold;
+            letter-spacing: 0.05em;
+        }
+
+        /* Styling for paragraphs and lists */
+        .remark-slide-content p,ol,ul {font-size: 1.2em;}
+
+        /* Styling for code blocks */
+        .remark-code,.remark-inline-code {
+            font-family: 'SF Mono', monospace;
+        }
+        .remark-code {
+            font-size: 0.65em;
+        }
+        
+        /* Styling for links */
+        a {text-decoration: none;color: #666666;}
+        /* Setting link properties is particular, do not change order below*/
+        a:visited {color: #666666}        
+        a:hover {color: #33AA99}
+        a:active,a#active {color: #FF9700;}
+        
+        /* Some special classes for the title slide */        
+        .title {
+            font-size: 2.4em;
+            color: #606060;
+            font-weight: bold;
+            letter-spacing: 0.05em;
+        }
+        
+        .author {
+            font-size: 1.4em;
+            color: #606060;
+            font-weight: bold;
+            letter-spacing: 0.02em;
+        }
+        
+        .coauthor {
+            font-size: 1.0em;
+            color: #606060;
+            font-weight: bold;
+            letter-spacing: 0.02em;
+        }
+        
+        .subtitle, .institution {
+            font-size: 1.0em;
+        }
+        
+        .date {
+            font-size: 1.0em;
+            font-style: italic;
+        }
+        
+        .note {
+            font-size: 0.8em;
+        }
+        
+        /* Other special classes */
+        .cite {
+            font-size: 0.8em;
+            color: #33AA99;
+            font-style: italic;
+        }
+        
+        .footnote {
+            position: absolute;
+            bottom: 2em;
+            left: 6em;
+            font-size: 0.7em;
+        }
+        
+        .caption {
+            font-size: 0.5em;
+            line-height: 10%;
+        }
+        
+    </style>
+</head>
+
+<body>
+    <textarea id="source">
+class: center, middle
+<br/><br/>
+.title[Gibbs Seawater - Rust]   
+.subtitle[GSW Toolbox implemented in Rust for efficiency and robustness]  
+<br/><br/>                 
+.author[Guilherme Castelão]  
+.institution[Scripps Institution of Oceanography - UCSD]  
+<br/>
+.author[Luiz Irber]  
+.institution[University of California Davis]  
+<br/><br/>
+.date[April 4, 2022 - [SEA's ISS](https://sea.ucar.edu)]   
+slides: https://github.com/castelao/GSW-rs
+<br/> <br/>
+.note[Created with [{Liminal}](https://github.com/jonathanlilly/liminal) using [{Remark.js}](http://remarkjs.com/) + [{Markdown}](https://github.com/adam-p/markdown-here/wiki/Markdown-Cheatsheet) +  [{KaTeX}](https://katex.org)]
+
+<!-- Put the link to this slide here so people can follow -->
+
+<!--
+Vision: We used Rust for GSW, and it was a good choice for this case for these
+ Why was Rust a good choice for GSW?
+
+https://www.infoq.com/presentations/rust-tradeoffs/
+https://smallcultfollowing.com/Rust-QCon.pdf
+
+- 5 min: light Rust intro
+  - drop-in replacement for GSW-C
+  - zero cost abstraction 
+- distributing: crates !!!
+- cargo test !!!
+  - unit
+  - validation/integration (MatLab scientific reference)
+- FFI -> cargo capi !!!
+- Replacing GSW-C in GSW-Python / GSW-R
+- cargo doc !!
+- cargo bench !!
+- no_std -> embedded !
+- features: compat, invalidasnan, !
+- Other applications:
+  - Iridium (Scripps): Direct-IP & RUDICS for Argo and Spray
+  - BUFR
+
+Closing slides:
+Other keywords for Rust. One single slide
+    - iterators como exemplo?
+    - rayon
+    - fearless concurency
+
+-> Link for community resource
+    - gitter.im
+-->
+
+---
+name: whatisgsw
+class: left
+#Gibbs Seawater Toolbox
+
+"TEOS-10 is based on a Gibbs function formulation from which all **thermodynamic properties of seawater** (density, enthalpy, entropy sound speed, etc.) can be derived in a thermodynamically **consistent** manner.
+TEOS-10 was adopted by the Intergovernmental Oceanographic Commission (**IOC**) at its 25th Assembly in June 2009 to replace EOS-80 as the official description of seawater and ice properties in marine science." [TEOS-10](http://www.teos-10.org)
+
+A notable use is on estimating density of the seawater from sensors measuring pressure, temperature, and conductivity.
+
+--
+
+Current state:
+- Toolbox available on MatLab, FORTRAN, C/C++, JS
+- Wrapper around C library: Haskell, Julia, Python, R, ...
+- Scientific development focused on MatLab.
+- The C library almost reproduce MatLab.
+
+<!-- Why did we pick Rust for this? -->
+<!-- Emphasize motivation -->
+---
+name: wishlist
+class: left  
+##Our wishlist for Scientific Computing
+Motivation: Enable more onboard decision making, such as using Machine Learning, in Argo floats and Spray underwater gliders.
+--
+
+- **Embedded:** Use within firmware for microcontrollers;
+--
+
+- **Package manager:** Reuse = speed coding; Take advantage of others expertise;
+--
+
+- **Interoperable:** Work with existing systems; Partial integration avoids complete rewrites;
+--
+
+- **Robustness:** Bugs on remote autonomous systems can be a catastrophic failure. A plus for robust concurrent processing;
+--
+
+- **Testing/Validation:** Integrated testing system;
+--
+
+- **Readable:** Code for human and leave for compiler to optimize it;
+--
+
+<br/>
+<center>
+  <img style="width:30%"  src="https://rustacean.net/assets/rustacean-flat-gesture.png">
+</center>
+
+<!-- What is Rust? -->
+---
+name: rustintro
+class: left  
+# Rust?
+
+System programming language (same realm as C)
+- High-level ergonomics and low-level control
+- Memory safety enforced by the compiler
+- Explicit error handling with the `Result` type
+
+Initially develop at Mozilla, increased adoption across industry
+- Integration within Firefox (large C++ codebase)
+- Iterative, not total rewrite
+- Minimize data races and other concurrency bugs
+
+Official book: https://doc.rust-lang.org/book/
+
+<!-- TODO LUIZ -->
+<!-- Maybe limit to a light intro here and save good longer points to the end -->
+
+<!--
+##Goal: efficiency
+
+- low resources (embedded)
+- analysis ()
+
+[Rust vs gcc](https://benchmarksgame-team.pages.debian.net/benchmarksgame/fastest/rust.html)
+
+https://aws.amazon.com/blogs/opensource/sustainability-with-rust/
+
+##Goal: robustness (maintenance, dependability)
+
+- error handling
+- testing and validation
+- documentation
+
+-->
+
+<!-- Certainly simplify this tree. What to keep? -->
+---
+name: tree
+class: left
+#Package structure
+
+.left-column[
+```shell
+$ tree -L 2
+.
+├── Cargo.toml
+├── README.md
+├── assets
+│   └── gswteos-10.h
+├── benches
+│     └── volume.rs
+├── build.rs
+├── cbindgen.toml
+├── convert_refdata
+│   ├── Cargo.toml
+│   ├── data/
+│   ├── src/
+│   └── tests/
+├── examples
+│   └── usage-from-c/
+```
+]
+
+.right-column[
+```shell
+
+.
+├── src
+│   ├── conversions.rs
+│   ├── earth.rs
+│   ├── error.rs
+│   ├── ffi.rs
+│   ├── gsw_internal_const.rs
+│   ├── gsw_internal_funcs.rs
+│   ├── gsw_sp_coefficients.rs
+│   ├── gsw_specvol_coefficients.rs
+│   ├── lib.rs
+│   ├── practical_salinity.rs
+│   └── volume.rs
+├── tests
+│   ├── data/
+│   ├── earth.rs
+│   └── volume.rs
+└── utils
+    ├── gen_stubs.py
+    └── gsw-py-patch
+```
+]
+
+---
+name: crates
+class: left  
+#Distributing - [crates.io](https://crates.io/crates/gsw)
+
+```shell
+$ cargo search gsw
+gsw = "0.0.10"  # TEOS-10 Gibbs Seawater Oceanographic Toolbox in Rust
+```
+
+--
+How to use other crates?
+```shell=
+$ cat Cargo.toml
+
+[package]
+name = "gsw"
+...
+[dependencies]
+libm = "0.2.1"
+libc = { version = "0.2", optional = true }
+thiserror = { version = "1.0.24", optional = true }
+...
+```
+
+--
+
+```shell
+$ grep libm src/conversions.rs | head -n 1
+
+src/conversions.rs:    let x = libm::sin(lat * DEG2RAD);
+```
+
+---
+name: cargo_doc
+class: left 
+#cargo doc - [docs.rs/gsw](https://docs.rs/gsw/0.0.10/gsw/volume/fn.specvol.html)
+
+As written in src/volume.rs, near the function implementation.
+
+````shell=
+/// Specific volume of sea water (75-term polynomial approximation)
+///
+/// Calculates specific volume from Absolute Salinity, Conservative
+/// Temperature and pressure, using the computationally-efficient
+/// polynomial expression for specific volume (Roquet et al., 2014).
+///
+/// # Arguments
+///
+/// * `sa`: Absolute Salinity \[ g kg-1 \]
+/// * `ct`: Conservative Temperature (ITS-90) \[ deg C \]
+/// * `p`: sea pressure \[ dbar \] (i.e. absolute pressure - 10.1325 dbar)
+///
+/// # Returns
+///
+/// * `specvol`: specific volume \[m3 kg-1\]
+///
+/// ...
+///
+pub fn specvol(sa: f64, ct: f64, p: f64) -> Result<f64> {
+  ...
+}
+````
+
+---
+name: doctest
+class: left  
+#cargo test - Doctest
+````shell=
+/// Specific volume of sea water (75-term polynomial approximation)
+///
+/// Calculates specific volume from Absolute Salinity, Conservative
+/// Temperature and pressure, using the computationally-efficient
+/// polynomial expression for specific volume (Roquet et al., 2014).
+///
+
+...
+
+///
+/// # Example:
+/// ```
+/// use gsw::volume::specvol;
+/// let v = specvol(32.0, 10.0, 100.0).unwrap();
+/// assert!((v - 0.0009756515980668401).abs() <= f64::EPSILON);
+/// ```
+///
+pub fn specvol(sa: f64, ct: f64, p: f64) -> Result<f64> {
+...
+}
+````
+
+---
+name: unittest
+class: left  
+#cargo test - Unit
+
+[{src/volume.rs}](https://github.com/castelao/GSW-rs/blob/7b5c6b5ab2b61ed86585fffd69f6c780e8894706/src/volume.rs#L96)
+
+```shell=
+pub fn specvol(sa: f64, ct: f64, p: f64) -> Result<f64> {...}
+
+#[cfg(test)]
+mod test_specvol {
+    use super::specvol;
+
+    #[test]
+    // NaN input results in NaN output.
+    // Other libraries using GSW-rs might rely on this
+    // behavior to propagate and handle invalid elements.
+    fn nan() {
+        let v = specvol(f64::NAN, 1.0, 1.0);
+        assert!(v.unwrap().is_nan());
+    }
+
+    #[test]
+    // Test value from Roquet 2015 Appendix C.3, rounded to 9.732819628e-04
+    fn roquet2015() {
+        assert!((specvol(30., 10., 1000.0).unwrap() - 9.732819628e-04).abs() <= 5e-14);
+    }
+    ...
+}
+```
+
+---
+name: validationtest
+class: left
+#cargo test - Validation
+
+.left-column[
+Matlab has a testing dataset that we use as our reference.
+
+But that dataset is a matlab binary.
+
+We created an auxiliary crate ([convert_refdata](https://github.com/castelao/GSW-rs/tree/main/convert_refdata)) to convert the matlab dataset into a serialized binary.
+
+With a readeable dataset (heapless) we can write tests ([tests/volume.rs](https://github.com/castelao/GSW-rs/blob/main/tests/volume.rs)) to validate against the reference values.
+]
+.right-column[
+```shell
+$ tree -L 2
+.
+├── Cargo.toml
+├── README.md
+├── build.rs
+├── convert_refdata
+│   ├── Cargo.toml
+│   ├── data/
+│   ├── src/
+│   └── tests/
+├── tests
+│   ├── data/
+│   ├── earth.rs
+│   └── volume.rs
+...
+```
+]
+
+
+---
+name: cargotest
+class:left
+# Running tests
+```shell
+$ cargo test
+cargo test
+    Finished test [unoptimized + debuginfo] target(s) in 0.14s
+     Running unittests (target/debug/deps/gsw-fe1efe8952eba1b5)
+running 53 tests
+...
+test result: ok. 53 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running tests/earth.rs (target/debug/deps/earth-445971b965eed566)
+running 2 tests
+...
+test result: ok. 2 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running tests/volume.rs (target/debug/deps/volume-26d3c06ea78d8e71)
+running 14 tests
+...
+test result: ok. 14 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.01s
+
+   Doc-tests gsw
+running 27 tests
+...
+test result: ok. 27 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 2.47s
+
+```
+Integrated with [Github Actions](https://github.com/castelao/GSW-rs/actions/runs/2075234547) to monitor for several platforms.
+
+---
+name: FFI-intro
+class: left  
+#C FFI
+
+Generate C-compatible libraries
+- static or dynamic linking
+- `pkg-config` configuration
+
+Using [{cargo-c}](https://github.com/lu-zero/cargo-c) for convenience
+
+---
+name: FFI-example
+class: left  
+#C FFI
+
+[{src/ffi.rs}](https://github.com/castelao/GSW-rs/blob/7b5c6b5ab2b61ed86585fffd69f6c780e8894706/src/ffi.rs)
+```rust
+pub const GSW_INVALID_VALUE: f64 = 9e15;
+pub const GSW_ERROR_LIMIT: f64 = 1e10;
+
+#[no_mangle]
+pub unsafe extern "C" fn gsw_specvol(sa: f64, ct: f64, p: f64) -> f64 {
+    crate::volume::specvol(sa, ct, p).unwrap_or(GSW_INVALID_VALUE)
+}
+```
+
+[{assets/gswteos-10.rs}](https://github.com/castelao/GSW-rs/blob/7b5c6b5ab2b61ed86585fffd69f6c780e8894706/assets/gswteos-10.h)
+
+```c
+/* GSW TEOS-10 V3.05 definitions and prototypes. */
+
+#ifndef GSWTEOS_10_H
+#define GSWTEOS_10_H
+
+#define GSW_INVALID_VALUE 9e15
+#define GSW_ERROR_LIMIT 1e10
+
+#ifdef __cplusplus
+extern "C" {
+#endif // __cplusplus
+
+double gsw_specvol(double sa, double ct, double p);
+
+#ifdef __cplusplus
+} // extern "C"
+#endif // __cplusplus
+
+#endif /* GSWTEOS_10_H */
+```
+
+<!--
+```rust
+#[no_mangle]
+pub unsafe extern "C" fn gsw_rho_first_derivatives(
+    sa: f64,
+    ct: f64,
+    p: f64,
+    drho_dsa: *mut f64,
+    drho_dct: *mut f64,
+    drho_dp: *mut f64,
+) {
+    let (dsa, dct, dp) = crate::volume::rho_first_derivatives(sa, ct, p).unwrap_or((
+        GSW_INVALID_VALUE,
+        GSW_INVALID_VALUE,
+        GSW_INVALID_VALUE,
+    ));
+
+    *drho_dsa = dsa;
+    *drho_dct = dct;
+    *drho_dp = dp;
+}
+```
+-->
+
+
+
+---
+name: other_languages
+class: left  
+#Using in GSW-Python
+
+**Goal**: Run the `GSW-Python` test suite in CI
+
+Only change: [Patch `setup.py`](https://github.com/castelao/GSW-rs/blob/7b5c6b5ab2b61ed86585fffd69f6c780e8894706/utils/gsw-py-patch)
+to build with Rust instead
+- Same header file
+- Linking with `ufunc` optimizations in GSW-Python (for `numpy`)
+- Current status: 84 failed, 399 passed
+- (mostly failures from functions not implemented yet)
+
+---
+name: bench_intro
+class: left  
+#Benchmarking
+
+- Using [criterion](https://bheisler.github.io/criterion.rs/book/index.html)
+- Also tracking in CI for regressions
+
+[`{benches/volume.rs}`](https://github.com/castelao/GSW-rs/blob/7b5c6b5ab2b61ed86585fffd69f6c780e8894706/benches/volume.rs)
+```rust
+use criterion::{black_box, criterion_group, criterion_main, Criterion};
+
+use gsw::{conversions, practical_salinity, volume};
+
+fn volume(c: &mut Criterion) {
+    c.bench_function("specvol", |b| {
+        b.iter(|| volume::specvol(black_box(10.0), black_box(10.0),
+                                  black_box(10.0)).unwrap())
+    });
+}
+
+criterion_group!(benches, volume);
+criterion_main!(benches);
+```
+
+```shell=
+$ cargo bench -- specvol
+
+specvol                 time:   [19.385 ns 19.402 ns 19.419 ns]
+Found 1 outliers among 100 measurements (1.00%)
+  1 (1.00%) high severe
+```
+
+---
+name: bench_c
+class: left  
+#Benchmarking
+
+In parallel: implementing benchmarks for `GSW-C` using https://github.com/google/benchmark
+- to check if they are in the same ballpark
+- focus on correctness at the moment, not performance
+
+```c
+#include <benchmark/benchmark.h>
+
+#include "gswteos-10.h"
+
+static void BM_specvol(benchmark::State& state) {
+  for (auto _  : state) {
+    gsw_specvol(10.0, 10.0, 10.0);
+  }
+}
+BENCHMARK(BM_specvol);
+```
+
+```shell=
+$ ./gsw_bench
+Running ./gsw_bench
+-------------------------------------------------------------------------------------
+Benchmark                                           Time             CPU   Iterations
+-------------------------------------------------------------------------------------
+BM_specvol                                       18.3 ns         18.3 ns     38028678
+```
+
+---
+name: bench_compare
+class: left  
+#Benchmarking
+
+<!--
+TODO LUIZ
+
+change | time_c | time_rs | units | function
+------ | ------ | ------- | ----- | --------
+  0.29 |  46.49 |   13.68 | ns/ns | c_from_sp
+  0.48 |  47.01 |   22.54 | ns/ns | enthalpy_second_derivatives
+  0.65 |  17.11 |   11.09 | ns/ns | z_from_p
+  0.67 |  47.65 |   31.82 | ns/ns | specvol_first_derivatives
+  0.84 |  12.13 |   10.22 | ns/ns | sigma0
+  0.84 |  46.64 |   39.28 | ns/ns | rho_first_derivatives
+  0.89 | 104.21 |   92.65 | ns/ns | rho_second_derivatives
+  0.92 |  41.16 |   37.72 | ns/ns | specvol_second_derivatives_wrt_enthalpy
+  0.98 |  14.04 |   13.76 | ns/ns | sp_from_c
+  1.03 |  24.12 |   24.87 | ns/ns | alpha_on_beta
+  1.05 | 104.96 |  110.00 | ns/ns | cabbeling
+  1.05 |  18.51 |   19.41 | ns/ns | specvol
+  1.06 |  31.66 |   33.55 | ns/ns | beta
+  1.06 |  39.53 |   41.99 | ns/ns | internal_energy
+  1.07 |  30.99 |   33.06 | ns/ns | alpha
+  1.07 |   6.18 |    6.63 | ns/ns | sp_salinometer
+  1.08 |  19.40 |   20.88 | ns/ns | dynamic_enthalpy
+  1.11 |  20.40 |   22.62 | ns/ns | specvol_anom_standard
+  1.12 |  27.75 |   31.15 | ns/ns | sound_speed
+  1.12 | 319.21 |  358.53 | ns/ns | ct_maxdensity
+  1.13 |  20.45 |   23.16 | ns/ns | rho
+  1.14 |  21.08 |   23.93 | ns/ns | sigma1
+  1.14 |  20.98 |   23.99 | ns/ns | sigma4
+  1.15 |  21.03 |   24.09 | ns/ns | sigma2
+  1.15 |  20.97 |   24.15 | ns/ns | sigma3
+  1.16 |  20.03 |   23.29 | ns/ns | enthalpy
+  1.17 |  25.38 |   29.76 | ns/ns | enthalpy_first_derivatives
+  1.19 |  24.64 |   29.42 | ns/ns | kappa
+  1.22 |  55.09 |   67.28 | ns/ns | specvol_first_derivatives_wrt_enthalpy
+  1.38 |  60.48 |   83.74 | ns/ns | thermobaric
+  1.53 |   1.77 |    2.70 | ns/ns | specvol_sso_0
+  1.65 |  26.92 |   44.30 | ns/ns | enthalpy_diff
+  2.31 |  41.81 |   96.62 | ns/ns | rho_alpha_beta
+  2.39 |  39.77 |   94.91 | ns/ns | specvol_alpha_beta
+  2.95 |  41.12 |  121.48 | ns/ns | specvol_second_derivatives
+  4.31 |  42.04 |  181.29 | ns/ns | sa_from_rho
+-->
+
+Top 8 - Rust faster than C:
+
+change | time_c | time_rs | units | function
+------ | ------ | ------- | ----- | --------
+  0.29 |  46.49 |   13.68 | ns/ns | c_from_sp
+  0.48 |  47.01 |   22.54 | ns/ns | enthalpy_second_derivatives
+  0.65 |  17.11 |   11.09 | ns/ns | z_from_p
+  0.67 |  47.65 |   31.82 | ns/ns | specvol_first_derivatives
+  0.84 |  12.13 |   10.22 | ns/ns | sigma0
+  0.84 |  46.64 |   39.28 | ns/ns | rho_first_derivatives
+  0.89 | 104.21 |   92.65 | ns/ns | rho_second_derivatives
+  0.92 |  41.16 |   37.72 | ns/ns | specvol_second_derivatives_wrt_enthalpy
+
+---
+name: bench_compare
+class: left  
+#Benchmarking
+
+Top 8 - C faster than Rust:
+
+change | time_c | time_rs | units | function
+------ | ------ | ------- | ----- | --------
+  4.31 |  42.04 |  181.29 | ns/ns | sa_from_rho
+  2.95 |  41.12 |  121.48 | ns/ns | specvol_second_derivatives
+  2.39 |  39.77 |   94.91 | ns/ns | specvol_alpha_beta
+  2.31 |  41.81 |   96.62 | ns/ns | rho_alpha_beta
+  1.65 |  26.92 |   44.30 | ns/ns | enthalpy_diff
+  1.53 |   1.77 |    2.70 | ns/ns | specvol_sso_0
+  1.38 |  60.48 |   83.74 | ns/ns | thermobaric
+  1.22 |  55.09 |   67.28 | ns/ns | specvol_first_derivatives_wrt_enthalpy
+
+---
+name: embedded
+class: left  
+#Embedded - `no_std`
+
+- Run on "Bare Metal" embedded systems, such as microcontrollers.
+
+- Microcontrollers used for real-time operational systems and low energy consumption.
+
+- With `#![no_std]` the crate links to the core-crate instead of the std-crate, thus it is platform-agnostic, lacking APIs for anything that involves platform integration.
+
+- Use of libm for math operations and heap not available by default.
+
+---
+name: features
+class: left  
+#Features
+
+Choose your flavor on compilation time. E.x.: to include C-API:
+```shell
+$ cargo build --features capi
+```
+
+--
+Also allow strategy decisions:
+- GSW-Matlab
+```matlab
+% This line ensures that SA is non-negative.
+SA(SA < 0) = 0;
+```
+
+--
+- GSW-C
+```shell
+#define GSW_INVALID_VALUE       9e15
+```
+```shell
+/* This line ensures that SP is non-negative. */
+if (sp < 0.0) {
+    sp  = GSW_INVALID_VALUE;
+}
+```
+
+---
+name: compat
+class: left  
+#Features - compat
+
+To reproduce Matlab:
+
+```shell
+$ cargo build --features compat
+```
+
+```shell
+pub fn specvol(sa: f64, ct: f64, p: f64) -> Result<f64> {
+    let sa: f64 = if sa < 0.0 {
+        if cfg!(feature = "compat") {
+            0.0
+        } else if cfg!(feature = "invalidasnan") {
+            return Ok(f64::NAN);
+        } else {
+            return Err(Error::NegativeSalinity);
+        }
+    } else {
+        sa
+    };
+    ...
+}
+```
+
+---
+name: humanreadeable
+class: left
+#Write code for humans
+
+Explicit definition without compromising performance and matching reference notation. For instance, `const`. 
+
+```shell
+/// SSO: Standard Ocean Reference Salinity [ g/kg ].
+pub const GSW_SSO: f64 = 35.16504;
+
+/// uPS: unit conversion factor for salinities (Millero et al., 2008) [g/kg]
+/// Reference Salinity SR is uPS times Practical Salinity SP.
+pub const GSW_UPS: f64 = GSW_SSO / 35.0;
+
+/// sfac  =  1/(40*gsw_ups) ~ 0.024882667558461472
+pub const GSW_SFAC: f64 = if cfg!(feature = "compat") {
+    0.0248826675584615
+} else {
+    1.0 / (40.0 * GSW_UPS)
+};
+```
+
+Write code for humans and leave the optimization for the compiler.
+- Easier to compare with papers;
+- Easier to maintain and update scientific advances;
+---
+name: whatisliminal
+class: left  
+#Other applications
+
+##[BUFR](https://github.com/castelao/bufr)
+An Open Source pure Rust library with a BUFR-dump (WIP).
+
+##Satellite Communications
+Iridium communications at Scripps Institution of Oceanography for Solo-II (Argo) and Spray (underwater gliders) have been running with a custom system written in Rust since 2017.
+- Fast response
+- Light process
+- Multi-Thread
+
+##[sourmash](https://github.com/sourmash-bio/sourmash)
+Quickly search, compare, and analyze genomic and metagenomic data sets.
+
+---
+name: community
+class: left  
+#Community and references
+
+GSW-rs: where to learn more and how to contribute?
+  - https://github.com/castelao/GSW-rs
+
+How to learn more about Rust
+  - [The official book](https://doc.rust-lang.org/book/) (intro)
+  - [Rust for Rustaceans](https://nostarch.com/rust-rustaceans) (intermediate)
+
+Link for community resource
+  - https://gitter.im/rustopensci/community
+
+---
+name: closing
+class: middle, center
+#That's All!
+
+Have fun!
+
+[{GSW-rs}](https://github.com/castelao/GSW-rs)
+
+<img style="width:60%"  src="https://rustacean.net/assets/rustacean-flat-happy.png">
+ 
+    </textarea>
+    <script src="./javascript/remark-latest.min.js" type="text/javascript"></script>
+    <script defer src="./javascript/katex.min.js"></script>
+    <script defer src="./javascript/auto-render.min.js"></script>
+    <!-- Call remark.js and KaTeX with liminal default settings -->
+    <script type="text/javascript" src="./javascript/call-javascript.js">
+</script>
+       
+</body>
+</html>
