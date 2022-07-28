@@ -35,6 +35,7 @@ dual licensed as above, without any additional terms or conditions.
 
 Castelao, G., & Irber, L. (2021). Gibbs Sea Water Oceanographic Toolbox of TEOS-10 implemented in Rust (Version 0.0.6) [Computer software]. https://doi.org/10.5281/zenodo.5348561
 
+```
 @software{Castelao_Gibbs_Sea_Water_2021,
   title = {{Gibbs Sea Water Oceanographic Toolbox of TEOS-10 implemented in Rust}},
   author = {Castelao, Guilherme and Irber, Luiz},
@@ -44,3 +45,4 @@ Castelao, G., & Irber, L. (2021). Gibbs Sea Water Oceanographic Toolbox of TEOS-
   doi = {10.5281/zenodo.5348561},
   url = {https://github.com/castelao/GSW-rs}
   }
+```
