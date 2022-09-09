@@ -3,8 +3,9 @@
 //! Other conversions between temperatures, salinities, entropy, pressure
 //! and height.
 
-use crate::gsw_internal_const::{DB2PA, DEG2RAD, GAMMA, GSW_P0};
+use crate::gsw_internal_const::{DB2PA, DEG2RAD, GAMMA, GSW_CP0, GSW_P0, GSW_SFAC};
 use crate::gsw_internal_funcs::enthalpy_sso_0;
+use crate::{Error, Result};
 
 /*
 gsw_deltaSA_from_SP
@@ -17,7 +18,63 @@ gsw_SA_from_Sstar
 gsw_SP_from_Sstar
 gsw_pt_from_CT
 gsw_t_from_CT
-gsw_CT_from_pt
+*/
+
+/// Conservative Temperature from potential temperature
+///
+/// # Examples
+/// ```
+/// use gsw::conversions::ct_from_pt;
+///
+/// let ct = ct_from_pt(32.0, 10.0).unwrap();
+/// assert!((ct - 10.047455620469973).abs() <= f64::EPSILON);
+/// ```
+pub fn ct_from_pt(sa: f64, pt: f64) -> Result<f64> {
+    // Doesn't apply the offset so can't use non_dimensional_sa
+    let sa: f64 = if sa < 0.0 {
+        if cfg!(feature = "compat") {
+            0.0
+        } else if cfg!(feature = "invalidasnan") {
+            return Ok(f64::NAN);
+        } else {
+            return Err(Error::NegativeSalinity);
+        }
+    } else {
+        sa
+    };
+
+    let x2 = GSW_SFAC * sa;
+    let x = libm::sqrt(x2);
+    let y = pt * 0.025;
+    let pot_enthalpy = 61.01362420681071e0
+        + y * (168776.46138048015e0
+            + y * (-2735.2785605119625e0
+                + y * (2574.2164453821433e0
+                    + y * (-1536.6644434977543e0
+                        + y * (545.7340497931629e0
+                            + (-50.91091728474331e0 - 18.30489878927802e0 * y) * y)))))
+        + x2 * (268.5520265845071e0
+            + y * (-12019.028203559312e0
+                + y * (3734.858026725145e0
+                    + y * (-2046.7671145057618e0
+                        + y * (465.28655623826234e0
+                            + (-0.6370820302376359e0 - 10.650848542359153e0 * y) * y))))
+            + x * (937.2099110620707e0
+                + y * (588.1802812170108e0
+                    + y * (248.39476522971285e0
+                        + (-3.871557904936333e0 - 2.6268019854268356e0 * y) * y))
+                + x * (-1687.914374187449e0
+                    + x * (246.9598888781377e0
+                        + x * (123.59576582457964e0 - 48.5891069025409e0 * x))
+                    + y * (936.3206544460336e0
+                        + y * (-942.7827304544439e0
+                            + y * (369.4389437509002e0
+                                + (-33.83664947895248e0 - 9.987880382780322e0 * y) * y))))));
+
+    Ok(pot_enthalpy / GSW_CP0)
+}
+
+/*
 gsw_pot_enthalpy_from_pt
 gsw_pt_from_t
 gsw_pt0_from_t
