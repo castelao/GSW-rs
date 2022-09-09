@@ -156,8 +156,52 @@ pub fn z_from_p(
     -2.0 * c / (b + libm::sqrt(b * b - 4.0 * a * c))
 }
 
+/// Pressure from height (75-term polynomial approximation)
+///
+/// # Examples
+/// ```
+/// use gsw::conversions::p_from_z;
+///
+/// let z = p_from_z(-1000.0, 15., None, None).unwrap();
+/// dbg!(&z);
+/// assert!((z - 1008.321764487538).abs() <= f64::EPSILON);
+/// ```
+pub fn p_from_z(
+    z: f64,
+    lat: f64,
+    geo_strf_dyn_height: Option<f64>,
+    sea_surface_geopotental: Option<f64>,
+) -> Result<f64> {
+    if z > 5.0 {
+        return Err(Error::Undefined);
+    }
+
+    let sinlat = libm::sin(lat * DEG2RAD);
+    let sin2 = sinlat * sinlat;
+    let gs = 9.780327 * (1.0 + (5.2792e-3 + (2.32e-5 * sin2)) * sin2);
+
+    // get the first estimate of p from Saunders (1981)
+    let c1 = 5.25e-3 * sin2 + 5.92e-3;
+    let p = -2.0 * z / ((1.0 - c1) + libm::sqrt((1.0 - c1) * (1.0 - c1) + 8.84e-6 * z));
+    // end of the first estimate from Saunders (1981)
+
+    // initial value of the derivative of f
+    let df_dp = DB2PA * crate::gsw_internal_funcs::specvol_sso_0(p);
+
+    let f = crate::gsw_internal_funcs::enthalpy_sso_0(p)
+        + gs * (z - 0.5 * GAMMA * (z * z))
+        + geo_strf_dyn_height.unwrap_or(0.0)
+        + sea_surface_geopotental.unwrap_or(0.0);
+    let p_old = p;
+    let p = p_old - f / df_dp;
+    let p_mid = 0.5 * (p + p_old);
+    let df_dp = DB2PA * crate::gsw_internal_funcs::specvol_sso_0(p_mid);
+    let p = p_old - f / df_dp;
+
+    Ok(p)
+}
+
 /*
-gsw_p_from_z
 gsw_z_from_depth
 gsw_depth_from_z
 */
