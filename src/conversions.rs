@@ -3,14 +3,32 @@
 //! Other conversions between temperatures, salinities, entropy, pressure
 //! and height.
 
-use crate::gsw_internal_const::{DB2PA, DEG2RAD, GAMMA, GSW_CP0, GSW_P0, GSW_SFAC};
+use crate::gsw_internal_const::{DB2PA, DEG2RAD, GAMMA, GSW_CP0, GSW_P0, GSW_SFAC, GSW_UPS};
 use crate::gsw_internal_funcs::enthalpy_sso_0;
 use crate::{Error, Result};
 
 /*
 gsw_deltaSA_from_SP
 gsw_SA_Sstar_from_SP
-gsw_SR_from_SP
+*/
+
+/// Reference Salinity from Practical Salinity
+///
+/// # Examples
+/// ```
+/// use gsw::conversions::sr_from_sp;
+///
+/// let sr = sr_from_sp(32.0);
+/// assert!((sr - 32.150893714285715).abs() <= f64::EPSILON);
+/// ```
+pub fn sr_from_sp(sp: f64) -> f64 {
+    if cfg!(feature = "compat") {
+        sp * 1.004715428571429
+    } else {
+        sp * GSW_UPS
+    }
+}
+/*
 gsw_SP_from_SR
 gsw_SP_from_SA
 gsw_Sstar_from_SA
