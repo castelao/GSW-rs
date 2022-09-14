@@ -28,8 +28,25 @@ pub fn sr_from_sp(sp: f64) -> f64 {
         sp * GSW_UPS
     }
 }
+
+/// Practical Salinity from Reference Salinity
+///
+/// # Examples
+/// ```
+/// use gsw::conversions::sp_from_sr;
+///
+/// let sp = sp_from_sr(32.0);
+/// assert!((sp - 31.849814474830684).abs() <= f64::EPSILON);
+/// ```
+pub fn sp_from_sr(sr: f64) -> f64 {
+    if cfg!(feature = "compat") {
+        sr * 0.995306702338459
+    } else {
+        sr / GSW_UPS
+    }
+}
+
 /*
-gsw_SP_from_SR
 gsw_SP_from_SA
 gsw_Sstar_from_SA
 gsw_SA_from_Sstar
