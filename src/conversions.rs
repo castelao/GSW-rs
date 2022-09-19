@@ -8,7 +8,48 @@ use crate::gsw_internal_funcs::enthalpy_sso_0;
 use crate::{Error, Result};
 
 /*
-gsw_deltaSA_from_SP
+/// Absolute Salinity Anomaly from Practical Salinity
+///
+pub fn deltasa_from_sp(sp: f64, p: f64, lon: f64, lat: f64) -> Result<f64> {
+    // Remove out of range values
+    if ((p < 100.0) & (sp > 120.0)) | ((p >= 100.0) & (sp > 42.0)) {
+        if cfg!(feature = "invalidasnan") {
+            return Ok(f64::NAN);
+        } else {
+            return Err(Error::Undefined);
+        }
+    }
+
+    if (p < -1.5) | (p > 12000.0) | (lon < 0.0) | (lon > 360.0) | (lat < -90.0) | (lat > 90.0) {
+        if cfg!(feature = "compat") {
+            return Err(Error::Undefined);
+        } else if cfg!(feature = "invalidasnan") {
+            return Ok(f64::NAN);
+        } else {
+            return Err(Error::Undefined);
+        }
+    }
+
+    let sp: f64 = if sp < 0.0 {
+        if cfg!(feature = "compat") {
+            0.0
+        } else if cfg!(feature = "invalidasnan") {
+            return Ok(f64::NAN);
+        } else {
+            return Err(Error::NegativeSalinity);
+        }
+    } else {
+        sp
+    };
+
+    let sa = sa_from_sp(sp, p, lon, lat);
+    let sr = sr_from_sp(sp);
+    let dsa = sa - sr;
+    Ok(dsa)
+}
+*/
+
+/*
 gsw_SA_Sstar_from_SP
 */
 
