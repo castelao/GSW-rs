@@ -234,6 +234,11 @@ pub fn z_from_p(
 
 /// Pressure from height (75-term polynomial approximation)
 ///
+/// # Notes
+///
+/// - The GSW-C does not allow dynamic height anomaly or geopotential at zero
+///   sea pressure.
+///
 /// # Examples
 /// ```
 /// use gsw::conversions::p_from_z;
