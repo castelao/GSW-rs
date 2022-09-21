@@ -335,6 +335,7 @@ fn rho() {
     }
 }
 
+/*
 #[test]
 #[cfg(not(windows))]
 fn specvol() {
@@ -363,6 +364,7 @@ fn specvol() {
         }
     }
 }
+*/
 
 #[test]
 #[cfg(not(windows))]
