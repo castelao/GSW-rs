@@ -1,5 +1,5 @@
 window.BENCHMARK_DATA = {
-  "lastUpdate": 1661399742886,
+  "lastUpdate": 1663878287167,
   "repoUrl": "https://github.com/castelao/GSW-rs",
   "entries": {
     "Rust Benchmark": [
@@ -1211,6 +1211,258 @@ window.BENCHMARK_DATA = {
             "name": "z_from_p",
             "value": 26,
             "range": "± 0",
+            "unit": "ns/iter"
+          }
+        ]
+      },
+      {
+        "commit": {
+          "author": {
+            "email": "guilherme@castelao.net",
+            "name": "Guilherme Castelão",
+            "username": "castelao"
+          },
+          "committer": {
+            "email": "noreply@github.com",
+            "name": "GitHub",
+            "username": "web-flow"
+          },
+          "distinct": true,
+          "id": "014d7ceb6956f434d86918e57d60fa877fd5ecff",
+          "message": "ct_from_pt (#41)\n\n* feat: ct_from_pt\r\n\r\n* feat: p_from_z()\r\n\r\n* feat: sr_from_sp()\r\n\r\n* feat: sp_from_sr()\r\n\r\n* wip: gibbs()\r\n\r\n* test: gibbs for NaN input\r\n\r\n* Implementing gibbs()\r\n\r\n* Making volume::non_dimensional_sa available within the crate\r\n\r\n* wip: deltasa_from_sp()\r\n\r\n* documenting z_from_p()\r\n\r\n* fix: .contains() doesn't handle NaN\r\n\r\n* re-ordering for consistency\r\n\r\n* cleaning code\r\n\r\n* Notes on gibbs()\r\n\r\n* Removing unsed function\r\n\r\n* Allow gibbs as a dead_code for now\r\n\r\n* Using mutable instead of redefining\r\n\r\n* Ignoring excessive precision for now\r\n\r\n* Ignoring suggestion to use contains() for now\r\n\r\n* Temporary solution to address powerpc64",
+          "timestamp": "2022-09-22T14:11:25-06:00",
+          "tree_id": "4f04f3302b478b0256a5738d8ae94cd866b13da5",
+          "url": "https://github.com/castelao/GSW-rs/commit/014d7ceb6956f434d86918e57d60fa877fd5ecff"
+        },
+        "date": 1663878286410,
+        "tool": "cargo",
+        "benches": [
+          {
+            "name": "specvol",
+            "value": 47,
+            "range": "± 3",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "alpha",
+            "value": 75,
+            "range": "± 3",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "beta",
+            "value": 76,
+            "range": "± 2",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "specvol_sso_0",
+            "value": 6,
+            "range": "± 0",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "specvol_anom_standard",
+            "value": 54,
+            "range": "± 2",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "specvol_alpha_beta",
+            "value": 204,
+            "range": "± 7",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "rho",
+            "value": 53,
+            "range": "± 2",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "rho_alpha_beta",
+            "value": 204,
+            "range": "± 7",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "sigma0",
+            "value": 26,
+            "range": "± 1",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "sigma1",
+            "value": 54,
+            "range": "± 1",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "sigma2",
+            "value": 55,
+            "range": "± 3",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "sigma3",
+            "value": 54,
+            "range": "± 6",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "sigma4",
+            "value": 54,
+            "range": "± 4",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "cabbeling",
+            "value": 270,
+            "range": "± 10",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "sound_speed",
+            "value": 69,
+            "range": "± 3",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "dynamic_enthalpy",
+            "value": 49,
+            "range": "± 1",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "sa_from_rho",
+            "value": 427,
+            "range": "± 18",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "specvol_first_derivatives",
+            "value": 69,
+            "range": "± 3",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "specvol_first_derivatives_wrt_enthalpy",
+            "value": 148,
+            "range": "± 6",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "specvol_second_derivatives",
+            "value": 266,
+            "range": "± 15",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "specvol_second_derivatives_wrt_enthalpy",
+            "value": 80,
+            "range": "± 2",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "alpha_on_beta",
+            "value": 60,
+            "range": "± 2",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "rho_first_derivatives",
+            "value": 83,
+            "range": "± 4",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "rho_second_derivatives",
+            "value": 206,
+            "range": "± 11",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "thermobaric",
+            "value": 206,
+            "range": "± 6",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "enthalpy",
+            "value": 51,
+            "range": "± 1",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "enthalpy_first_derivatives",
+            "value": 55,
+            "range": "± 2",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "enthalpy_second_derivatives",
+            "value": 51,
+            "range": "± 2",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "enthalpy_diff",
+            "value": 101,
+            "range": "± 3",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "kappa",
+            "value": 68,
+            "range": "± 1",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "internal_energy",
+            "value": 98,
+            "range": "± 6",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "internal_energy_first_derivatives",
+            "value": 173,
+            "range": "± 10",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "internal_energy_second_derivatives",
+            "value": 174,
+            "range": "± 16",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "ct_maxdensity",
+            "value": 804,
+            "range": "± 30",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "sp_from_c",
+            "value": 30,
+            "range": "± 2",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "c_from_sp",
+            "value": 30,
+            "range": "± 1",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "sp_salinometer",
+            "value": 12,
+            "range": "± 0",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "z_from_p",
+            "value": 30,
+            "range": "± 1",
             "unit": "ns/iter"
           }
         ]
