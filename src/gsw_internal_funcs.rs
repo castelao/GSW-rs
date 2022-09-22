@@ -634,7 +634,7 @@ pub(crate) fn gibbs(ns: i8, nt: i8, np: i8, sa: f64, t: f64, p: f64) -> Result<f
             g08 /= x2;
         }
         if x == 0.0 {
-            let g08 = f64::NAN;
+            g08 = f64::NAN;
         }
 
         Ok(0.5 * GSW_SFAC * GSW_SFAC * g08)
