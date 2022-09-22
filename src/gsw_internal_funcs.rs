@@ -370,7 +370,7 @@ pub(crate) fn gibbs(ns: i8, nt: i8, np: i8, sa: f64, t: f64, p: f64) -> Result<f
                                 + (88.4080716616 - 15.84003094423364 * z) * z)))));
 
         if x > 0.0 {
-            g08 = g08 + (11625.62913253464 + 1702.453469893412 * y) * libm::log(x);
+            g08 += (11625.62913253464 + 1702.453469893412 * y) * libm::log(x);
         }
         if x == 0.0 {
             g08 = f64::NAN;
@@ -528,7 +528,7 @@ pub(crate) fn gibbs(ns: i8, nt: i8, np: i8, sa: f64, t: f64, p: f64) -> Result<f
         if sa == 0.0 {
             g08 = f64::NAN;
         } else if x > 0.0 {
-            g08 = g08 + 1702.453469893412 * libm::log(x);
+            g08 += 1702.453469893412 * libm::log(x);
         }
 
         Ok(0.5 * GSW_SFAC * 0.025 * g08)
@@ -629,7 +629,7 @@ pub(crate) fn gibbs(ns: i8, nt: i8, np: i8, sa: f64, t: f64, p: f64) -> Result<f
                             - 5.118778986619230 * z))));
 
         if x > 0.0 {
-            g08 = g08 / x2;
+            g08 /= x2;
         }
         if x == 0.0 {
             let g08 = f64::NAN;
