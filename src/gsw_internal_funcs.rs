@@ -211,6 +211,8 @@ mod test_hill_ratio_at_sp2 {
 
 /// Gibbs energy and its derivatives
 ///
+/// # Notes
+/// No effort yet on optimizing, but just reproducing the results.
 pub(crate) fn gibbs(ns: i8, nt: i8, np: i8, sa: f64, t: f64, p: f64) -> Result<f64> {
     let sa: f64 = if sa < 0.0 {
         if cfg!(feature = "compat") {
