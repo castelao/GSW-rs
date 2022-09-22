@@ -208,6 +208,7 @@ mod test_hill_ratio_at_sp2 {
     }
 }
 
+#[allow(dead_code)]
 /// Gibbs energy and its derivatives
 ///
 /// # Notes
