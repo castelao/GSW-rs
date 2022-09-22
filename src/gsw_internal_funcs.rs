@@ -224,7 +224,7 @@ pub(crate) fn gibbs(ns: i8, nt: i8, np: i8, sa: f64, t: f64, p: f64) -> Result<f
         sa
     };
 
-    if (sa > 120.0) | (-12.0 > t) | (80.0 < t) | (p > 12000.0) {
+    if (sa > 120.0) | (t < -12.0) | (t > 80.0) | (p > 12000.0) {
         if cfg!(feature = "invalidasnan") {
             return Ok(f64::NAN);
         } else {
