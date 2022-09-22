@@ -214,6 +214,11 @@ mod test_hill_ratio_at_sp2 {
 /// # Notes
 /// No effort yet on optimizing, but just reproducing the results.
 pub(crate) fn gibbs(ns: i8, nt: i8, np: i8, sa: f64, t: f64, p: f64) -> Result<f64> {
+    // Temporary solution to avoid failure with powerpc64
+    if sa.is_nan() | t.is_nan() | p.is_nan() {
+        return Ok(f64::NAN);
+    }
+
     let sa: f64 = if sa < 0.0 {
         if cfg!(feature = "compat") {
             0.0
