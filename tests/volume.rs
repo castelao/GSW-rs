@@ -18,7 +18,8 @@ struct DataRef {
 #[test]
 #[cfg(not(windows))]
 fn specvol() {
-    let mut input = File::open("tests/data/gsw_validation.bin").expect("Unable to open file");
+    let mut input =
+        File::open("tests/data/gsw_volume_validation.bin").expect("Unable to open file");
     let mut contents = vec![];
     input
         .read_to_end(&mut contents)
@@ -102,7 +103,8 @@ fn beta() {
 #[test]
 #[cfg(not(windows))]
 fn specvol_anom_standard() {
-    let mut input = File::open("tests/data/gsw_validation.bin").expect("Unable to open file");
+    let mut input =
+        File::open("tests/data/gsw_volume_validation.bin").expect("Unable to open file");
     let mut contents = vec![];
     input
         .read_to_end(&mut contents)
@@ -134,7 +136,8 @@ fn specvol_anom_standard() {
 #[test]
 #[cfg(not(windows))]
 fn sigma0() {
-    let mut input = File::open("tests/data/gsw_validation.bin").expect("Unable to open file");
+    let mut input =
+        File::open("tests/data/gsw_volume_validation.bin").expect("Unable to open file");
     let mut contents = vec![];
     input
         .read_to_end(&mut contents)
@@ -160,7 +163,8 @@ fn sigma0() {
 #[test]
 #[cfg(not(windows))]
 fn sigma1() {
-    let mut input = File::open("tests/data/gsw_validation.bin").expect("Unable to open file");
+    let mut input =
+        File::open("tests/data/gsw_volume_validation.bin").expect("Unable to open file");
     let mut contents = vec![];
     input
         .read_to_end(&mut contents)
@@ -186,7 +190,8 @@ fn sigma1() {
 #[test]
 #[cfg(not(windows))]
 fn sigma2() {
-    let mut input = File::open("tests/data/gsw_validation.bin").expect("Unable to open file");
+    let mut input =
+        File::open("tests/data/gsw_volume_validation.bin").expect("Unable to open file");
     let mut contents = vec![];
     input
         .read_to_end(&mut contents)
@@ -212,7 +217,8 @@ fn sigma2() {
 #[test]
 #[cfg(not(windows))]
 fn sigma3() {
-    let mut input = File::open("tests/data/gsw_validation.bin").expect("Unable to open file");
+    let mut input =
+        File::open("tests/data/gsw_volume_validation.bin").expect("Unable to open file");
     let mut contents = vec![];
     input
         .read_to_end(&mut contents)
@@ -238,7 +244,8 @@ fn sigma3() {
 #[test]
 #[cfg(not(windows))]
 fn sigma4() {
-    let mut input = File::open("tests/data/gsw_validation.bin").expect("Unable to open file");
+    let mut input =
+        File::open("tests/data/gsw_volume_validation.bin").expect("Unable to open file");
     let mut contents = vec![];
     input
         .read_to_end(&mut contents)
@@ -266,7 +273,7 @@ fn sigma4() {
 #[test]
 #[cfg(not(windows))]
 fn enthalpy_diff() {
-    let mut input = File::open("tests/data/gsw_validation.bin").expect("Unable to open file");
+    let mut input = File::open("tests/data/gsw_volume_validation.bin").expect("Unable to open file");
     let mut contents = vec![];
     input
         .read_to_end(&mut contents)
@@ -406,7 +413,8 @@ fn sound_speed() {
 #[test]
 #[cfg(not(windows))]
 fn internal_energy() {
-    let mut input = File::open("tests/data/gsw_validation.bin").expect("Unable to open file");
+    let mut input =
+        File::open("tests/data/gsw_volume_validation.bin").expect("Unable to open file");
     let mut contents = vec![];
     input
         .read_to_end(&mut contents)
@@ -441,7 +449,8 @@ fn internal_energy() {
 #[test]
 #[cfg(not(windows))]
 fn dynamic_enthalpy() {
-    let mut input = File::open("tests/data/gsw_validation.bin").expect("Unable to open file");
+    let mut input =
+        File::open("tests/data/gsw_volume_validation.bin").expect("Unable to open file");
     let mut contents = vec![];
     input
         .read_to_end(&mut contents)
@@ -476,7 +485,8 @@ fn dynamic_enthalpy() {
 #[test]
 #[cfg(not(windows))]
 fn sa_from_rho() {
-    let mut input = File::open("tests/data/gsw_validation.bin").expect("Unable to open file");
+    let mut input =
+        File::open("tests/data/gsw_volume_validation.bin").expect("Unable to open file");
     let mut contents = vec![];
     input
         .read_to_end(&mut contents)
