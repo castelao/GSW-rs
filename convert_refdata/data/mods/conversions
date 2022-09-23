@@ -1,3 +1,11 @@
+SA_chck_cast
+t_chck_cast
+p_chck_cast
+SP_chck_cast
+CT_chck_cast
+long_chck_cast
+lat_chck_cast
+deltaSA_from_SP
 SR_from_SP
 SP_from_SR
 CT_from_PT
