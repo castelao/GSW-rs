@@ -10,14 +10,16 @@ struct DataRef {
     version: String<8>,
     src: String<32>,
     src_md5: String<32>,
-    data_x: FnvIndexMap<String<24>, Vec<f64, 3>, 4>,
-    data2d: FnvIndexMap<String<24>, Vec<Vec<f64, 45>, 3>, 64>,
+    scalar: FnvIndexMap<String<64>, f64, 2>,
+    data_x: FnvIndexMap<String<64>, Vec<f64, 3>, 2>,
+    data2d: FnvIndexMap<String<64>, Vec<Vec<f64, 45>, 3>, 32>,
 }
 
 #[test]
 #[cfg(not(windows))]
 fn specvol() {
-    let mut input = File::open("tests/data/gsw_validation.bin").expect("Unable to open file");
+    let mut input =
+        File::open("tests/data/gsw_volume_validation.bin").expect("Unable to open file");
     let mut contents = vec![];
     input
         .read_to_end(&mut contents)
@@ -45,7 +47,8 @@ fn specvol() {
 #[test]
 #[cfg(not(windows))]
 fn alpha() {
-    let mut input = File::open("tests/data/gsw_validation.bin").expect("Unable to open file");
+    let mut input =
+        File::open("tests/data/gsw_volume_validation.bin").expect("Unable to open file");
     let mut contents = vec![];
     input
         .read_to_end(&mut contents)
@@ -72,7 +75,8 @@ fn alpha() {
 #[test]
 #[cfg(not(windows))]
 fn beta() {
-    let mut input = File::open("tests/data/gsw_validation.bin").expect("Unable to open file");
+    let mut input =
+        File::open("tests/data/gsw_volume_validation.bin").expect("Unable to open file");
     let mut contents = vec![];
     input
         .read_to_end(&mut contents)
@@ -99,7 +103,8 @@ fn beta() {
 #[test]
 #[cfg(not(windows))]
 fn specvol_anom_standard() {
-    let mut input = File::open("tests/data/gsw_validation.bin").expect("Unable to open file");
+    let mut input =
+        File::open("tests/data/gsw_volume_validation.bin").expect("Unable to open file");
     let mut contents = vec![];
     input
         .read_to_end(&mut contents)
@@ -131,7 +136,8 @@ fn specvol_anom_standard() {
 #[test]
 #[cfg(not(windows))]
 fn sigma0() {
-    let mut input = File::open("tests/data/gsw_validation.bin").expect("Unable to open file");
+    let mut input =
+        File::open("tests/data/gsw_volume_validation.bin").expect("Unable to open file");
     let mut contents = vec![];
     input
         .read_to_end(&mut contents)
@@ -157,7 +163,8 @@ fn sigma0() {
 #[test]
 #[cfg(not(windows))]
 fn sigma1() {
-    let mut input = File::open("tests/data/gsw_validation.bin").expect("Unable to open file");
+    let mut input =
+        File::open("tests/data/gsw_volume_validation.bin").expect("Unable to open file");
     let mut contents = vec![];
     input
         .read_to_end(&mut contents)
@@ -183,7 +190,8 @@ fn sigma1() {
 #[test]
 #[cfg(not(windows))]
 fn sigma2() {
-    let mut input = File::open("tests/data/gsw_validation.bin").expect("Unable to open file");
+    let mut input =
+        File::open("tests/data/gsw_volume_validation.bin").expect("Unable to open file");
     let mut contents = vec![];
     input
         .read_to_end(&mut contents)
@@ -209,7 +217,8 @@ fn sigma2() {
 #[test]
 #[cfg(not(windows))]
 fn sigma3() {
-    let mut input = File::open("tests/data/gsw_validation.bin").expect("Unable to open file");
+    let mut input =
+        File::open("tests/data/gsw_volume_validation.bin").expect("Unable to open file");
     let mut contents = vec![];
     input
         .read_to_end(&mut contents)
@@ -235,7 +244,8 @@ fn sigma3() {
 #[test]
 #[cfg(not(windows))]
 fn sigma4() {
-    let mut input = File::open("tests/data/gsw_validation.bin").expect("Unable to open file");
+    let mut input =
+        File::open("tests/data/gsw_volume_validation.bin").expect("Unable to open file");
     let mut contents = vec![];
     input
         .read_to_end(&mut contents)
@@ -263,7 +273,7 @@ fn sigma4() {
 #[test]
 #[cfg(not(windows))]
 fn enthalpy_diff() {
-    let mut input = File::open("tests/data/gsw_validation.bin").expect("Unable to open file");
+    let mut input = File::open("tests/data/gsw_volume_validation.bin").expect("Unable to open file");
     let mut contents = vec![];
     input
         .read_to_end(&mut contents)
@@ -276,8 +286,7 @@ fn enthalpy_diff() {
     let ct = out.data2d.get(&String::from("CT_chck_cast")).unwrap();
     let enthalpy_diff = out.data2d.get(&String::from("enthalpy_diff")).unwrap();
     let tol = if cfg!(feature = "compat") || (f64::EPSILON > 1e-10) {
-        // f64::EPSILON
-        1e-11
+        f64::EPSILON
     } else {
         1e-10
     };
@@ -303,7 +312,8 @@ fn enthalpy_diff() {
 #[test]
 #[cfg(not(windows))]
 fn rho() {
-    let mut input = File::open("tests/data/gsw_validation.bin").expect("Unable to open file");
+    let mut input =
+        File::open("tests/data/gsw_volume_validation.bin").expect("Unable to open file");
     let mut contents = vec![];
     input
         .read_to_end(&mut contents)
@@ -332,10 +342,42 @@ fn rho() {
     }
 }
 
+/*
+#[test]
+#[cfg(not(windows))]
+fn specvol() {
+    let mut input =
+        File::open("tests/data/gsw_volume_validation.bin").expect("Unable to open file");
+    let mut contents = vec![];
+    input
+        .read_to_end(&mut contents)
+        .expect("Failed to read content");
+
+    let out: DataRef = from_bytes(&contents).unwrap();
+
+    let p = out.data2d.get(&String::from("p_chck_cast")).unwrap();
+    let sa = out.data2d.get(&String::from("SA_chck_cast")).unwrap();
+    let ct = out.data2d.get(&String::from("CT_chck_cast")).unwrap();
+    let specvol = out.data2d.get(&String::from("specvol")).unwrap();
+    for i in 0..3 {
+        for j in 0..45 {
+            if !specvol[i][j].is_nan() {
+                assert!(
+                    (gsw::volume::specvol(sa[i][j], ct[i][j], p[i][j]).unwrap() - specvol[i][j])
+                        .abs()
+                        <= f64::EPSILON
+                );
+            }
+        }
+    }
+}
+*/
+
 #[test]
 #[cfg(not(windows))]
 fn sound_speed() {
-    let mut input = File::open("tests/data/gsw_validation.bin").expect("Unable to open file");
+    let mut input =
+        File::open("tests/data/gsw_volume_validation.bin").expect("Unable to open file");
     let mut contents = vec![];
     input
         .read_to_end(&mut contents)
@@ -371,7 +413,8 @@ fn sound_speed() {
 #[test]
 #[cfg(not(windows))]
 fn internal_energy() {
-    let mut input = File::open("tests/data/gsw_validation.bin").expect("Unable to open file");
+    let mut input =
+        File::open("tests/data/gsw_volume_validation.bin").expect("Unable to open file");
     let mut contents = vec![];
     input
         .read_to_end(&mut contents)
@@ -406,7 +449,8 @@ fn internal_energy() {
 #[test]
 #[cfg(not(windows))]
 fn dynamic_enthalpy() {
-    let mut input = File::open("tests/data/gsw_validation.bin").expect("Unable to open file");
+    let mut input =
+        File::open("tests/data/gsw_volume_validation.bin").expect("Unable to open file");
     let mut contents = vec![];
     input
         .read_to_end(&mut contents)
@@ -441,7 +485,8 @@ fn dynamic_enthalpy() {
 #[test]
 #[cfg(not(windows))]
 fn sa_from_rho() {
-    let mut input = File::open("tests/data/gsw_validation.bin").expect("Unable to open file");
+    let mut input =
+        File::open("tests/data/gsw_volume_validation.bin").expect("Unable to open file");
     let mut contents = vec![];
     input
         .read_to_end(&mut contents)
