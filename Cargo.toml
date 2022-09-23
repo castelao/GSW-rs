@@ -1,6 +1,6 @@
 [package]
 name = "gsw"
-version = "0.0.10"
+version = "0.0.11"
 authors = ["Guilherme Castelão <guilherme@castelao.net>", "Luiz Irber <luiz.irber@gmail.com>"]
 edition = "2018"
 description = "TEOS-10 v3.06.12 Gibbs Seawater Oceanographic Toolbox in Rust"
@@ -25,6 +25,8 @@ inline-c = "0.1"
 postcard = "0.7.0"
 serde = "1.0.126"
 criterion = "0.3.6"
+# Indirect dependency that address CVE-2022-24713
+regex = "1.5.5"
 
 [build-dependencies]
 cbindgen = { version = "0.18.0", optional = true }
