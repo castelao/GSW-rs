@@ -6,6 +6,14 @@ use crate::{Error, Result};
 
 /// Coriolis parameter (f)
 ///
+/// # Arguments
+///
+/// * `lat`: latitude \[decimal degrees\] (positive northward)
+///
+/// # Returns
+///
+/// * `f`: coriolis parameter \[s-1\]
+///
 /// # Example
 /// ```
 /// use gsw::earth::coriollis_parameter;
@@ -48,13 +56,21 @@ mod test_coriollis_parameter {
 /// Calculates acceleration due to gravity as a function of latitude and
 /// pressure in the ocean.
 ///
+/// # Arguments
+///
+/// * `lat`: latitude \[degree\] (positive northward)
+/// * `p`: sea pressure \[ dbar \] (i.e. absolute pressure - 10.1325 dbar)
+///
+/// # Returns
+///
+/// * `g`: gravitational acceleration \[m s-2\]
+///
 /// # Example:
 /// ```
 /// use gsw::earth::gravity;
 /// let g = gravity(-18.0, 1250.0).unwrap();
 /// assert!((g - 9.78799904835888).abs() <= f64::EPSILON);
 /// ```
-///
 pub fn gravity(lat: f64, p: f64) -> Result<f64> {
     if !(-90.0..=90.0).contains(&lat) {
         return Err(Error::Undefined);
