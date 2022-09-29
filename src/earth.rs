@@ -31,7 +31,11 @@ use crate::{Error, Result};
 /// ```
 pub fn coriollis_parameter(lat: f64) -> Result<f64> {
     if !(-90.0..=90.0).contains(&lat) {
-        return Err(Error::OutOfBounds);
+        if lat.is_nan() {
+            return Ok(f64::NAN);
+        } else {
+            return Err(Error::OutOfBounds);
+        }
     }
 
     let omega = 7.292115e-5;
@@ -40,7 +44,7 @@ pub fn coriollis_parameter(lat: f64) -> Result<f64> {
 
 #[cfg(test)]
 mod test_coriollis_parameter {
-    use super::coriollis_parameter;
+    use super::{coriollis_parameter, Error};
 
     #[test]
     fn poles() {
@@ -57,6 +61,23 @@ mod test_coriollis_parameter {
     fn equator() {
         let f = coriollis_parameter(0.0).unwrap();
         assert!((f).abs() <= f64::EPSILON);
+    }
+
+    #[test]
+    fn nan() {
+        let f = coriollis_parameter(f64::NAN).unwrap();
+        assert!(f.is_nan());
+    }
+
+    #[test]
+    fn out_of_limites() {
+        for lat in [-91.0, 91.0] {
+            let f = coriollis_parameter(lat);
+            match f {
+                Err(Error::OutOfBounds) => (),
+                _ => panic!("Out of limits. It should be Error::OutOfBounds"),
+            }
+        }
     }
 }
 
