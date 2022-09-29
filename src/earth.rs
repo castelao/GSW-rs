@@ -182,7 +182,11 @@ mod test_gravity {
 /// ```
 pub fn distance(lon1: f64, lat1: f64, p1: f64, lon2: f64, lat2: f64, p2: f64) -> Result<f64> {
     if !(-90.0..=90.0).contains(&lat1) | !(-90.0..=90.0).contains(&lat2) {
-        return Err(Error::Undefined);
+        if lat1.is_nan() || lat2.is_nan() {
+            return Ok(f64::NAN);
+        } else {
+            return Err(Error::OutOfBounds);
+        }
     }
 
     // Earth's radius in metres
