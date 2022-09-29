@@ -31,7 +31,7 @@ use crate::{Error, Result};
 /// ```
 pub fn coriollis_parameter(lat: f64) -> Result<f64> {
     if !(-90.0..=90.0).contains(&lat) {
-        return Err(Error::Undefined);
+        return Err(Error::OutOfBounds);
     }
 
     let omega = 7.292115e-5;
@@ -91,7 +91,7 @@ mod test_coriollis_parameter {
 /// ```
 pub fn gravity(lat: f64, p: f64) -> Result<f64> {
     if !(-90.0..=90.0).contains(&lat) {
-        return Err(Error::Undefined);
+        return Err(Error::OutOfBounds);
     }
 
     let sinlat = libm::sin(lat * DEG2RAD);
