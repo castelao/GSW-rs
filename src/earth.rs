@@ -112,7 +112,11 @@ mod test_coriollis_parameter {
 /// ```
 pub fn gravity(lat: f64, p: f64) -> Result<f64> {
     if !(-90.0..=90.0).contains(&lat) {
-        return Err(Error::OutOfBounds);
+        if lat.is_nan() {
+            return Ok(f64::NAN);
+        } else {
+            return Err(Error::OutOfBounds);
+        }
     }
 
     let sinlat = libm::sin(lat * DEG2RAD);
@@ -128,6 +132,31 @@ pub fn gravity(lat: f64, p: f64) -> Result<f64> {
     // pressure p, is negative in the ocean.
     let z = z_from_p(p, lat, 0.0, 0.0);
     Ok(gs * (1.0 - GAMMA * z))
+}
+
+#[cfg(test)]
+mod test_gravity {
+    use super::{gravity, Error};
+
+    #[test]
+    fn nan() {
+        let g = gravity(f64::NAN, 0.0).unwrap();
+        assert!(g.is_nan());
+
+        let g = gravity(0.0, f64::NAN).unwrap();
+        assert!(g.is_nan());
+    }
+
+    #[test]
+    fn out_of_limites() {
+        for lat in [-91.0, 91.0] {
+            let g = gravity(lat, 0.0);
+            match g {
+                Err(Error::OutOfBounds) => (),
+                _ => panic!("Out of limits. It should be Error::OutOfBounds"),
+            }
+        }
+    }
 }
 
 /// Distance between two coordinates on Earth
