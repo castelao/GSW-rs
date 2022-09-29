@@ -6,6 +6,23 @@ use crate::{Error, Result};
 
 /// Coriolis parameter (f)
 ///
+/// # Arguments
+///
+/// * `lat`: latitude \[decimal degrees\] (positive northward)
+///
+/// # Returns
+///
+/// * `f`: coriolis parameter \[s-1\]
+///
+/// # References
+///
+/// Gill, A. E., & Adrian, E. (1982). Atmosphere-ocean dynamics (Vol. 30).
+/// Academic press.
+///
+/// Groten, E., 2004: Fundamental Parameters and Current (2004) Best
+/// Estimates of the Parameters of Common Relevance to Astronomy, Geodesy,
+/// and Geodynamics. Journal of Geodesy, 77, pp. 724-797.
+///
 /// # Example
 /// ```
 /// use gsw::earth::coriollis_parameter;
@@ -14,7 +31,11 @@ use crate::{Error, Result};
 /// ```
 pub fn coriollis_parameter(lat: f64) -> Result<f64> {
     if !(-90.0..=90.0).contains(&lat) {
-        return Err(Error::Undefined);
+        if lat.is_nan() {
+            return Ok(f64::NAN);
+        } else {
+            return Err(Error::OutOfBounds);
+        }
     }
 
     let omega = 7.292115e-5;
@@ -23,7 +44,7 @@ pub fn coriollis_parameter(lat: f64) -> Result<f64> {
 
 #[cfg(test)]
 mod test_coriollis_parameter {
-    use super::coriollis_parameter;
+    use super::{coriollis_parameter, Error};
 
     #[test]
     fn poles() {
@@ -41,6 +62,23 @@ mod test_coriollis_parameter {
         let f = coriollis_parameter(0.0).unwrap();
         assert!((f).abs() <= f64::EPSILON);
     }
+
+    #[test]
+    fn nan() {
+        let f = coriollis_parameter(f64::NAN).unwrap();
+        assert!(f.is_nan());
+    }
+
+    #[test]
+    fn out_of_limites() {
+        for lat in [-91.0, 91.0] {
+            let f = coriollis_parameter(lat);
+            match f {
+                Err(Error::OutOfBounds) => (),
+                _ => panic!("Out of limits. It should be Error::OutOfBounds"),
+            }
+        }
+    }
 }
 
 /// Gravity in the ocean
@@ -48,16 +86,37 @@ mod test_coriollis_parameter {
 /// Calculates acceleration due to gravity as a function of latitude and
 /// pressure in the ocean.
 ///
+/// # Arguments
+///
+/// * `lat`: latitude \[degree\] (positive northward)
+/// * `p`: sea pressure \[ dbar \] (i.e. absolute pressure - 10.1325 dbar)
+///
+/// # Returns
+///
+/// * `g`: gravitational acceleration \[m s-2\]
+///
+/// # References
+///
+/// Moritz, H. (2000). Geodetic reference system 1980. Journal of Geodesy,
+/// 74(1), pp. 128-133.
+///
+/// Saunders, P. M., & Fofonoff, N. P. (1976, January). Conversion of pressure
+/// to depth in the ocean. In Deep Sea Research and Oceanographic Abstracts
+/// (Vol. 23, No. 1, pp. 109-111). Elsevier.
+///
 /// # Example:
 /// ```
 /// use gsw::earth::gravity;
 /// let g = gravity(-18.0, 1250.0).unwrap();
 /// assert!((g - 9.78799904835888).abs() <= f64::EPSILON);
 /// ```
-///
 pub fn gravity(lat: f64, p: f64) -> Result<f64> {
     if !(-90.0..=90.0).contains(&lat) {
-        return Err(Error::Undefined);
+        if lat.is_nan() {
+            return Ok(f64::NAN);
+        } else {
+            return Err(Error::OutOfBounds);
+        }
     }
 
     let sinlat = libm::sin(lat * DEG2RAD);
@@ -73,6 +132,31 @@ pub fn gravity(lat: f64, p: f64) -> Result<f64> {
     // pressure p, is negative in the ocean.
     let z = z_from_p(p, lat, 0.0, 0.0);
     Ok(gs * (1.0 - GAMMA * z))
+}
+
+#[cfg(test)]
+mod test_gravity {
+    use super::{gravity, Error};
+
+    #[test]
+    fn nan() {
+        let g = gravity(f64::NAN, 0.0).unwrap();
+        assert!(g.is_nan());
+
+        let g = gravity(0.0, f64::NAN).unwrap();
+        assert!(g.is_nan());
+    }
+
+    #[test]
+    fn out_of_limites() {
+        for lat in [-91.0, 91.0] {
+            let g = gravity(lat, 0.0);
+            match g {
+                Err(Error::OutOfBounds) => (),
+                _ => panic!("Out of limits. It should be Error::OutOfBounds"),
+            }
+        }
+    }
 }
 
 /// Distance between two coordinates on Earth
@@ -98,7 +182,11 @@ pub fn gravity(lat: f64, p: f64) -> Result<f64> {
 /// ```
 pub fn distance(lon1: f64, lat1: f64, p1: f64, lon2: f64, lat2: f64, p2: f64) -> Result<f64> {
     if !(-90.0..=90.0).contains(&lat1) | !(-90.0..=90.0).contains(&lat2) {
-        return Err(Error::Undefined);
+        if lat1.is_nan() || lat2.is_nan() {
+            return Ok(f64::NAN);
+        } else {
+            return Err(Error::OutOfBounds);
+        }
     }
 
     // Earth's radius in metres
