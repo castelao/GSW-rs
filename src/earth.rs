@@ -14,6 +14,15 @@ use crate::{Error, Result};
 ///
 /// * `f`: coriolis parameter \[s-1\]
 ///
+/// # References
+///
+/// Gill, A. E., & Adrian, E. (1982). Atmosphere-ocean dynamics (Vol. 30).
+/// Academic press.
+///
+/// Groten, E., 2004: Fundamental Parameters and Current (2004) Best
+/// Estimates of the Parameters of Common Relevance to Astronomy, Geodesy,
+/// and Geodynamics. Journal of Geodesy, 77, pp. 724-797.
+///
 /// # Example
 /// ```
 /// use gsw::earth::coriollis_parameter;
@@ -64,6 +73,15 @@ mod test_coriollis_parameter {
 /// # Returns
 ///
 /// * `g`: gravitational acceleration \[m s-2\]
+///
+/// # References
+///
+/// Moritz, H. (2000). Geodetic reference system 1980. Journal of Geodesy,
+/// 74(1), pp. 128-133.
+///
+/// Saunders, P. M., & Fofonoff, N. P. (1976, January). Conversion of pressure
+/// to depth in the ocean. In Deep Sea Research and Oceanographic Abstracts
+/// (Vol. 23, No. 1, pp. 109-111). Elsevier.
 ///
 /// # Example:
 /// ```
