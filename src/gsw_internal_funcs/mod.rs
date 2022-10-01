@@ -990,9 +990,9 @@ mod test_gibbs {
     // Other libraries using GSW-rs might rely on this behavior to propagate
     // and handle invalid elements.
     fn nan() {
-        for ns in 0..=0 {
-            for nt in 0..=0 {
-                for np in 0..=0 {
+        for ns in 0..=1 {
+            for nt in 0..=1 {
+                for np in 0..=1 {
                     let v = gibbs(ns, nt, np, f64::NAN, 1.0, 1.0);
                     assert!(v.unwrap().is_nan());
 
