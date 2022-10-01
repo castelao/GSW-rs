@@ -213,7 +213,7 @@ mod test_hill_ratio_at_sp2 {
 ///
 /// # Notes
 /// No effort yet on optimizing, but just reproducing the results.
-pub(crate) fn gibbs(ns: i8, nt: i8, np: i8, sa: f64, t: f64, p: f64) -> Result<f64> {
+pub(crate) fn gibbs(ns: u8, nt: u8, np: u8, sa: f64, t: f64, p: f64) -> Result<f64> {
     // Temporary solution to avoid failure with powerpc64
     if sa.is_nan() | t.is_nan() | p.is_nan() {
         return Ok(f64::NAN);
@@ -1003,6 +1003,39 @@ mod test_gibbs {
                     assert!(v.unwrap().is_nan());
                 }
             }
+        }
+    }
+
+    #[test]
+    /// A sanity check with a single set of (S,T,P).
+    /// Check values match Matlab's output.
+    fn checking_values() {
+        let sa = 32.0;
+        let t = 10.0;
+        let p = 100.0;
+        let check_values = [
+            (0, 0, 0, 50.249433022084645),
+            (0, 0, 1, 9.756573803380614e-04),
+            (0, 0, 2, -4.319267169958817e-13),
+            (0, 1, 0, -144.76166221982535),
+            (0, 1, 1, 1.579419118574033e-07),
+            (0, 1, 2, 1.731843128190281e-15),
+            (0, 2, 0, -14.14177325330212),
+            (0, 2, 1, 9.947007722211213e-09),
+            (0, 3, 0, 4.830012068790147e-02),
+            (1, 0, 0, 60.38885230503149),
+            (1, 0, 1, -7.383641712245458e-07),
+            (1, 0, 2, 1.306882540566367e-15),
+            (1, 1, 0, 0.4711432080021902),
+            (1, 1, 1, 1.849778736567631e-09),
+            (1, 2, 0, 1.904117940743395e-02),
+            (2, 0, 0, 2.269679195264845),
+            (2, 0, 1, 8.949706277002558e-10),
+            (2, 1, 0, 1.013083889176643e-02),
+        ];
+
+        for (ns, nt, np, ans) in check_values.iter() {
+            assert!((gibbs(*ns, *nt, *np, sa, t, p).unwrap() - *ans).abs() < f64::EPSILON);
         }
     }
 }
