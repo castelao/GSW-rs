@@ -6,7 +6,7 @@
 //! For the official TEOS-10 documentation and other software implementations,
 //! check the webiste: <http://www.teos-10.org>
 //!
-//! GSW-rs was initially implementated to provide support for embedded
+//! GSW-rs was initially implemented to provide support for embedded
 //! applications, but there is no restrictions on using it in regular
 //! computers or even HPC. It is an alternative for GSW-C, and we demonstrate
 //! how to link Python and R implementations of GSW with our Rust version
@@ -18,7 +18,7 @@
 //! conditional compilation and optional dependencies.". The features defined
 //! in GSW-rs are:
 //!
-//! - capi: Include the C-API so that GSW-rs can be accessed as it was a
+//! - capi: Include the C-API so that GSW-rs can be accessed as if it was a
 //!         C-library. For instance, the other GSW implementations based on
 //!         GSW-C could be linked with GSW-rs instead by using this feature.
 //! - compat: Reproduces the GSW-Matlab implementation for compatibility.
@@ -27,7 +27,7 @@
 //! - nodgdz: Ignores vertical variations of gravity, i.e. no dependency on z.
 //!           This might be useful on some numerical models.
 //! - std: Activate the Rust standard library. The default implementation does
-//!        not rely on std so it can run in embedded systems .
+//!        not rely on std so it can run in embedded systems.
 //!
 //! For example, to compile it compatible with the Matlab library:
 //! cargo build --features compat
