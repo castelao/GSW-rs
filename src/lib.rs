@@ -14,9 +14,8 @@
 //!
 //! ## Features
 //!
-//! From the Cargo Book: "Cargo 'features' provide a mechanism to express
-//! conditional compilation and optional dependencies.". The features defined
-//! in GSW-rs are:
+//! A few customizations can be choosen at compiling time by activating the
+//! following features:
 //!
 //! - capi: Include the C-API so that GSW-rs can be accessed as if it was a
 //!         C-library. For instance, the other GSW implementations based on
@@ -30,7 +29,9 @@
 //!        not rely on std so it can run in embedded systems.
 //!
 //! For example, to compile it compatible with the Matlab library:
+//! ```text
 //! cargo build --features compat
+//! ```
 
 ////////////////////////////////////////////////////////////////////////////////
 
