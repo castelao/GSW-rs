@@ -638,7 +638,7 @@ pub fn specvol_second_derivatives(sa: f64, ct: f64, p: f64) -> Result<(f64, f64,
                 + tau * (B012 + s * (B112 + B212 * s) + tau * (B022 + B122 * s + B032 * tau)))
             + pi * (3.0 * (B003 + B103 * s + B013 * tau) + 4.0 * B004 * pi));
 
-    let v_sa_p = 1e-8 * 0.5 * GSW_SFAC * v_sa_p_part;
+    let v_sa_p = 1e-8 * 0.5 * GSW_SFAC * v_sa_p_part / s;
 
     let v_ct_p_part = A001
         + s * (A101 + s * (A201 + s * (A301 + A401 * s)))
