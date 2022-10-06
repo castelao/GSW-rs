@@ -196,6 +196,9 @@ mod test_hill_ratio_at_sp2 {
     use super::hill_ratio_at_sp2;
 
     #[test]
+    // These test values were obtained by running GSW-Matlab. It was common
+    // a difference of O(16), so we assumed that the values obtained with
+    // Rust were correct.
     fn example_values() {
         let ratio = hill_ratio_at_sp2(0.);
         assert!((ratio - 0.999_834_364_412_733_2).abs() <= f64::EPSILON);
@@ -205,6 +208,15 @@ mod test_hill_ratio_at_sp2 {
 
         let ratio = hill_ratio_at_sp2(25.);
         assert!((ratio - 1.000_076_483_096_847_2).abs() <= f64::EPSILON);
+
+        let ratio = hill_ratio_at_sp2(30.);
+        assert!((ratio - 1.000_104_961_868_661_5).abs() <= f64::EPSILON,);
+
+        let ratio = hill_ratio_at_sp2(40.);
+        assert!((ratio - 1.000_151_589_022_029_8).abs() <= f64::EPSILON);
+
+        let ratio = hill_ratio_at_sp2(50.);
+        assert!((ratio - 1.000_188_151_345_468_5).abs() <= f64::EPSILON);
     }
 }
 
