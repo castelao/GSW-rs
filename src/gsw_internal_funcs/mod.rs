@@ -141,7 +141,7 @@ pub(crate) fn enthalpy_sso_0(p: f64) -> f64 {
 pub(crate) fn hill_ratio_at_sp2(t: f64) -> f64 {
     let sp2 = 2.0;
 
-    let t68: f64 = t * 1.000_24;
+    let t68: f64 = crate::practical_salinity::t68_from_t90(t);
     let ft68: f64 = (t68 - 15.0) / (1.0 + K * (t68 - 15.0));
 
     // Find the initial estimates of Rtx (Rtx0) and of the derivative dSP_dRtx
