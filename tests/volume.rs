@@ -450,7 +450,7 @@ fn internal_energy() {
 #[cfg(not(windows))]
 fn dynamic_enthalpy() {
     let mut input =
-        File::open("tests/data/gsw_volume_validation.bin").expect("Unable to open file");
+        File::open("tests/data/gsw_enthalpy_validation.bin").expect("Unable to open file");
     let mut contents = vec![];
     input
         .read_to_end(&mut contents)
