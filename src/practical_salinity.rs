@@ -246,6 +246,7 @@ mod test_round_trip {
         let sp_values = [0.1, 10.0, 20.0, 25.0, 30.0, 35.0, 40.0];
         let t_values = [0.0, 10.0, 20.0, 30.0, 40.0];
         let p_values = [0.0, 10.0, 100.0, 1000.0, 2000.0, 5000.0];
+        // The largest error found was 2.1e-14
         let tol = 2.2e-14;
         for sp in sp_values.iter() {
             for t in t_values.iter() {
