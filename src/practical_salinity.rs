@@ -236,6 +236,36 @@ mod test_sp_from_r {
     }
 }
 
+#[cfg(test)]
+mod test_round_trip {
+    use super::{r_from_sp, sp_from_r};
+
+    #[test]
+    // Check the roundtrip from S_p to R and back to S_p again.
+    fn sp_vs_r() {
+        let sp_values = [0.1, 10.0, 20.0, 25.0, 30.0, 35.0, 40.0];
+        let t_values = [0.0, 10.0, 20.0, 30.0, 40.0];
+        let p_values = [0.0, 10.0, 100.0, 1000.0, 2000.0, 5000.0];
+        let tol = 2.2e-14;
+        for sp in sp_values.iter() {
+            for t in t_values.iter() {
+                for p in p_values.iter() {
+                    let sp_back = sp_from_r(r_from_sp(*sp, *t, *p).unwrap(), *t, *p).unwrap();
+                    assert!(
+                        (sp - sp_back).abs() <= tol,
+                        "t:{}, p:{}, sp:{}, sp_back:{}, diff: {:+e}",
+                        t,
+                        p,
+                        sp,
+                        sp_back,
+                        sp_back - sp
+                    );
+                }
+            }
+        }
+    }
+}
+
 #[allow(clippy::manual_range_contains)]
 /// Conductivity ratio from Practical Salinity
 ///
