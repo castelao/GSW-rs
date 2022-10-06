@@ -16,7 +16,7 @@ struct DataRef {
     src: heapless::String<32>,
     src_md5: heapless::String<32>,
     scalar: FnvIndexMap<heapless::String<64>, f64, 2>,
-    data_x: FnvIndexMap<heapless::String<64>, heapless::Vec<f64, 3>, 32>,
+    data_x: FnvIndexMap<heapless::String<64>, heapless::Vec<f64, 3>, 2>,
     data2d: FnvIndexMap<heapless::String<64>, heapless::Vec<heapless::Vec<f64, 45>, 3>, 32>,
 }
 
@@ -43,7 +43,7 @@ fn main() {
 
     for (group, varnames) in groups {
         let mut scalar = FnvIndexMap::<heapless::String<64>, _, 2>::new();
-        let mut data_x = FnvIndexMap::<heapless::String<64>, _, 32>::new();
+        let mut data_x = FnvIndexMap::<heapless::String<64>, _, 2>::new();
         let mut data2d = FnvIndexMap::<heapless::String<64>, _, 32>::new();
 
         let mut scalar_size: isize = 0;
@@ -109,7 +109,7 @@ fn main() {
             data2d,
         };
 
-        let stream: heapless::Vec<u8, 350_000> =
+        let stream: heapless::Vec<u8, 100_000> =
             to_vec(&dataset).expect("Failed to vectorize dataset");
         // let serialized = serde_json::to_string(&dataset).unwrap();
 
