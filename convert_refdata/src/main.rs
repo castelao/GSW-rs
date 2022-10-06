@@ -15,7 +15,7 @@ struct DataRef {
     version: heapless::String<8>,
     src: heapless::String<32>,
     src_md5: heapless::String<32>,
-    scalar: FnvIndexMap<heapless::String<64>, f64, 2>,
+    scalar: FnvIndexMap<heapless::String<64>, f64, 8>,
     data_x: FnvIndexMap<heapless::String<64>, heapless::Vec<f64, 3>, 2>,
     data2d: FnvIndexMap<heapless::String<64>, heapless::Vec<heapless::Vec<f64, 45>, 3>, 32>,
 }
@@ -42,7 +42,7 @@ fn main() {
     dbg!(&groups);
 
     for (group, varnames) in groups {
-        let mut scalar = FnvIndexMap::<heapless::String<64>, _, 2>::new();
+        let mut scalar = FnvIndexMap::<heapless::String<64>, _, 8>::new();
         let mut data_x = FnvIndexMap::<heapless::String<64>, _, 2>::new();
         let mut data2d = FnvIndexMap::<heapless::String<64>, _, 32>::new();
 

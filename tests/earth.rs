@@ -10,8 +10,8 @@ struct DataRef {
     version: String<8>,
     src: String<32>,
     src_md5: String<32>,
-    scalar: FnvIndexMap<String<64>, f64, 2>,
-    data_x: FnvIndexMap<String<64>, Vec<f64, 3>, 32>,
+    scalar: FnvIndexMap<String<64>, f64, 8>,
+    data_x: FnvIndexMap<String<64>, Vec<f64, 3>, 2>,
     data2d: FnvIndexMap<String<64>, Vec<Vec<f64, 45>, 3>, 32>,
 }
 
