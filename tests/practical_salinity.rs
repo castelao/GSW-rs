@@ -30,6 +30,7 @@ fn sp_from_r() {
     let p = out.data2d.get(&String::from("p_chck_cast")).unwrap();
     let t = out.data2d.get(&String::from("t_chck_cast")).unwrap();
     let sp = out.data2d.get(&String::from("SP_chck_cast")).unwrap();
+    let r = out.data2d.get(&String::from("R_from_SP")).unwrap();
     let sp_from_r = out.data2d.get(&String::from("SP_from_R")).unwrap();
     // Value obtained from sp_vs. Since there are no R_chck_cast, we do the
     // round trip conversion, which can lead to differences as large as this:
@@ -37,22 +38,25 @@ fn sp_from_r() {
     for i in 0..3 {
         for j in 0..45 {
             if !sp_from_r[i][j].is_nan() {
-                let r = gsw::practical_salinity::r_from_sp(sp[i][j], t[i][j], p[i][j]).unwrap();
-                let new = gsw::practical_salinity::sp_from_r(r, t[i][j], p[i][j]).unwrap();
-                dbg!(r);
+                let new = gsw::practical_salinity::sp_from_r(r[i][j], t[i][j], p[i][j]).unwrap();
                 dbg!(
                     i,
                     j,
                     sp[i][j],
                     t[i][j],
                     p[i][j],
-                    r,
+                    r[i][j],
                     sp_from_r[i][j],
                     new,
                     sp_from_r[i][j] - new
                 );
                 assert!(
-                    (gsw::practical_salinity::sp_from_r(r, t[i][j], p[i][j]).unwrap()
+                    r[i][j]
+                        - gsw::practical_salinity::r_from_sp(sp[i][j], t[i][j], p[i][j]).unwrap()
+                        <= f64::EPSILON
+                );
+                assert!(
+                    (gsw::practical_salinity::sp_from_r(r[i][j], t[i][j], p[i][j]).unwrap()
                         - sp_from_r[i][j])
                         .abs()
                         <= tol
