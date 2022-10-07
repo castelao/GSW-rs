@@ -101,9 +101,9 @@ fn main() {
         */
 
         let dataset = DataRef {
-            version: heapless::String::from("3.06.12"),
+            version: heapless::String::from("3.06.16"),
             src: heapless::String::from("gsw_data_v3_0.mat"),
-            src_md5: heapless::String::from("25b840e6f8bdd72522e28d99eccd9e99"),
+            src_md5: heapless::String::from("489365f8be6f2b7868f94fb0ccd1e8c2"),
             scalar,
             data_x,
             data2d,
