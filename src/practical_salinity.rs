@@ -325,17 +325,17 @@ pub fn r_from_sp(sp: f64, t90: f64, p: f64) -> Result<f64> {
                             + Q8 * x
                             + t68 * (Q9 + x * (Q13 + x * Q18) + t68 * (Q14 + Q19 * x + Q20 * t68))))
     } else if sp >= 0.003 && sp < 0.25 {
-        S0 + x
-            * (S1
-                + S4 * t68
-                + x * (S3 + S7 * t68 + x * (S6 + S11 * t68 + x * (S10 + S16 * t68 + x * S15))))
+        R0 + x
+            * (R1
+                + R4 * t68
+                + x * (R3 + R7 * t68 + x * (R6 + R11 * t68 + x * (R10 + R16 * t68 + x * R15))))
             + t68
-                * (S2
+                * (R2
                     + t68
-                        * (S5
-                            + x * x * (S12 + x * S17)
-                            + S8 * x
-                            + t68 * (S9 + x * (S13 + x * S18) + t68 * (S14 + S19 * x + S20 * t68))))
+                        * (R5
+                            + x * x * (R12 + x * R17)
+                            + R8 * x
+                            + t68 * (R9 + x * (R13 + x * R18) + t68 * (R14 + R19 * x + R20 * t68))))
     // S_p < 0.003 the only possible condition left, thus this is equivalent to
     // if sp < 0.003 {
     } else {

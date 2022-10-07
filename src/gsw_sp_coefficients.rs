@@ -78,7 +78,6 @@ pub(crate) const Q18: f64 = -4.279_037_686_797_859e-9;
 pub(crate) const Q19: f64 = -2.045_829_202_713_288e-10;
 pub(crate) const Q20: f64 = 5.025_109_163_112_005e-12;
 
-/*
 pub(crate) const R0: f64 = 3.432285006604888e-3;
 pub(crate) const R1: f64 = 1.672940491817403e-1;
 pub(crate) const R2: f64 = 2.640304401023995e-5;
@@ -100,7 +99,6 @@ pub(crate) const R17: f64 = 4.466087528793912e-6;
 pub(crate) const R18: f64 = 1.960872795577774e-8;
 pub(crate) const R19: f64 = -2.723159418888634e-10;
 pub(crate) const R20: f64 = 1.122200786423241e-12;
-*/
 
 pub(crate) const S0: f64 = 3.432_285_006_604_888e-3;
 pub(crate) const S1: f64 = 1.672_940_491_817_403e-1;
