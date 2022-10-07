@@ -7,6 +7,7 @@ C_from_SP_ca
 SP_from_C_ca
 R_from_SP_ca
 SP_from_R_ca
+SP_salinometer_ca
 SP_from_R
 SP_from_C
 C_from_SP

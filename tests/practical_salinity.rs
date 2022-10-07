@@ -155,3 +155,36 @@ fn c_from_sp() {
         }
     }
 }
+
+#[test]
+#[cfg(not(windows))]
+fn sp_salinometer() {
+    let mut input = File::open("tests/data/gsw_practical_salinity_validation.bin")
+        .expect("Unable to open file");
+    let mut contents = vec![];
+    input
+        .read_to_end(&mut contents)
+        .expect("Failed to read content");
+
+    let out: DataRef = from_bytes(&contents).unwrap();
+
+    let tol = out.scalar.get(&String::from("SP_salinometer_ca")).unwrap();
+    // A sanity check if the Matlab validation dataset isn't too large tolerance
+    assert!(tol.abs() < 1e-9);
+
+    let rt = out.data2d.get(&String::from("Rt_chck_cast")).unwrap();
+    let t = out.data2d.get(&String::from("t_chck_cast")).unwrap();
+    let sp_salinometer = out.data2d.get(&String::from("SP_salinometer")).unwrap();
+    for i in 0..3 {
+        for j in 0..45 {
+            if !sp_salinometer[i][j].is_nan() {
+                assert!(
+                    (gsw::practical_salinity::sp_salinometer(rt[i][j], t[i][j]).unwrap()
+                        - sp_salinometer[i][j])
+                        .abs()
+                        <= *tol
+                );
+            }
+        }
+    }
+}
