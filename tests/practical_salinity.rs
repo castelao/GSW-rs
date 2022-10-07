@@ -28,7 +28,7 @@ fn sp_from_r() {
     let out: DataRef = from_bytes(&contents).unwrap();
 
     let tol = out.scalar.get(&String::from("SP_from_R_ca")).unwrap();
-    // A sanity check if the Matlab validation dataset didn't setup a way too large tolerance
+    // A sanity check if the Matlab validation dataset isn't too large tolerance
     assert!(tol.abs() < 1e-9);
 
     let sp = out.data2d.get(&String::from("SP_chck_cast")).unwrap();
@@ -66,7 +66,7 @@ fn r_from_sp() {
     let out: DataRef = from_bytes(&contents).unwrap();
 
     let tol = out.scalar.get(&String::from("R_from_SP_ca")).unwrap();
-    // A sanity check if the Matlab validation dataset didn't setup a way too large tolerance
+    // A sanity check if the Matlab validation dataset isn't too large tolerance
     assert!(tol.abs() < 1e-9);
 
     let sp = out.data2d.get(&String::from("SP_chck_cast")).unwrap();
@@ -100,7 +100,7 @@ fn sp_from_c() {
     let out: DataRef = from_bytes(&contents).unwrap();
 
     let tol = out.scalar.get(&String::from("SP_from_C_ca")).unwrap();
-    // A sanity check if the Matlab validation dataset didn't setup a way too large tolerance
+    // A sanity check if the Matlab validation dataset isn't too large tolerance
     assert!(tol.abs() < 1e-9);
 
     let sp = out.data2d.get(&String::from("SP_chck_cast")).unwrap();
@@ -135,7 +135,7 @@ fn c_from_sp() {
     let out: DataRef = from_bytes(&contents).unwrap();
 
     let tol = out.scalar.get(&String::from("C_from_SP_ca")).unwrap();
-    // A sanity check if the Matlab validation dataset didn't setup a way too large tolerance
+    // A sanity check if the Matlab validation dataset isn't too large tolerance
     assert!(tol.abs() < 1e-9);
 
     let sp = out.data2d.get(&String::from("SP_chck_cast")).unwrap();
