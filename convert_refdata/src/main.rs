@@ -15,8 +15,8 @@ struct DataRef {
     version: heapless::String<8>,
     src: heapless::String<32>,
     src_md5: heapless::String<32>,
-    scalar: FnvIndexMap<heapless::String<64>, f64, 2>,
-    data_x: FnvIndexMap<heapless::String<64>, heapless::Vec<f64, 3>, 32>,
+    scalar: FnvIndexMap<heapless::String<64>, f64, 8>,
+    data_x: FnvIndexMap<heapless::String<64>, heapless::Vec<f64, 3>, 2>,
     data2d: FnvIndexMap<heapless::String<64>, heapless::Vec<heapless::Vec<f64, 45>, 3>, 32>,
 }
 
@@ -42,8 +42,8 @@ fn main() {
     dbg!(&groups);
 
     for (group, varnames) in groups {
-        let mut scalar = FnvIndexMap::<heapless::String<64>, _, 2>::new();
-        let mut data_x = FnvIndexMap::<heapless::String<64>, _, 32>::new();
+        let mut scalar = FnvIndexMap::<heapless::String<64>, _, 8>::new();
+        let mut data_x = FnvIndexMap::<heapless::String<64>, _, 2>::new();
         let mut data2d = FnvIndexMap::<heapless::String<64>, _, 32>::new();
 
         let mut scalar_size: isize = 0;
@@ -101,15 +101,15 @@ fn main() {
         */
 
         let dataset = DataRef {
-            version: heapless::String::from("3.06.12"),
+            version: heapless::String::from("3.06.16"),
             src: heapless::String::from("gsw_data_v3_0.mat"),
-            src_md5: heapless::String::from("25b840e6f8bdd72522e28d99eccd9e99"),
+            src_md5: heapless::String::from("489365f8be6f2b7868f94fb0ccd1e8c2"),
             scalar,
             data_x,
             data2d,
         };
 
-        let stream: heapless::Vec<u8, 350_000> =
+        let stream: heapless::Vec<u8, 100_000> =
             to_vec(&dataset).expect("Failed to vectorize dataset");
         // let serialized = serde_json::to_string(&dataset).unwrap();
 

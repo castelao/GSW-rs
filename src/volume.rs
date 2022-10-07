@@ -638,7 +638,7 @@ pub fn specvol_second_derivatives(sa: f64, ct: f64, p: f64) -> Result<(f64, f64,
                 + tau * (B012 + s * (B112 + B212 * s) + tau * (B022 + B122 * s + B032 * tau)))
             + pi * (3.0 * (B003 + B103 * s + B013 * tau) + 4.0 * B004 * pi));
 
-    let v_sa_p = 1e-8 * 0.5 * GSW_SFAC * v_sa_p_part;
+    let v_sa_p = 1e-8 * 0.5 * GSW_SFAC * v_sa_p_part / s;
 
     let v_ct_p_part = A001
         + s * (A101 + s * (A201 + s * (A301 + A401 * s)))
@@ -1101,7 +1101,7 @@ mod test_rho_first_derivatives {
 /// assert!((dsds - 0.0001259760985890476).abs() <= f64::EPSILON);
 /// assert!((dsdt + 0.002603337785720922).abs() <= f64::EPSILON);
 /// assert!((dtdt + 0.010331290447124985).abs() <= f64::EPSILON);
-/// assert!((dsdp + 1.0368197591928267e-09).abs() <= f64::EPSILON);
+/// assert!((dsdp + 7.741702425421236e-10).abs() <= f64::EPSILON);
 /// assert!((dtdp + 2.1999866528036205e-09).abs() <= f64::EPSILON);
 /// ```
 pub fn rho_second_derivatives(sa: f64, ct: f64, p: f64) -> Result<(f64, f64, f64, f64, f64)> {
@@ -1331,7 +1331,7 @@ mod test_cabbeling {
 /// ```
 /// use gsw::volume::thermobaric;
 /// let t_b = thermobaric(33.0, 10.0, 100.0).unwrap();
-/// assert!((t_b - 2.3569403670861866e-12).abs() <= f64::EPSILON);
+/// assert!((t_b - 2.298255413737383e-12).abs() <= f64::EPSILON);
 /// ```
 pub fn thermobaric(sa: f64, ct: f64, p: f64) -> Result<f64> {
     let (v_sa, v_ct, _) = specvol_first_derivatives(sa, ct, p)?;

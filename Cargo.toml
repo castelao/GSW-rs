@@ -1,6 +1,6 @@
 [package]
 name = "gsw"
-version = "0.1.0"
+version = "0.1.1"
 authors = ["Guilherme Castelão <guilherme@castelao.net>", "Luiz Irber <luiz.irber@gmail.com>"]
 edition = "2018"
 description = "TEOS-10 v3.06.12 Gibbs Seawater Oceanographic Toolbox in Rust"
@@ -15,7 +15,7 @@ keywords = ["oceanography", "seawater"]
 members = ["convert_refdata"]
 
 [dependencies]
-libm = "0.2.1"
+libm = "=0.2.3"
 libc = { version = "0.2", optional = true }
 thiserror = { version = "1.0.24", optional = true }
 

@@ -141,7 +141,7 @@ pub(crate) fn enthalpy_sso_0(p: f64) -> f64 {
 pub(crate) fn hill_ratio_at_sp2(t: f64) -> f64 {
     let sp2 = 2.0;
 
-    let t68: f64 = t * 1.000_24;
+    let t68: f64 = crate::practical_salinity::t68_from_t90(t);
     let ft68: f64 = (t68 - 15.0) / (1.0 + K * (t68 - 15.0));
 
     // Find the initial estimates of Rtx (Rtx0) and of the derivative dSP_dRtx
@@ -196,6 +196,9 @@ mod test_hill_ratio_at_sp2 {
     use super::hill_ratio_at_sp2;
 
     #[test]
+    // These test values were obtained by running GSW-Matlab. It was common
+    // a difference of O(16), so we assumed that the values obtained with
+    // Rust were correct.
     fn example_values() {
         let ratio = hill_ratio_at_sp2(0.);
         assert!((ratio - 0.999_834_364_412_733_2).abs() <= f64::EPSILON);
@@ -205,6 +208,15 @@ mod test_hill_ratio_at_sp2 {
 
         let ratio = hill_ratio_at_sp2(25.);
         assert!((ratio - 1.000_076_483_096_847_2).abs() <= f64::EPSILON);
+
+        let ratio = hill_ratio_at_sp2(30.);
+        assert!((ratio - 1.000_104_961_868_661_5).abs() <= f64::EPSILON,);
+
+        let ratio = hill_ratio_at_sp2(40.);
+        assert!((ratio - 1.000_151_589_022_029_8).abs() <= f64::EPSILON);
+
+        let ratio = hill_ratio_at_sp2(50.);
+        assert!((ratio - 1.000_188_151_345_468_5).abs() <= f64::EPSILON);
     }
 }
 

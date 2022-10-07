@@ -10,7 +10,7 @@ struct DataRef {
     version: String<8>,
     src: String<32>,
     src_md5: String<32>,
-    scalar: FnvIndexMap<String<64>, f64, 2>,
+    scalar: FnvIndexMap<String<64>, f64, 8>,
     data_x: FnvIndexMap<String<64>, Vec<f64, 3>, 2>,
     data2d: FnvIndexMap<String<64>, Vec<Vec<f64, 45>, 3>, 32>,
 }
@@ -450,7 +450,7 @@ fn internal_energy() {
 #[cfg(not(windows))]
 fn dynamic_enthalpy() {
     let mut input =
-        File::open("tests/data/gsw_volume_validation.bin").expect("Unable to open file");
+        File::open("tests/data/gsw_enthalpy_validation.bin").expect("Unable to open file");
     let mut contents = vec![];
     input
         .read_to_end(&mut contents)
@@ -512,6 +512,46 @@ fn sa_from_rho() {
                         .abs()
                         <= tol
                 );
+            }
+        }
+    }
+}
+
+#[test]
+#[cfg(not(windows))]
+fn specvol_second_derivatives() {
+    let mut input =
+        File::open("tests/data/gsw_volume_validation.bin").expect("Unable to open file");
+    let mut contents = vec![];
+    input
+        .read_to_end(&mut contents)
+        .expect("Failed to read content");
+
+    let out: DataRef = from_bytes(&contents).unwrap();
+
+    let p = out.data2d.get(&String::from("p_chck_cast")).unwrap();
+    let sa = out.data2d.get(&String::from("SA_chck_cast")).unwrap();
+    let ct = out.data2d.get(&String::from("CT_chck_cast")).unwrap();
+    let v_sa_sa = out.data2d.get(&String::from("v_SA_SA")).unwrap();
+    let v_sa_ct = out.data2d.get(&String::from("v_SA_CT")).unwrap();
+    let v_ct_ct = out.data2d.get(&String::from("v_CT_CT")).unwrap();
+    let v_sa_p = out.data2d.get(&String::from("v_SA_P")).unwrap();
+    let v_ct_p = out.data2d.get(&String::from("v_CT_P")).unwrap();
+    let tol = if cfg!(feature = "compat") || (f64::EPSILON > 1e-12) {
+        f64::EPSILON
+    } else {
+        1e-12
+    };
+    for i in 0..3 {
+        for j in 0..45 {
+            if !v_sa_sa[i][j].is_nan() {
+                let (dsds, dsdt, dtdt, dsdp, dtdp) =
+                    gsw::volume::specvol_second_derivatives(sa[i][j], ct[i][j], p[i][j]).unwrap();
+                assert!((v_sa_sa[i][j] - dsds).abs() <= tol);
+                assert!((v_sa_ct[i][j] - dsdt).abs() <= tol);
+                assert!((v_ct_ct[i][j] - dtdt).abs() <= tol);
+                assert!((v_sa_p[i][j] - dsdp).abs() <= tol);
+                assert!((v_ct_p[i][j] - dtdp).abs() <= tol);
             }
         }
     }

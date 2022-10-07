@@ -6,7 +6,7 @@ use crate::gsw_internal_funcs::*;
 use crate::gsw_sp_coefficients::*;
 use crate::{Error, Result};
 
-fn t68_from_t90(t90: f64) -> f64 {
+pub(crate) fn t68_from_t90(t90: f64) -> f64 {
     t90 * 1.00024
 }
 
@@ -236,6 +236,37 @@ mod test_sp_from_r {
     }
 }
 
+#[cfg(test)]
+mod test_round_trip {
+    use super::{r_from_sp, sp_from_r};
+
+    #[test]
+    // Check the roundtrip from S_p to R and back to S_p again.
+    fn sp_vs_r() {
+        let sp_values = [0.1, 10.0, 20.0, 25.0, 30.0, 35.0, 40.0];
+        let t_values = [0.0, 10.0, 20.0, 30.0, 40.0];
+        let p_values = [0.0, 10.0, 100.0, 1000.0, 2000.0, 5000.0];
+        // The largest error found was 2.1e-14
+        let tol = 2.2e-14;
+        for sp in sp_values.iter() {
+            for t in t_values.iter() {
+                for p in p_values.iter() {
+                    let sp_back = sp_from_r(r_from_sp(*sp, *t, *p).unwrap(), *t, *p).unwrap();
+                    assert!(
+                        (sp - sp_back).abs() <= tol,
+                        "t:{}, p:{}, sp:{}, sp_back:{}, diff: {:+e}",
+                        t,
+                        p,
+                        sp,
+                        sp_back,
+                        sp_back - sp
+                    );
+                }
+            }
+        }
+    }
+}
+
 #[allow(clippy::manual_range_contains)]
 /// Conductivity ratio from Practical Salinity
 ///
@@ -294,17 +325,17 @@ pub fn r_from_sp(sp: f64, t90: f64, p: f64) -> Result<f64> {
                             + Q8 * x
                             + t68 * (Q9 + x * (Q13 + x * Q18) + t68 * (Q14 + Q19 * x + Q20 * t68))))
     } else if sp >= 0.003 && sp < 0.25 {
-        S0 + x
-            * (S1
-                + S4 * t68
-                + x * (S3 + S7 * t68 + x * (S6 + S11 * t68 + x * (S10 + S16 * t68 + x * S15))))
+        R0 + x
+            * (R1
+                + R4 * t68
+                + x * (R3 + R7 * t68 + x * (R6 + R11 * t68 + x * (R10 + R16 * t68 + x * R15))))
             + t68
-                * (S2
+                * (R2
                     + t68
-                        * (S5
-                            + x * x * (S12 + x * S17)
-                            + S8 * x
-                            + t68 * (S9 + x * (S13 + x * S18) + t68 * (S14 + S19 * x + S20 * t68))))
+                        * (R5
+                            + x * x * (R12 + x * R17)
+                            + R8 * x
+                            + t68 * (R9 + x * (R13 + x * R18) + t68 * (R14 + R19 * x + R20 * t68))))
     // S_p < 0.003 the only possible condition left, thus this is equivalent to
     // if sp < 0.003 {
     } else {
