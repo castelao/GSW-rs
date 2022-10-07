@@ -15,7 +15,7 @@ keywords = ["oceanography", "seawater"]
 members = ["convert_refdata"]
 
 [dependencies]
-libm = "0.2.1"
+libm = "=0.2.3"
 libc = { version = "0.2", optional = true }
 thiserror = { version = "1.0.24", optional = true }
 
