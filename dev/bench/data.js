@@ -1,5 +1,5 @@
 window.BENCHMARK_DATA = {
-  "lastUpdate": 1664770528144,
+  "lastUpdate": 1665123058144,
   "repoUrl": "https://github.com/castelao/GSW-rs",
   "entries": {
     "Rust Benchmark": [
@@ -2723,6 +2723,258 @@ window.BENCHMARK_DATA = {
             "name": "z_from_p",
             "value": 26,
             "range": "± 0",
+            "unit": "ns/iter"
+          }
+        ]
+      },
+      {
+        "commit": {
+          "author": {
+            "email": "guilherme@castelao.net",
+            "name": "Guilherme Castelão",
+            "username": "castelao"
+          },
+          "committer": {
+            "email": "noreply@github.com",
+            "name": "GitHub",
+            "username": "web-flow"
+          },
+          "distinct": true,
+          "id": "8d64637888c2423bbc7cddbdfa241a696be4bb9a",
+          "message": "bugfix: Missing a term in the specvol second derivatives (#46)\n\n* fix: Missing a term in the equation\r\n\r\nIdentified by @PaulMBarker and reported on TEOS-10/GSW-Matlab@38c9635\r\n\r\n* fixing test values due to that missing term\r\n\r\n* Split enthalpy validation dataset\r\n\r\nIt was getting too large to fit in the stack\r\n\r\n* Reducing serialized validation dataset\r\n\r\nIt doesn't have to be so large.\r\n\r\n* Testing roundtrip between S_p & R\r\n\r\n* Validating practical_salinity\r\n\r\n* Validate using R_from_SP from validation dataset\r\n\r\nNote that those values match the output from R_from_SP in Rust.\r\n\r\n* Updating serialized templates\r\n\r\nIncreasing scalar array size\r\n\r\n* Cleaning practical_salinity validtion\r\n\r\n* Allowing t68_from_t90() within crate\r\n\r\n* Validation dataset for practical_salinity module\r\n\r\nThat dataset came from Matlab distribution.\r\n\r\n* Updating validation datasets\r\n\r\nRe-distributing variables to reduce load in the stack.\r\n\r\n* It was missing SP_salinometer & Rt_chck_cast\r\n\r\n* A comment on the largest error that I found\r\n\r\n* Diverting enthalpy tests to the new validation test file\r\n\r\n* Using t68_from_t90(), DRY\r\n\r\n* Extending test values for hill_ratio_at_sp2()\r\n\r\nI was searching for the source of a bug and tried to improve this\r\ncoverage.\r\n\r\n* Ignoring validtion datasets within support crate\r\n\r\nThe bin files in the main library are not ignored.\r\n\r\n* Cleaning empty line\r\n\r\n* test: specvol_second_derivatives()\r\n\r\n* Upgrading validation dataset to 3.06.16\r\n\r\n* Minor change inline doc\r\n\r\n* Validating SP_salinometer()\r\n\r\n* Upgrade to 0.1.1\r\n\r\n* Update Cargo.lock\r\n\r\n* Upgrading minimum supported version to 1.57\r\n\r\n* Renaming constants used on r_from_sp()\r\n\r\nIt looks like the S* were renamed to R*, but the values kept the same.\r\n\r\n* clippy, breaking excessive prevision",
+          "timestamp": "2022-10-06T23:57:19-06:00",
+          "tree_id": "06f4bb8ff1a325cf70cce0f155edb6ffe24fb9e5",
+          "url": "https://github.com/castelao/GSW-rs/commit/8d64637888c2423bbc7cddbdfa241a696be4bb9a"
+        },
+        "date": 1665123056228,
+        "tool": "cargo",
+        "benches": [
+          {
+            "name": "specvol",
+            "value": 45,
+            "range": "± 2",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "alpha",
+            "value": 74,
+            "range": "± 8",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "beta",
+            "value": 74,
+            "range": "± 1",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "specvol_sso_0",
+            "value": 6,
+            "range": "± 0",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "specvol_anom_standard",
+            "value": 53,
+            "range": "± 3",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "specvol_alpha_beta",
+            "value": 208,
+            "range": "± 16",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "rho",
+            "value": 52,
+            "range": "± 4",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "rho_alpha_beta",
+            "value": 208,
+            "range": "± 19",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "sigma0",
+            "value": 26,
+            "range": "± 0",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "sigma1",
+            "value": 51,
+            "range": "± 2",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "sigma2",
+            "value": 52,
+            "range": "± 3",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "sigma3",
+            "value": 48,
+            "range": "± 3",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "sigma4",
+            "value": 51,
+            "range": "± 1",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "cabbeling",
+            "value": 268,
+            "range": "± 21",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "sound_speed",
+            "value": 68,
+            "range": "± 9",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "dynamic_enthalpy",
+            "value": 47,
+            "range": "± 3",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "sa_from_rho",
+            "value": 414,
+            "range": "± 13",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "specvol_first_derivatives",
+            "value": 67,
+            "range": "± 3",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "specvol_first_derivatives_wrt_enthalpy",
+            "value": 142,
+            "range": "± 13",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "specvol_second_derivatives",
+            "value": 263,
+            "range": "± 14",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "specvol_second_derivatives_wrt_enthalpy",
+            "value": 84,
+            "range": "± 5",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "alpha_on_beta",
+            "value": 57,
+            "range": "± 3",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "rho_first_derivatives",
+            "value": 76,
+            "range": "± 5",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "rho_second_derivatives",
+            "value": 203,
+            "range": "± 13",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "thermobaric",
+            "value": 205,
+            "range": "± 9",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "enthalpy",
+            "value": 51,
+            "range": "± 14",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "enthalpy_first_derivatives",
+            "value": 54,
+            "range": "± 2",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "enthalpy_second_derivatives",
+            "value": 50,
+            "range": "± 2",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "enthalpy_diff",
+            "value": 93,
+            "range": "± 4",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "kappa",
+            "value": 62,
+            "range": "± 6",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "internal_energy",
+            "value": 95,
+            "range": "± 4",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "internal_energy_first_derivatives",
+            "value": 170,
+            "range": "± 28",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "internal_energy_second_derivatives",
+            "value": 170,
+            "range": "± 20",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "ct_maxdensity",
+            "value": 781,
+            "range": "± 77",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "sp_from_c",
+            "value": 28,
+            "range": "± 2",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "c_from_sp",
+            "value": 29,
+            "range": "± 0",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "sp_salinometer",
+            "value": 12,
+            "range": "± 1",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "z_from_p",
+            "value": 29,
+            "range": "± 1",
             "unit": "ns/iter"
           }
         ]
