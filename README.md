@@ -2,6 +2,9 @@
 
 GSW for microcontrollers.
 
+Note that we do our best to follow TEOS-10 manual and references, but his
+library is not endorsed by TEOS-10 committee.
+
 ## Talks
 
 We presented about goals and progress (as of Apr 2022) at the
