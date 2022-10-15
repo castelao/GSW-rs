@@ -54,11 +54,15 @@ dual licensed as above, without any additional terms or conditions.
 
 ## Citation
 
+If you use this library we kindly ask to cite all the three following references:
+
 [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.5348561.svg)](https://doi.org/10.5281/zenodo.5348561)
 
-Castelao, G., & Irber, L. (2021). Gibbs Sea Water Oceanographic Toolbox of TEOS-10 implemented in Rust (Version 0.1.1) [Computer software]. https://doi.org/10.5281/zenodo.5348561
+Castelao, G., & Irber, L. (2021). Unofficial Gibbs Sea Water Oceanographic
+Toolbox of TEOS-10 implemented in Rust (Version 0.1.1) [Computer software].
+https://doi.org/10.5281/zenodo.5348561
 
-```
+```text
 @software{Castelao_Gibbs_Sea_Water_2021,
   title = {{Gibbs Sea Water Oceanographic Toolbox of TEOS-10 implemented in Rust}},
   author = {Castelao, Guilherme and Irber, Luiz},
@@ -69,3 +73,12 @@ Castelao, G., & Irber, L. (2021). Gibbs Sea Water Oceanographic Toolbox of TEOS-
   url = {https://github.com/castelao/GSW-rs}
   }
 ```
+
+IOC, SCOR and IAPSO, 2010: The international thermodynamic equation of
+seawater - 2010: Calculation and use of thermodynamic properties.
+Intergovernmental - Oceanographic Commission, Manuals and Guides No. 56,
+UNESCO (English), 196 pp.
+
+McDougall, T.J. and P.M. Barker, 2011: Getting started with TEOS-10 and the
+Gibbs Seawater (GSW) Oceanographic Toolbox, 28pp., SCOR/IAPSO WG127,
+ISBN 978-0-646-55621-5.
