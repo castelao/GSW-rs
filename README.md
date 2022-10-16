@@ -67,7 +67,7 @@ https://doi.org/10.5281/zenodo.5348561
   title = {{Gibbs Sea Water Oceanographic Toolbox of TEOS-10 implemented in Rust}},
   author = {Castelao, Guilherme and Irber, Luiz},
   year = {2021},
-  license = {MIT OR Apache-2.0},month = {8},
+  license = {MIT OR Apache-2.0},
   version = {0.1.1},
   doi = {10.5281/zenodo.5348561},
   url = {https://github.com/castelao/GSW-rs}
