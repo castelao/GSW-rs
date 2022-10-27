@@ -1,10 +1,11 @@
 //! # Gibbs Sea Water
 //!
-//! Gibbs Sea Water Oceanographic Toolbox of TEOS-10, version 3.06.12,
-//! implemented in Rust.
+//! Unofficial Gibbs Sea Water Oceanographic Toolbox of TEOS-10,
+//! based on version 3.06.12, implemented in Rust.
 //!
-//! For the official TEOS-10 documentation and other software implementations,
-//! check: <http://www.teos-10.org>
+//! Note that we do follow TEOS-10 manual and references, but his library is
+//! not endorsed by TEOS-10 committee. For the official TEOS-10 documentation
+//! and other software implementations, check: <http://www.teos-10.org>
 //!
 //! GSW-rs was initially implemented to provide support for embedded
 //! applications, but there is no restrictions on using it in regular
