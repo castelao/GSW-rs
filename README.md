@@ -35,6 +35,36 @@ GSW-rs are:
 For example, to compile it compatible with the official Matlab library:
 cargo build --features compat
 
+## Repository structure
+
+For anyone learning Rust, this repository might be overwhelming. We are doing
+many things here, hence more files and directories that would be strictly
+necessary.
+
+- The `Cargo.toml` and `src` are the fundamental Rust components. The first
+  one contains some metadata describing the crate, while the second one groups
+  the source code. This is the core of the crate.
+  - Note that in `src` we group the modules following the TEOS-10 library
+    card. We also isolate the constants, while avoiding repetition.
+  - The `src/lib.rs` is the starting point of the library.
+  - We split the tests so that those are close to the target functions. Usually
+    all the unit tests would go together somewhere, but here, each function has
+    so many tests that it would be an extra work to debug and maintain. Also,
+    we add refrence cases described in the scientific literature.
+- Validation tests are grouped outside the `src`, in the `tests`, which uses
+  the reference `data`.
+- `convert_refdata` is an auxiliary crate. We don't intend to publish that
+  one since it is only used to support GSW-rs. The GSW-Matlab provides a
+  reference dataset, which we can use to validate our library. Since our goal
+  is to also work with microcontrollers, we have to format that dataset in
+  such a way that it can be used in microcontrollers, thus validated. There
+  you'll find its own `Cargo.toml` and `src`. We use portcard to encdoe it.
+- We use FFI to expose our library, so it can be used outside as if it was a
+  C-library. For instance, to test it, we link the official GSW-Python with our
+  Rust library (GSW-rs) instead of the traditional GSW-C, and run the Python
+  tests. Take a look on `.github/workflows/gsw-python.yml` to see how we link
+  GSW-Python with GSW-rs.
+
 ## License
 
 Licensed under the 3-Clause BSD License ([BSD-3-Clause](LICENSE))
