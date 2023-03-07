@@ -13,12 +13,12 @@ jobs:
       matrix:
         os: [macos-latest, windows-latest, ubuntu-latest]
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
         with:
           repository: "TEOS-10/GSW-Python"
           ref: 63a7747166f243f6eed844ae18c3ac2de54c399e
 
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
         with:
           path: 'src/GSW-rs'
 
@@ -31,7 +31,7 @@ jobs:
         id: rust-version
         run: echo "::set-output name=version::$(cargo -V | head -n1 | awk '{print $2}')"
 
-      - uses: actions/cache@v2
+      - uses: actions/cache@v3
         with:
           path: |
             ~/.cargo/git
@@ -76,7 +76,7 @@ jobs:
           echo "::set-output name=dir::$(pip cache dir)"
 
       - name: pip cache
-        uses: actions/cache@v2
+        uses: actions/cache@v3
         with:
           path: ${{ steps.pip-cache.outputs.dir }}
           key: ${{ runner.os }}-pip-${{ hashFiles('**/setup.py') }}
