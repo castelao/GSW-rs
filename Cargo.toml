@@ -24,7 +24,7 @@ heapless = "0.7"
 inline-c = "0.1"
 postcard = "0.7.0"
 serde = "1.0.126"
-criterion = "0.3.6"
+criterion = "0.4.0"
 # Indirect dependency that address CVE-2022-24713
 regex = "1.5.5"
 
