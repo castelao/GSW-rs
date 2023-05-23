@@ -1052,8 +1052,11 @@ mod test_gibbs {
     }
 }
 
+fn gibbs_ice(nt: u8, np: u8, t: f64, p: f64) -> Result<f64> {
+
+}
+
 /*
-gsw_gibbs_ice
 gsw_SAAR
 gsw_Fdelta
 gsw_deltaSA_atlas
