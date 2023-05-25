@@ -2,6 +2,8 @@
 //!
 //! Functions not intended to be used outside this library
 
+use core::f32::consts::PI;
+
 use crate::gsw_internal_const::{DB2PA, GSW_PU, GSW_SFAC};
 use crate::gsw_sp_coefficients::*;
 use crate::gsw_specvol_coefficients::{V005, V006};
@@ -1055,27 +1057,28 @@ mod test_gibbs {
 
 
 fn gibbs_ice(nt: u8, np: u8, t: f64, p: f64) -> Result<f64> {
-    use num::complex::Complex;
+    // use a complex number crate
+    use num_complex::Complex;
     // some constants that I couldn't find already defined in rust. copied from gsw_internal_const.h:
     const GSW_T0: f64 = 273.15;
     const REC_TT: f64 = 3.660858105139845e-3;
     const REC_PT: f64 = 1.634903221903779e-3;
-    const T1: Complex = Complex::new(3.68017112855051e-2, 5.10878114959572e-2);
-    const T2: Complex = Complex::new(3.37315741065416e-1, 3.35449415919309e-1);
+    const T1: Complex<f64> = Complex::new(3.68017112855051e-2, 5.10878114959572e-2);
+    const T2: Complex<f64> = Complex::new(3.37315741065416e-1, 3.35449415919309e-1);
     const G00: f64 = -6.32020233335886e5;
     const G01: f64 = 6.55022213658955e-1;
     const G02: f64 = -1.89369929326131e-8;
     const G03: f64 = 3.3974612327105304e-15;
     const G04: f64 = -5.564648690589909e-22;
-    const r20: Complex = Complex::new(-7.25974574329220e1, -7.81008427112870e1); // already something named R20?
-    const R21: Complex = Complex::new(-5.57107698030123e-5, 4.64578634580806e-5);
-    const R22: Complex = Complex::new(2.34801409215913e-11, -2.85651142904972e-11);
-    const r1: Complex = Complex::new(4.47050716285388e1, 6.56876847463481e1);
+    const r20: Complex<f64> = Complex::new(-7.25974574329220e1, -7.81008427112870e1); // already something named R20?
+    const R21: Complex<f64> = Complex::new(-5.57107698030123e-5, 4.64578634580806e-5);
+    const R22: Complex<f64> = Complex::new(2.34801409215913e-11, -2.85651142904972e-11);
+    const r1: Complex<f64> = Complex::new(4.47050716285388e1, 6.56876847463481e1);
     const TT: f64 = 273.16;
 
     // declare these initial variables:
     let s0: f64 = -3.32733756492168e3;
-    let tau = Complex::new((t + GSW_T0)*REC_TT, 0);
+    let tau = Complex::new((t + GSW_T0)*REC_TT, 0.0);
     let dzi: f64 = DB2PA*p*REC_PT;
 
     if nt == 0 && np == 0 {
@@ -1089,14 +1092,15 @@ fn gibbs_ice(nt: u8, np: u8, t: f64, p: f64) -> Result<f64> {
 
         let r2 = r20 + dzi*(R21 + R22*dzi);
 
-        // note to self: this is where it all falls apart
+        // note to self: unsure if .ln is the same as log()
         let g = r1*(tau*((1.0 + tau_t1)/(1.0 - tau_t1)).ln()
         + T1*((1.0 - sqtau_t1).ln() - sqtau_t1))
         + r2*(tau*((1.0 + tau_t2).ln()/(1.0 - tau_t2))
         + T2*((1.0 - sqtau_t2).ln() - sqtau_t2));
 
-        return (g0 - TT*(s0*tau - g.re)).re;
+        return Ok((g0 - TT*(s0*tau - g.re)).re);
 
+    // the other if statements just return error for now
     } else if nt == 1 && np == 0 {
 
     } else if nt == 0 && np == 1 {
@@ -1108,10 +1112,9 @@ fn gibbs_ice(nt: u8, np: u8, t: f64, p: f64) -> Result<f64> {
     } else if nt == 0 && np == 2 {
 
     } else {
-        // return the error here
+        // return invalid input error
     }
-    // return result
-    Ok(10.0)
+    Ok(0.0)
 }
 
 /*
