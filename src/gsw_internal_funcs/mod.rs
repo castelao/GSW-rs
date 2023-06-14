@@ -1177,9 +1177,9 @@ fn gibbs_ice(nt: u8, np: u8, t: f64, p: f64) -> Result<f64> {
 
         let r2pp = 2.0*R22*sqrec_pt;
 
-        let g = r2pp * (
-            
-        )
+        // let g = r2pp * (
+
+        // )
 
         let ans = 0.0;
         return Ok(ans);
