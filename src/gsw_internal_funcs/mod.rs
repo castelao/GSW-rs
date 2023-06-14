@@ -2,7 +2,7 @@
 //!
 //! Functions not intended to be used outside this library
 
-use core::f32::consts::PI;
+
 
 use crate::gsw_internal_const::{DB2PA, GSW_PU, GSW_SFAC};
 use crate::gsw_sp_coefficients::*;
@@ -1055,7 +1055,7 @@ mod test_gibbs {
 }
 
 
-
+#[allow(dead_code)]
 fn gibbs_ice(nt: u8, np: u8, t: f64, p: f64) -> Result<f64> {
     // use a complex number crate
     use num_complex::Complex;
@@ -1065,14 +1065,16 @@ fn gibbs_ice(nt: u8, np: u8, t: f64, p: f64) -> Result<f64> {
     const REC_PT: f64 = 1.634903221903779e-3;
     const T1: Complex<f64> = Complex::new(3.68017112855051e-2, 5.10878114959572e-2);
     const T2: Complex<f64> = Complex::new(3.37315741065416e-1, 3.35449415919309e-1);
-    const G00: f64 = -6.32020233335886e5;
+    const G00: f64 = -6.32_020_233_335_886_e5;
     const G01: f64 = 6.55022213658955e-1;
     const G02: f64 = -1.89369929326131e-8;
-    const G03: f64 = 3.3974612327105304e-15;
-    const G04: f64 = -5.564648690589909e-22;
+    const G03: f64 = 3.39_746_123_271_053_e-15; // in the GSW-C library this is 3.39_746_123_271_053_04e-15
+    const G04: f64 = -5.56_464_869_058_991e-22; // in the GSW-C library this is -5.56_464_869_058_990_9e-22
+    // R20 already named
     const r20: Complex<f64> = Complex::new(-7.25974574329220e1, -7.81008427112870e1); // already something named R20?
     const R21: Complex<f64> = Complex::new(-5.57107698030123e-5, 4.64578634580806e-5);
     const R22: Complex<f64> = Complex::new(2.34801409215913e-11, -2.85651142904972e-11);
+    // r1 already named
     const r1: Complex<f64> = Complex::new(4.47050716285388e1, 6.56876847463481e1);
     const TT: f64 = 273.16;
 
@@ -1092,30 +1094,148 @@ fn gibbs_ice(nt: u8, np: u8, t: f64, p: f64) -> Result<f64> {
 
         let r2 = r20 + dzi*(R21 + R22*dzi);
 
-        // note to self: unsure if .ln is the same as log()
-        let g = r1*(tau*((1.0 + tau_t1)/(1.0 - tau_t1)).ln()
-        + T1*((1.0 - sqtau_t1).ln() - sqtau_t1))
-        + r2*(tau*((1.0 + tau_t2).ln()/(1.0 - tau_t2))
-        + T2*((1.0 - sqtau_t2).ln() - sqtau_t2));
+        let g = r1 * (
+            tau*((1.0 + tau_t1)/(1.0 - tau_t1)).ln()
+            + T1 * ((1.0 - sqtau_t1).ln() - sqtau_t1)
+        )
+        + r2 * (
+            (tau*((1.0 + tau_t2)/(1.0 - tau_t2)).ln())
+            + T2*((1.0 - sqtau_t2).ln() - sqtau_t2)
+    );
 
-        return Ok((g0 - TT*(s0*tau - g.re)).re);
+        let ans = (g0 - TT*(s0*tau - g.re)).re;
+
+        return Ok(ans);
 
     // the other if statements just return error for now
     } else if nt == 1 && np == 0 {
 
+        let tau_t1 = tau / T1;
+        let tau_t2 = tau / T2;
+
+        let r2 = r20 + dzi*(R21 + R22*dzi);
+
+        let g = r1 * (
+            ((1.0 + tau_t1)/(1.0 - tau_t1)).ln() - 2.0 * tau_t1
+        ) + r2 * (
+            ((1.0 + tau_t2)/(1.0 - tau_t2)).ln() - 2.0 * tau_t2
+        );
+
+        let ans = -s0 + g.re;
+        return Ok(ans);
+
     } else if nt == 0 && np == 1 {
 
+        let tau_t2 = tau / T2;
+        let sqtau_t2 = tau_t2 * tau_t2;
+
+        let g0p = REC_PT * (G01 + dzi * (2.0 * G02 + dzi * (3.0 * G03 + 4.0 * G04 * dzi)));
+
+        let r2p = REC_PT * (R21 + 2.0 * R22 * dzi);
+
+        let g = r2p * (
+            tau * ((1.0 + tau_t2)/(1.0 - tau_t2)).ln()
+            + T2 * ((1.0 - sqtau_t2).ln() - sqtau_t2)
+        );
+
+        let ans = g0p + TT * g.re;
+        return Ok(ans);
+
     } else if nt == 1 && np == 1 {
+        
+        let tau_t2 = tau / T2;
+
+        let r2p = REC_PT * (R21 + 2.0 * R22 * dzi);
+
+        let g = r2p * (
+            ((1.0 + tau_t2)/(1.0 - tau_t2)).ln() - 2.0 * tau_t2
+        );
+
+        let ans = g.re;
+        return Ok(ans);
 
     } else if nt == 2 && np == 0 {
 
-    } else if nt == 0 && np == 2 {
+        let r2 = r20 + dzi*(R21 + R22*dzi);
 
+        let g = r1 * (
+            1.0/(T1 - tau) + 1.0/(T1 + tau) - 2.0/T1
+        ) + r2 * (
+            1.0/(T2 - tau)
+        );
+
+        let ans = 0.0;
+        return Ok(ans);
+
+    } else if nt == 0 && np == 2 {
+        
+        let sqrec_pt = REC_PT * REC_PT;
+
+        let tau_t2 = tau / T2;
+
+        let g0pp = sqrec_pt * (2.0*G02 + dzi*(6.0*G03 + 12.0*G04*dzi));
+
+        let r2pp = 2.0*R22*sqrec_pt;
+
+        let g = r2pp * (
+            
+        )
+
+        let ans = 0.0;
+        return Ok(ans);
     } else {
-        // return invalid input error
+        Err(Error::Undefined) // return invalid input error
     }
-    Ok(0.0)
 }
+
+#[cfg(test)]
+mod test_gibbs_ice {
+    use num_complex::ComplexFloat;
+
+    use crate::gsw_internal_funcs::{gibbs_ice};
+    use crate::{Error, Result};
+
+    #[test]
+    fn exploration() {
+        assert!((gibbs_ice(0, 0, 0.0, 0.0).unwrap() - 98.2676).abs() < f64::EPSILON); // originally 98.2676
+        assert!((gibbs_ice(0, 0, 4.0, 10.0).unwrap() - 5.029179813607595e3).abs() < f64::EPSILON); // this is super close
+    }
+
+    #[test]
+    #[should_panic]
+    fn out_of_bounds() {
+    let x = gibbs_ice(5, 5, 0.0, 0.0).unwrap();
+    }
+
+    #[test]
+    // NaN input results in NaN output.
+    // Other libraries using GSW-rs might rely on this behavior to propagate
+    // and handle invalid elements.
+    fn nan() {
+        let v = gibbs_ice(0, 0, 0.0, f64::NAN);
+        assert!(v.unwrap().is_nan());
+
+        let v = gibbs_ice(0, 0, f64::NAN, 0.0);
+        assert!(v.unwrap().is_nan());
+
+        let v = gibbs_ice(0, 0, f64::NAN, f64::NAN);
+        assert!(v.unwrap().is_nan());
+    }
+
+    #[test]
+    fn test_ln() {
+        // all these pass. ln is precise on complex numbers
+        use num_complex::Complex;
+        let e = Complex::new( 2.718281828459045, 0.0);
+        assert!((e.ln().re - 1.0).abs() < f64::EPSILON);
+
+        let num = Complex::new(1.0, 1.0);
+        let log = num.ln();
+        assert!((log.re - 0.3465735902799726).abs() < f64::EPSILON);
+        assert!((log.im - 0.7853981633974483).abs() < f64::EPSILON);
+    }
+}
+
 
 /*
 gsw_SAAR
