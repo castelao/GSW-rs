@@ -1104,10 +1104,8 @@ fn gibbs_ice(nt: u8, np: u8, t: f64, p: f64) -> Result<f64> {
     );
 
         let ans = (g0 - TT*(s0*tau - g.re)).re;
-
         return Ok(ans);
 
-    // the other if statements just return error for now
     } else if nt == 1 && np == 0 {
 
         let tau_t1 = tau / T1;
@@ -1154,9 +1152,11 @@ fn gibbs_ice(nt: u8, np: u8, t: f64, p: f64) -> Result<f64> {
         let ans = g.re;
         return Ok(ans);
 
-    } else if nt == 2 && np == 0 {
+    } else if nt == 2 && np == 0 { // start to rewrite without num-complex
 
         let r2 = R20_GIBBS_ICE + dzi*(R21 + R22*dzi);
+        let r2_re: f64 = R20_GIBBS_ICE.re + dzi *(R21.re + R22.re*dzi);
+        let r2_im: f64 = R20_GIBBS_ICE.im + dzi * (R21.im + R22.im*dzi);
 
         let g = R1_GIBBS_ICE * (
             1.0/(T1 - tau) + 1.0/(T1 + tau) - 2.0/T1
@@ -1164,7 +1164,28 @@ fn gibbs_ice(nt: u8, np: u8, t: f64, p: f64) -> Result<f64> {
             1.0/(T2 - tau)
         );
 
-        let ans = REC_TT * g.re;
+        // define helper variables
+        let a = T1.re - tau.re;
+        let b = T1.im - tau.im;
+        let c = T1.re + tau.re;
+        let d = T1.im + tau.im;
+        let e = T1.re;
+        let f = T1.im;
+        let h = T2.re - tau.re;
+        let j = T2.im - tau.im;
+
+        let g_re = (R1_GIBBS_ICE * (
+            1.0/(T1 - tau) + 1.0/(T1 + tau) - 2.0/T1
+        )).re + r2.re * (T2.re + tau.re);
+
+        // let g_re: f64 = R1_GIBBS_ICE.re * (
+        //     a/(a.powi(2) + b.powi(2)) + c/(c.powi(2) + d.powi(2)) - 2.0 * e/(e.powi(2) + f.powi(2))
+        // ) - R1_GIBBS_ICE.im * (
+        //     -b/(a.powi(2) + b.powi(2)) -d/(c.powi(2) + d.powi(2)) -2.0*f/(e.powi(2) + f.powi(2))
+        // )
+        // + (r2.re * h + r2.im * j) / (h.powi(2) + j.powi(2));
+
+        let ans = REC_TT * g_re;
         return Ok(ans);
 
     } else if nt == 0 && np == 2 {
