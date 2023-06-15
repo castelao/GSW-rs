@@ -1057,24 +1057,24 @@ mod test_gibbs {
 
 #[allow(dead_code)]
 fn gibbs_ice(nt: u8, np: u8, t: f64, p: f64) -> Result<f64> {
-    // use a complex number crate
+    // use a complex number crate. eventually replaced by calculations by hand
     use num_complex::Complex;
-    // some constants that I couldn't find already defined in rust. copied from gsw_internal_const.h:
+
     const GSW_T0: f64 = 273.15;
     const REC_TT: f64 = 3.660858105139845e-3;
     const REC_PT: f64 = 1.634903221903779e-3;
     const T1: Complex<f64> = Complex::new(3.68017112855051e-2, 5.10878114959572e-2);
     const T2: Complex<f64> = Complex::new(3.37315741065416e-1, 3.35449415919309e-1);
-    const G00: f64 = -6.32_020_233_335_886_e5;
+    const G00: f64 = -6.32020233335886e5;
     const G01: f64 = 6.55022213658955e-1;
     const G02: f64 = -1.89369929326131e-8;
-    const G03: f64 = 3.39_746_123_271_053_e-15; // in the GSW-C library this is 3.39_746_123_271_053_04e-15
-    const G04: f64 = -5.56_464_869_058_991e-22; // in the GSW-C library this is -5.56_464_869_058_990_9e-22
+    const G03: f64 = 3.39746123271053e-15; // in the GSW-C library this is 3.39_746_123_271_053_04e-15
+    const G04: f64 = -5.56464869058991e-22; // in the GSW-C library this is -5.56_464_869_058_990_9e-22
     // R20 already named
     const R20_GIBBS_ICE: Complex<f64> = Complex::new(-7.25974574329220e1, -7.81008427112870e1); // already something named R20?
     const R21: Complex<f64> = Complex::new(-5.57107698030123e-5, 4.64578634580806e-5);
     const R22: Complex<f64> = Complex::new(2.34801409215913e-11, -2.85651142904972e-11);
-    // r1 already named
+    // R1 already named
     const R1_GIBBS_ICE: Complex<f64> = Complex::new(4.47050716285388e1, 6.56876847463481e1);
     const TT: f64 = 273.16;
 
