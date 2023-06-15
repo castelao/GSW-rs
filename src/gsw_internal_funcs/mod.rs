@@ -1071,11 +1071,11 @@ fn gibbs_ice(nt: u8, np: u8, t: f64, p: f64) -> Result<f64> {
     const G03: f64 = 3.39_746_123_271_053_e-15; // in the GSW-C library this is 3.39_746_123_271_053_04e-15
     const G04: f64 = -5.56_464_869_058_991e-22; // in the GSW-C library this is -5.56_464_869_058_990_9e-22
     // R20 already named
-    const r20: Complex<f64> = Complex::new(-7.25974574329220e1, -7.81008427112870e1); // already something named R20?
+    const R20_GIBBS_ICE: Complex<f64> = Complex::new(-7.25974574329220e1, -7.81008427112870e1); // already something named R20?
     const R21: Complex<f64> = Complex::new(-5.57107698030123e-5, 4.64578634580806e-5);
     const R22: Complex<f64> = Complex::new(2.34801409215913e-11, -2.85651142904972e-11);
     // r1 already named
-    const r1: Complex<f64> = Complex::new(4.47050716285388e1, 6.56876847463481e1);
+    const R1_GIBBS_ICE: Complex<f64> = Complex::new(4.47050716285388e1, 6.56876847463481e1);
     const TT: f64 = 273.16;
 
     // declare these initial variables:
@@ -1092,9 +1092,9 @@ fn gibbs_ice(nt: u8, np: u8, t: f64, p: f64) -> Result<f64> {
 
         let g0: f64 = G00 + dzi * (G01 + dzi * (G02 + dzi * (G03 + dzi * G04)));
 
-        let r2 = r20 + dzi*(R21 + R22*dzi);
+        let r2 = R20_GIBBS_ICE + dzi*(R21 + R22*dzi);
 
-        let g = r1 * (
+        let g = R1_GIBBS_ICE * (
             tau*((1.0 + tau_t1)/(1.0 - tau_t1)).ln()
             + T1 * ((1.0 - sqtau_t1).ln() - sqtau_t1)
         )
@@ -1113,9 +1113,9 @@ fn gibbs_ice(nt: u8, np: u8, t: f64, p: f64) -> Result<f64> {
         let tau_t1 = tau / T1;
         let tau_t2 = tau / T2;
 
-        let r2 = r20 + dzi*(R21 + R22*dzi);
+        let r2 = R20_GIBBS_ICE + dzi*(R21 + R22*dzi);
 
-        let g = r1 * (
+        let g = R1_GIBBS_ICE * (
             ((1.0 + tau_t1)/(1.0 - tau_t1)).ln() - 2.0 * tau_t1
         ) + r2 * (
             ((1.0 + tau_t2)/(1.0 - tau_t2)).ln() - 2.0 * tau_t2
@@ -1156,15 +1156,15 @@ fn gibbs_ice(nt: u8, np: u8, t: f64, p: f64) -> Result<f64> {
 
     } else if nt == 2 && np == 0 {
 
-        let r2 = r20 + dzi*(R21 + R22*dzi);
+        let r2 = R20_GIBBS_ICE + dzi*(R21 + R22*dzi);
 
-        let g = r1 * (
+        let g = R1_GIBBS_ICE * (
             1.0/(T1 - tau) + 1.0/(T1 + tau) - 2.0/T1
         ) + r2 * (
             1.0/(T2 - tau)
         );
 
-        let ans = 0.0;
+        let ans = REC_TT * g.re;
         return Ok(ans);
 
     } else if nt == 0 && np == 2 {
