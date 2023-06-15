@@ -1194,14 +1194,12 @@ fn gibbs_ice(nt: u8, np: u8, t: f64, p: f64) -> Result<f64> {
 #[cfg(test)]
 mod test_gibbs_ice {
 
-    use num_complex::ComplexFloat;
-
     use crate::gsw_internal_funcs::{gibbs_ice};
     use crate::Error;
 
 
     #[test]
-    fn exploration() {
+    fn check_values() {
         // answers have not been checked for correctness, but are outputs of the function using num-complex
         // (nt, np, ans)
         let answers = [
@@ -1213,7 +1211,7 @@ mod test_gibbs_ice {
             (0, 2, -1.2848482463976177E-13)
         ];
         for (nt, np, ans) in answers.iter() {
-            assert!((gibbs_ice(*nt, *np, 0.0, 0.0).unwrap() - *ans).abs() < f64::EPSILON);
+            assert!((gibbs_ice(*nt, *np, 0.0, 0.0).unwrap() - *ans).abs() < f64::EPSILON, "nt = {}, np = {}, ans = {}", nt, np, ans);
         }
         //assert!((gibbs_ice(0, 0, 4.0, 10.0).unwrap() - 5.029179813607595e3).abs() < f64::EPSILON); // this is super close
     }
