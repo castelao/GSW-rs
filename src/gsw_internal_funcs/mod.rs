@@ -1083,16 +1083,17 @@ fn gibbs_ice(nt: u8, np: u8, t: f64, p: f64) -> Result<f64> {
     let tau = Complex::new((t + GSW_T0)*REC_TT, 0.0);
     let dzi: f64 = DB2PA*p*REC_PT;
 
+    // pulling these constants out of the if statements to not be redundant
+    let tau_t1 = tau / T1;
+    let sqtau_t1 = tau_t1*tau_t1;
+    let tau_t2 = tau / T2;
+    let sqtau_t2 = tau_t2*tau_t2;
+    let r2 = R20_GIBBS_ICE + dzi*(R21 + R22*dzi);
+    let r2p = REC_PT * (R21 + 2.0 * R22 * dzi);
+
     if nt == 0 && np == 0 {
 
-        let tau_t1 = tau / T1;
-        let sqtau_t1 = tau_t1*tau_t1;
-        let tau_t2 = tau / T2;
-        let sqtau_t2 = tau_t2*tau_t2;
-
         let g0: f64 = G00 + dzi * (G01 + dzi * (G02 + dzi * (G03 + dzi * G04)));
-
-        let r2 = R20_GIBBS_ICE + dzi*(R21 + R22*dzi);
 
         let g = R1_GIBBS_ICE * (
             tau*((1.0 + tau_t1)/(1.0 - tau_t1)).ln()
@@ -1108,11 +1109,6 @@ fn gibbs_ice(nt: u8, np: u8, t: f64, p: f64) -> Result<f64> {
 
     } else if nt == 1 && np == 0 {
 
-        let tau_t1 = tau / T1;
-        let tau_t2 = tau / T2;
-
-        let r2 = R20_GIBBS_ICE + dzi*(R21 + R22*dzi);
-
         let g = R1_GIBBS_ICE * (
             ((1.0 + tau_t1)/(1.0 - tau_t1)).ln() - 2.0 * tau_t1
         ) + r2 * (
@@ -1124,12 +1120,7 @@ fn gibbs_ice(nt: u8, np: u8, t: f64, p: f64) -> Result<f64> {
 
     } else if nt == 0 && np == 1 {
 
-        let tau_t2 = tau / T2;
-        let sqtau_t2 = tau_t2 * tau_t2;
-
         let g0p = REC_PT * (G01 + dzi * (2.0 * G02 + dzi * (3.0 * G03 + 4.0 * G04 * dzi)));
-
-        let r2p = REC_PT * (R21 + 2.0 * R22 * dzi);
 
         let g = r2p * (
             tau * ((1.0 + tau_t2)/(1.0 - tau_t2)).ln()
@@ -1140,10 +1131,6 @@ fn gibbs_ice(nt: u8, np: u8, t: f64, p: f64) -> Result<f64> {
         return Ok(ans);
 
     } else if nt == 1 && np == 1 {
-        
-        let tau_t2 = tau / T2;
-
-        let r2p = REC_PT * (R21 + 2.0 * R22 * dzi);
 
         let g = r2p * (
             ((1.0 + tau_t2)/(1.0 - tau_t2)).ln() - 2.0 * tau_t2
@@ -1153,10 +1140,6 @@ fn gibbs_ice(nt: u8, np: u8, t: f64, p: f64) -> Result<f64> {
         return Ok(ans);
 
     } else if nt == 2 && np == 0 { // start to rewrite without num-complex
-
-        let r2 = R20_GIBBS_ICE + dzi*(R21 + R22*dzi);
-        let r2_re: f64 = R20_GIBBS_ICE.re + dzi *(R21.re + R22.re*dzi);
-        let r2_im: f64 = R20_GIBBS_ICE.im + dzi * (R21.im + R22.im*dzi);
 
         let g = R1_GIBBS_ICE * (
             1.0/(T1 - tau) + 1.0/(T1 + tau) - 2.0/T1
@@ -1185,15 +1168,12 @@ fn gibbs_ice(nt: u8, np: u8, t: f64, p: f64) -> Result<f64> {
         // )
         // + (r2.re * h + r2.im * j) / (h.powi(2) + j.powi(2));
 
-        let ans = REC_TT * g_re;
+        let ans = REC_TT * g.re;
         return Ok(ans);
 
     } else if nt == 0 && np == 2 {
         
         let sqrec_pt = REC_PT * REC_PT;
-
-        let tau_t2 = tau / T2;
-        let sqtau_t2 = tau_t2 * tau_t2;
 
         let g0pp = sqrec_pt * (2.0*G02 + dzi*(6.0*G03 + 12.0*G04*dzi));
 
