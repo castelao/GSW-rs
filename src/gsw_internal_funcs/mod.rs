@@ -1218,9 +1218,11 @@ mod test_gibbs_ice {
     }
 
     #[test]
-    #[should_panic]
     fn out_of_bounds() {
-        let x = gibbs_ice(5, 5, 0.0, 0.0).unwrap();
+        match gibbs_ice(0, 3, 0.0, 0.0) {
+            Err(Error::OutOfBounds) => (),
+            _ => panic!("error should be OutOfBounds")
+        }
     }
 
     #[test]
