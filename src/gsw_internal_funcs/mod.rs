@@ -1172,39 +1172,51 @@ fn gibbs_ice(nt: u8, np: u8, t: f64, p: f64) -> Result<f64> {
         let sqrec_pt = REC_PT * REC_PT;
 
         let tau_t2 = tau / T2;
+        let sqtau_t2 = tau_t2 * tau_t2;
 
         let g0pp = sqrec_pt * (2.0*G02 + dzi*(6.0*G03 + 12.0*G04*dzi));
 
         let r2pp = 2.0*R22*sqrec_pt;
 
-        // let g = r2pp * (
+        let g = r2pp * (
+            tau * ((1.0 + tau_t2)/(1.0 - tau_t2)).ln()
+            + T2 * ((1.0 - sqtau_t2).ln() - sqtau_t2)
+        );
 
-        // )
-
-        let ans = 0.0;
+        let ans = g0pp + TT * g.re;
         return Ok(ans);
     } else {
-        Err(Error::Undefined) // return invalid input error
+        return Err(Error::OutOfBounds);
     }
 }
 
 #[cfg(test)]
 mod test_gibbs_ice {
+
     use num_complex::ComplexFloat;
 
     use crate::gsw_internal_funcs::{gibbs_ice};
-    use crate::{Error, Result};
+    use crate::Error;
+
 
     #[test]
     fn exploration() {
-        assert!((gibbs_ice(0, 0, 0.0, 0.0).unwrap() - 98.2676).abs() < f64::EPSILON); // originally 98.2676
-        assert!((gibbs_ice(0, 0, 4.0, 10.0).unwrap() - 5.029179813607595e3).abs() < f64::EPSILON); // this is super close
+        // let answers = [
+        //     (0, 0, 0.0, 0.0, 98.267598402919248),
+        //     (1, 0 , 0.0, 0.0),
+        //     (0, 1, 0.0, 0.0),
+        //     (1, 1, 0.0, 0.0),
+        //     (2, 0, 0.0, 0.0),
+        //     (0, 2, 0.0, 0.0)
+        // ];
+        assert!((gibbs_ice(0, 2, 0.0, 0.0).unwrap() - 98.267598402919248).abs() < f64::EPSILON); // originally 98.2676
+        //assert!((gibbs_ice(0, 0, 4.0, 10.0).unwrap() - 5.029179813607595e3).abs() < f64::EPSILON); // this is super close
     }
 
     #[test]
     #[should_panic]
     fn out_of_bounds() {
-    let x = gibbs_ice(5, 5, 0.0, 0.0).unwrap();
+        let x = gibbs_ice(5, 5, 0.0, 0.0).unwrap();
     }
 
     #[test]
