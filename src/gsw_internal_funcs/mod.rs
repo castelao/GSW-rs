@@ -1201,15 +1201,19 @@ mod test_gibbs_ice {
 
     #[test]
     fn exploration() {
-        // let answers = [
-        //     (0, 0, 0.0, 0.0, 98.267598402919248),
-        //     (1, 0 , 0.0, 0.0),
-        //     (0, 1, 0.0, 0.0),
-        //     (1, 1, 0.0, 0.0),
-        //     (2, 0, 0.0, 0.0),
-        //     (0, 2, 0.0, 0.0)
-        // ];
-        assert!((gibbs_ice(0, 2, 0.0, 0.0).unwrap() - 98.267598402919248).abs() < f64::EPSILON); // originally 98.2676
+        // answers have not been checked for correctness, but are outputs of the function using num-complex
+        // (nt, np, ans)
+        let answers = [
+            (0, 0, 98.267598402919248),
+            (1, 0 , 1220.7886612999528),
+            (0, 1, 0.0010908434429264351),
+            (1, 1, 1.7436082496084962E-7),
+            (2, 0, -9.0784284079463049),
+            (0, 2, -1.2848482463976177E-13)
+        ];
+        for (nt, np, ans) in answers.iter() {
+            assert!((gibbs_ice(*nt, *np, 0.0, 0.0).unwrap() - *ans).abs() < f64::EPSILON);
+        }
         //assert!((gibbs_ice(0, 0, 4.0, 10.0).unwrap() - 5.029179813607595e3).abs() < f64::EPSILON); // this is super close
     }
 
