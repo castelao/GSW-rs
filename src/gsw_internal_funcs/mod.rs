@@ -1159,7 +1159,11 @@ fn gibbs_ice(nt: u8, np: u8, t: f64, p: f64) -> Result<f64> {
 
         let g_re = (R1_GIBBS_ICE * (
             1.0/(T1 - tau) + 1.0/(T1 + tau) - 2.0/T1
-        )).re + r2.re * (T2.re + tau.re);
+        )).re + r2.re * (
+            h/(h.powi(2) + j.powi(2))
+        ) + r2.im * (
+            j/(h.powi(2) + j.powi(2))
+        );
 
         // let g_re: f64 = R1_GIBBS_ICE.re * (
         //     a/(a.powi(2) + b.powi(2)) + c/(c.powi(2) + d.powi(2)) - 2.0 * e/(e.powi(2) + f.powi(2))
@@ -1168,7 +1172,7 @@ fn gibbs_ice(nt: u8, np: u8, t: f64, p: f64) -> Result<f64> {
         // )
         // + (r2.re * h + r2.im * j) / (h.powi(2) + j.powi(2));
 
-        let ans = REC_TT * g.re;
+        let ans = REC_TT * g_re;
         return Ok(ans);
 
     } else if nt == 0 && np == 2 {
