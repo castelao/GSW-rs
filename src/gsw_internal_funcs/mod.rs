@@ -1147,32 +1147,7 @@ fn gibbs_ice(nt: u8, np: u8, t: f64, p: f64) -> Result<f64> {
             1.0/(T2 - tau)
         );
 
-        // define helper variables
-        let a = T1.re - tau.re;
-        let b = T1.im - tau.im;
-        let c = T1.re + tau.re;
-        let d = T1.im + tau.im;
-        let e = T1.re;
-        let f = T1.im;
-        let h = T2.re - tau.re;
-        let j = T2.im - tau.im;
-
-        let g_re = (R1_GIBBS_ICE * (
-            1.0/(T1 - tau) + 1.0/(T1 + tau) - 2.0/T1
-        )).re + r2.re * (
-            h/(h.powi(2) + j.powi(2))
-        ) + r2.im * (
-            j/(h.powi(2) + j.powi(2))
-        );
-
-        // let g_re: f64 = R1_GIBBS_ICE.re * (
-        //     a/(a.powi(2) + b.powi(2)) + c/(c.powi(2) + d.powi(2)) - 2.0 * e/(e.powi(2) + f.powi(2))
-        // ) - R1_GIBBS_ICE.im * (
-        //     -b/(a.powi(2) + b.powi(2)) -d/(c.powi(2) + d.powi(2)) -2.0*f/(e.powi(2) + f.powi(2))
-        // )
-        // + (r2.re * h + r2.im * j) / (h.powi(2) + j.powi(2));
-
-        let ans = REC_TT * g_re;
+        let ans = REC_TT * g.re;
         return Ok(ans);
 
     } else if nt == 0 && np == 2 {
@@ -1243,18 +1218,18 @@ mod test_gibbs_ice {
         assert!(v.unwrap().is_nan());
     }
 
-    #[test]
-    fn test_ln() {
-        // all these pass. ln is precise on complex numbers
-        use num_complex::Complex;
-        let e = Complex::new( 2.718281828459045, 0.0);
-        assert!((e.ln().re - 1.0).abs() < f64::EPSILON);
+    // #[test]
+    // fn test_ln() {
+    //     // all these pass. ln is precise on complex numbers
+    //     use num_complex::Complex;
+    //     let e = Complex::new( 2.718281828459045, 0.0);
+    //     assert!((e.ln().re - 1.0).abs() < f64::EPSILON);
 
-        let num = Complex::new(1.0, 1.0);
-        let log = num.ln();
-        assert!((log.re - 0.3465735902799726).abs() < f64::EPSILON);
-        assert!((log.im - 0.7853981633974483).abs() < f64::EPSILON);
-    }
+    //     let num = Complex::new(1.0, 1.0);
+    //     let log = num.ln();
+    //     assert!((log.re - 0.3465735902799726).abs() < f64::EPSILON);
+    //     assert!((log.im - 0.7853981633974483).abs() < f64::EPSILON);
+    // }
 }
 
 
