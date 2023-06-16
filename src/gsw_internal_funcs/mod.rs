@@ -1061,25 +1061,25 @@ fn gibbs_ice(nt: u8, np: u8, t: f64, p: f64) -> Result<f64> {
     use num_complex::Complex;
 
     const GSW_T0: f64 = 273.15;
-    const REC_TT: f64 = 3.660858105139845e-3;
-    const REC_PT: f64 = 1.634903221903779e-3;
-    const T1: Complex<f64> = Complex::new(3.68017112855051e-2, 5.10878114959572e-2);
-    const T2: Complex<f64> = Complex::new(3.37315741065416e-1, 3.35449415919309e-1);
-    const G00: f64 = -6.32020233335886e5;
-    const G01: f64 = 6.55022213658955e-1;
-    const G02: f64 = -1.89369929326131e-8;
-    const G03: f64 = 3.39746123271053e-15; // in the GSW-C library this is 3.39_746_123_271_053_04e-15
-    const G04: f64 = -5.56464869058991e-22; // in the GSW-C library this is -5.56_464_869_058_990_9e-22
+    const REC_TT: f64 = 3.660_858_105_139_845_e-3;
+    const REC_PT: f64 = 1.634_903_221_903_779_e-3;
+    const T1: Complex<f64> = Complex::new(3.680_171_128_550_51_e-2, 5.108_781_149_595_72_e-2);
+    const T2: Complex<f64> = Complex::new(3.373_157_410_654_16_e-1, 3.354_494_159_193_09_e-1);
+    const G00: f64 = -6.320_202_333_358_86_e5;
+    const G01: f64 = 6.550_222_136_589_55_e-1;
+    const G02: f64 = -1.893_699_293_261_31_e-8;
+    const G03: f64 = 3.397_461_232_710_53_e-15; // in the GSW-C library this is 3.39_746_123_271_053_04e-15
+    const G04: f64 = -5.564_648_690_589_91_e-22; // in the GSW-C library this is -5.56_464_869_058_990_9e-22
     // R20 already named
-    const R20_GIBBS_ICE: Complex<f64> = Complex::new(-7.25974574329220e1, -7.81008427112870e1); // already something named R20?
-    const R21: Complex<f64> = Complex::new(-5.57107698030123e-5, 4.64578634580806e-5);
-    const R22: Complex<f64> = Complex::new(2.34801409215913e-11, -2.85651142904972e-11);
+    const R20_GIBBS_ICE: Complex<f64> = Complex::new(-7.259_745_743_292_20_e1, -7.810_084_271_128_70_e1); // already something named R20?
+    const R21: Complex<f64> = Complex::new(-5.571_076_980_301_23_e-5, 4.645_786_345_808_06_e-5);
+    const R22: Complex<f64> = Complex::new(2.348_014_092_159_13_e-11, -2.856_511_429_049_72_e-11);
     // R1 already named
-    const R1_GIBBS_ICE: Complex<f64> = Complex::new(4.47050716285388e1, 6.56876847463481e1);
+    const R1_GIBBS_ICE: Complex<f64> = Complex::new(4.470_507_162_853_88_e1, 6.568_768_474_634_81_e1);
     const TT: f64 = 273.16;
 
     // declare these initial variables:
-    let s0: f64 = -3.32733756492168e3;
+    let s0: f64 = -3.327_337_564_921_68_e3;
     let tau = Complex::new((t + GSW_T0)*REC_TT, 0.0);
     let dzi: f64 = DB2PA*p*REC_PT;
 
