@@ -1054,7 +1054,23 @@ mod test_gibbs {
     }
 }
 
-
+/// Ice specific Gibbs energy and derivatives up to order 2.
+/// 
+/// # Arguments
+/// - `nt`: order of t derivative \[integers 0, 1, or 2\]
+/// - `np`: order of p derivative \[integers 0, 1, or 2\]
+/// - `t`: in-situ temoerature (ITS-90) \[deg C\]
+/// - `p`: sea pressure \[dbar\]
+/// 
+/// # Returns
+/// `gibbs_ice` : specific gibbs energy of ice or its derivatives
+///     - gibbs energy in \[J/kg\]
+///     - temperature derivatives in: \[(J/kg) (K)^(-nt)\]
+///     - pressure derivatives in: \[(J/kg) (Pa)^(-np)\]
+///     - mixed derivatives in \[(J/kg) (K)^(-nt) (Pa)^(-np)\]
+/// 
+/// # Raises
+/// `OutOfBounds`: invalid input for either nt or np
 #[allow(dead_code)]
 fn gibbs_ice(nt: u8, np: u8, t: f64, p: f64) -> Result<f64> {
     // use a complex number crate. eventually replaced by calculations by hand
