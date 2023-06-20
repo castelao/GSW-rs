@@ -1218,18 +1218,6 @@ mod test_gibbs_ice {
         assert!(v.unwrap().is_nan());
     }
 
-    // #[test]
-    // fn test_ln() {
-    //     // all these pass. ln is precise on complex numbers
-    //     use num_complex::Complex;
-    //     let e = Complex::new( 2.718281828459045, 0.0);
-    //     assert!((e.ln().re - 1.0).abs() < f64::EPSILON);
-
-    //     let num = Complex::new(1.0, 1.0);
-    //     let log = num.ln();
-    //     assert!((log.re - 0.3465735902799726).abs() < f64::EPSILON);
-    //     assert!((log.im - 0.7853981633974483).abs() < f64::EPSILON);
-    // }
 }
 
 
