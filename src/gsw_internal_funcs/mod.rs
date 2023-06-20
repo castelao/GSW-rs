@@ -1119,7 +1119,7 @@ fn gibbs_ice(nt: u8, np: u8, t: f64, p: f64) -> Result<f64> {
     );
 
         let ans = (g0 - TT*(s0*tau - g.re)).re;
-        return Ok(ans);
+        Ok(ans)
 
     } else if nt == 1 && np == 0 {
 
@@ -1130,7 +1130,7 @@ fn gibbs_ice(nt: u8, np: u8, t: f64, p: f64) -> Result<f64> {
         );
 
         let ans = -s0 + g.re;
-        return Ok(ans);
+        Ok(ans)
 
     } else if nt == 0 && np == 1 {
 
@@ -1142,7 +1142,7 @@ fn gibbs_ice(nt: u8, np: u8, t: f64, p: f64) -> Result<f64> {
         );
 
         let ans = g0p + TT * g.re;
-        return Ok(ans);
+        Ok(ans)
 
     } else if nt == 1 && np == 1 {
 
@@ -1151,7 +1151,7 @@ fn gibbs_ice(nt: u8, np: u8, t: f64, p: f64) -> Result<f64> {
         );
 
         let ans = g.re;
-        return Ok(ans);
+        Ok(ans)
 
     } else if nt == 2 && np == 0 { // start to rewrite without num-complex
 
@@ -1162,7 +1162,7 @@ fn gibbs_ice(nt: u8, np: u8, t: f64, p: f64) -> Result<f64> {
         );
 
         let ans = REC_TT * g.re;
-        return Ok(ans);
+        Ok(ans)
 
     } else if nt == 0 && np == 2 {
         
@@ -1178,9 +1178,9 @@ fn gibbs_ice(nt: u8, np: u8, t: f64, p: f64) -> Result<f64> {
         );
 
         let ans = g0pp + TT * g.re;
-        return Ok(ans);
+        Ok(ans)
     } else {
-        return Err(Error::OutOfBounds);
+        Err(Error::OutOfBounds)
     }
 }
 
