@@ -1118,8 +1118,7 @@ fn gibbs_ice(nt: u8, np: u8, t: f64, p: f64) -> Result<f64> {
             + T2*((1.0 - sqtau_t2).ln() - sqtau_t2)
     );
 
-        let ans = (g0 - TT*(s0*tau - g.re)).re;
-        Ok(ans)
+        Ok((g0 - TT*(s0*tau - g.re)).re)
 
     } else if nt == 1 && np == 0 {
 
@@ -1129,8 +1128,7 @@ fn gibbs_ice(nt: u8, np: u8, t: f64, p: f64) -> Result<f64> {
             ((1.0 + tau_t2)/(1.0 - tau_t2)).ln() - 2.0 * tau_t2
         );
 
-        let ans = -s0 + g.re;
-        Ok(ans)
+        Ok(-s0 + g.re)
 
     } else if nt == 0 && np == 1 {
 
@@ -1141,8 +1139,7 @@ fn gibbs_ice(nt: u8, np: u8, t: f64, p: f64) -> Result<f64> {
             + T2 * ((1.0 - sqtau_t2).ln() - sqtau_t2)
         );
 
-        let ans = g0p + TT * g.re;
-        Ok(ans)
+        Ok(g0p + TT * g.re)
 
     } else if nt == 1 && np == 1 {
 
@@ -1150,8 +1147,7 @@ fn gibbs_ice(nt: u8, np: u8, t: f64, p: f64) -> Result<f64> {
             ((1.0 + tau_t2)/(1.0 - tau_t2)).ln() - 2.0 * tau_t2
         );
 
-        let ans = g.re;
-        Ok(ans)
+        Ok(g.re)
 
     } else if nt == 2 && np == 0 { // start to rewrite without num-complex
 
@@ -1161,8 +1157,7 @@ fn gibbs_ice(nt: u8, np: u8, t: f64, p: f64) -> Result<f64> {
             1.0/(T2 - tau)
         );
 
-        let ans = REC_TT * g.re;
-        Ok(ans)
+        Ok(REC_TT * g.re)
 
     } else if nt == 0 && np == 2 {
         
@@ -1177,8 +1172,8 @@ fn gibbs_ice(nt: u8, np: u8, t: f64, p: f64) -> Result<f64> {
             + T2 * ((1.0 - sqtau_t2).ln() - sqtau_t2)
         );
 
-        let ans = g0pp + TT * g.re;
-        Ok(ans)
+        Ok(g0pp + TT * g.re)
+        
     } else {
         Err(Error::OutOfBounds)
     }
