@@ -11,6 +11,14 @@
       "orcid": "0000-0003-4371-9659"
     }
   ],
+  "contributors": [
+    {
+      "type": "ProjectMember",
+      "name": "Bryce Irving",
+      "affiliation": "Student at Colorado School of Mines",
+      "orcid": "0009-0004-2309-9522"
+    }
+  ],
   "related_identifiers": [
     {
       "scheme": "isbn",
