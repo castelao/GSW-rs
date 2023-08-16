@@ -1,5 +1,5 @@
 window.BENCHMARK_DATA = {
-  "lastUpdate": 1692053444523,
+  "lastUpdate": 1692200901461,
   "repoUrl": "https://github.com/castelao/GSW-rs",
   "entries": {
     "Rust Benchmark": [
@@ -3983,6 +3983,258 @@ window.BENCHMARK_DATA = {
             "name": "z_from_p",
             "value": 17,
             "range": "± 0",
+            "unit": "ns/iter"
+          }
+        ]
+      },
+      {
+        "commit": {
+          "author": {
+            "email": "126987327+brycemines@users.noreply.github.com",
+            "name": "brycemines",
+            "username": "brycemines"
+          },
+          "committer": {
+            "email": "noreply@github.com",
+            "name": "GitHub",
+            "username": "web-flow"
+          },
+          "distinct": true,
+          "id": "39b081093156735dada47d5fee8e17870f907883",
+          "message": "Gsw gibbs ice (#51)\n\n* Create gibbs_ice signiture\r\n\r\n* In progress gibbs_ice function\r\n\r\n* Added and used complex number crate\r\n\r\n* Added tests and close to completing funciton\r\n\r\n* fix: removing error from unfinished function\r\n\r\n* fix: change constant names to unique uppercase\r\n\r\n* fix: complete the gibbs_ice and is returning value\r\n\r\n* test similar to check_values for checking complex\r\n\r\n* fix: rewrite out_of_bounds() test\r\n\r\n* style: rewrite constants consistently\r\n\r\n* wip: rewriting and replacing num-complex\r\n\r\n* Removed repeated variable assignments\r\n\r\n* rename and update exploration test\r\n\r\n* style: add spacing to the constants\r\n\r\n* remove half num complex from 2 0\r\n\r\n* Roll back to working num-complex\r\n\r\n* remove unneeded and unused test\r\n\r\n* add documentation comment to gibbs_ice\r\n\r\n* add variable types to documentation\r\n\r\n* style: remove unneeded retrun statements\r\n\r\n* remove unnecessary variable ans\r\n\r\n* add to contributors on .zenodo.json\r\n\r\n* fix .zenodo.json\r\n\r\n* Create gibbs_ice signiture\r\n\r\n* In progress gibbs_ice function\r\n\r\n* Added and used complex number crate\r\n\r\n* Added tests and close to completing funciton\r\n\r\n* fix: removing error from unfinished function\r\n\r\n* fix: change constant names to unique uppercase\r\n\r\n* fix: complete the gibbs_ice and is returning value\r\n\r\n* test similar to check_values for checking complex\r\n\r\n* fix: rewrite out_of_bounds() test\r\n\r\n* style: rewrite constants consistently\r\n\r\n* wip: rewriting and replacing num-complex\r\n\r\n* Removed repeated variable assignments\r\n\r\n* rename and update exploration test\r\n\r\n* style: add spacing to the constants\r\n\r\n* remove half num complex from 2 0\r\n\r\n* Roll back to working num-complex\r\n\r\n* remove unneeded and unused test\r\n\r\n* add documentation comment to gibbs_ice\r\n\r\n* add variable types to documentation\r\n\r\n* style: remove unneeded retrun statements\r\n\r\n* remove unnecessary variable ans\r\n\r\n* add to contributors on .zenodo.json\r\n\r\n* fix .zenodo.json\r\n\r\n* Create gibbs_ice signiture\r\n\r\n* In progress gibbs_ice function\r\n\r\n* Added and used complex number crate\r\n\r\n* Added tests and close to completing funciton\r\n\r\n* fix: removing error from unfinished function\r\n\r\n* fix: change constant names to unique uppercase\r\n\r\n* fix: complete the gibbs_ice and is returning value\r\n\r\n* test similar to check_values for checking complex\r\n\r\n* fix: rewrite out_of_bounds() test\r\n\r\n* style: rewrite constants consistently\r\n\r\n* wip: rewriting and replacing num-complex\r\n\r\n* Removed repeated variable assignments\r\n\r\n* rename and update exploration test\r\n\r\n* style: add spacing to the constants\r\n\r\n* remove half num complex from 2 0\r\n\r\n* Roll back to working num-complex\r\n\r\n* remove unneeded and unused test\r\n\r\n* add documentation comment to gibbs_ice\r\n\r\n* add variable types to documentation\r\n\r\n* style: remove unneeded retrun statements\r\n\r\n* remove unnecessary variable ans\r\n\r\n* add to contributors on .zenodo.json\r\n\r\n* fix .zenodo.json\r\n\r\n* Revert Cargo.lock to main version and add num-complex\r\n\r\n---------\r\n\r\nCo-authored-by: Guilherme Castelão <guilherme@castelao.net>",
+          "timestamp": "2023-08-16T09:35:21-06:00",
+          "tree_id": "30f6fd216e75ccc9a9d566c8a9429f59cfcb373f",
+          "url": "https://github.com/castelao/GSW-rs/commit/39b081093156735dada47d5fee8e17870f907883"
+        },
+        "date": 1692200900675,
+        "tool": "cargo",
+        "benches": [
+          {
+            "name": "specvol",
+            "value": 41,
+            "range": "± 1",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "alpha",
+            "value": 72,
+            "range": "± 2",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "beta",
+            "value": 76,
+            "range": "± 3",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "specvol_sso_0",
+            "value": 5,
+            "range": "± 0",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "specvol_anom_standard",
+            "value": 48,
+            "range": "± 0",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "specvol_alpha_beta",
+            "value": 189,
+            "range": "± 6",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "rho",
+            "value": 51,
+            "range": "± 0",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "rho_alpha_beta",
+            "value": 193,
+            "range": "± 6",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "sigma0",
+            "value": 21,
+            "range": "± 0",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "sigma1",
+            "value": 52,
+            "range": "± 0",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "sigma2",
+            "value": 52,
+            "range": "± 0",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "sigma3",
+            "value": 50,
+            "range": "± 1",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "sigma4",
+            "value": 51,
+            "range": "± 1",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "cabbeling",
+            "value": 238,
+            "range": "± 9",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "sound_speed",
+            "value": 64,
+            "range": "± 2",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "dynamic_enthalpy",
+            "value": 48,
+            "range": "± 0",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "sa_from_rho",
+            "value": 363,
+            "range": "± 3",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "specvol_first_derivatives",
+            "value": 58,
+            "range": "± 2",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "specvol_first_derivatives_wrt_enthalpy",
+            "value": 121,
+            "range": "± 16",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "specvol_second_derivatives",
+            "value": 238,
+            "range": "± 28",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "specvol_second_derivatives_wrt_enthalpy",
+            "value": 79,
+            "range": "± 2",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "alpha_on_beta",
+            "value": 55,
+            "range": "± 2",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "rho_first_derivatives",
+            "value": 94,
+            "range": "± 3",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "rho_second_derivatives",
+            "value": 182,
+            "range": "± 9",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "thermobaric",
+            "value": 176,
+            "range": "± 2",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "enthalpy",
+            "value": 51,
+            "range": "± 1",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "enthalpy_first_derivatives",
+            "value": 53,
+            "range": "± 3",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "enthalpy_second_derivatives",
+            "value": 47,
+            "range": "± 0",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "enthalpy_diff",
+            "value": 101,
+            "range": "± 1",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "kappa",
+            "value": 59,
+            "range": "± 1",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "internal_energy",
+            "value": 95,
+            "range": "± 1",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "internal_energy_first_derivatives",
+            "value": 155,
+            "range": "± 10",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "internal_energy_second_derivatives",
+            "value": 153,
+            "range": "± 1",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "ct_maxdensity",
+            "value": 722,
+            "range": "± 28",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "sp_from_c",
+            "value": 24,
+            "range": "± 0",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "c_from_sp",
+            "value": 24,
+            "range": "± 0",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "sp_salinometer",
+            "value": 10,
+            "range": "± 0",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "z_from_p",
+            "value": 21,
+            "range": "± 1",
             "unit": "ns/iter"
           }
         ]
