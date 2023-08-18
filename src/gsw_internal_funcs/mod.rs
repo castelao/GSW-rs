@@ -2,8 +2,6 @@
 //!
 //! Functions not intended to be used outside this library
 
-
-
 use crate::gsw_internal_const::{DB2PA, GSW_PU, GSW_SFAC};
 use crate::gsw_sp_coefficients::*;
 use crate::gsw_specvol_coefficients::{V005, V006};
@@ -1055,15 +1053,15 @@ mod test_gibbs {
 }
 
 /// Ice specific Gibbs energy and derivatives up to order 2.
-/// 
+///
 /// # Arguments
 /// - `nt`: `u8` order of t derivative \[integers 0, 1, or 2\]
 /// - `np`: `u8` order of p derivative \[integers 0, 1, or 2\]
 /// - `t`: `f64` in-situ temoerature (ITS-90) \[deg C\]
 /// - `p`: `f64` sea pressure \[dbar\]
-/// 
+///
 /// # Returns
-/// `gibbs_ice` : `Result<Ok(f64), Err(Error::OutOfBounds)>` 
+/// `gibbs_ice` : `Result<Ok(f64), Err(Error::OutOfBounds)>`
 ///     - specific gibbs energy of ice or its derivatives
 ///     - gibbs energy in \[J/kg\]
 ///     - temperature derivatives in: \[(J/kg) (K)^(-nt)\]
@@ -1084,96 +1082,75 @@ fn gibbs_ice(nt: u8, np: u8, t: f64, p: f64) -> Result<f64> {
     const G02: f64 = -1.893_699_293_261_31_e-8;
     const G03: f64 = 3.397_461_232_710_53_e-15; // in the GSW-C library this is 3.39_746_123_271_053_04e-15
     const G04: f64 = -5.564_648_690_589_91_e-22; // in the GSW-C library this is -5.56_464_869_058_990_9e-22
-    // R20 already named
-    const R20_GIBBS_ICE: Complex<f64> = Complex::new(-7.259_745_743_292_20_e1, -7.810_084_271_128_70_e1); // already something named R20?
     const R21: Complex<f64> = Complex::new(-5.571_076_980_301_23_e-5, 4.645_786_345_808_06_e-5);
     const R22: Complex<f64> = Complex::new(2.348_014_092_159_13_e-11, -2.856_511_429_049_72_e-11);
-    // R1 already named
-    const R1_GIBBS_ICE: Complex<f64> = Complex::new(4.470_507_162_853_88_e1, 6.568_768_474_634_81_e1);
     const TT: f64 = 273.16;
+    // R20 already named
+    const R20_GIBBS_ICE: Complex<f64> =
+        Complex::new(-7.259_745_743_292_20_e1, -7.810_084_271_128_70_e1);
+    // R1 already named
+    const R1_GIBBS_ICE: Complex<f64> =
+        Complex::new(4.470_507_162_853_88_e1, 6.568_768_474_634_81_e1);
 
     // declare these initial variables:
     let s0: f64 = -3.327_337_564_921_68_e3;
-    let tau = Complex::new((t + GSW_T0)*REC_TT, 0.0);
-    let dzi: f64 = DB2PA*p*REC_PT;
+    let tau = Complex::new((t + GSW_T0) * REC_TT, 0.0);
+    let dzi: f64 = DB2PA * p * REC_PT;
 
     // pulling these constants out of the if statements to not be redundant
     let tau_t1 = tau / T1;
-    let sqtau_t1 = tau_t1*tau_t1;
+    let sqtau_t1 = tau_t1 * tau_t1;
     let tau_t2 = tau / T2;
-    let sqtau_t2 = tau_t2*tau_t2;
-    let r2 = R20_GIBBS_ICE + dzi*(R21 + R22*dzi);
+    let sqtau_t2 = tau_t2 * tau_t2;
+    let r2 = R20_GIBBS_ICE + dzi * (R21 + R22 * dzi);
     let r2p = REC_PT * (R21 + 2.0 * R22 * dzi);
 
     if nt == 0 && np == 0 {
-
         let g0: f64 = G00 + dzi * (G01 + dzi * (G02 + dzi * (G03 + dzi * G04)));
 
-        let g = R1_GIBBS_ICE * (
-            tau*((1.0 + tau_t1)/(1.0 - tau_t1)).ln()
-            + T1 * ((1.0 - sqtau_t1).ln() - sqtau_t1)
-        )
-        + r2 * (
-            (tau*((1.0 + tau_t2)/(1.0 - tau_t2)).ln())
-            + T2*((1.0 - sqtau_t2).ln() - sqtau_t2)
-    );
+        let g = R1_GIBBS_ICE
+            * (tau * ((1.0 + tau_t1) / (1.0 - tau_t1)).ln()
+                + T1 * ((1.0 - sqtau_t1).ln() - sqtau_t1))
+            + r2 * ((tau * ((1.0 + tau_t2) / (1.0 - tau_t2)).ln())
+                + T2 * ((1.0 - sqtau_t2).ln() - sqtau_t2));
 
-        Ok((g0 - TT*(s0*tau - g.re)).re)
-
+        Ok((g0 - TT * (s0 * tau - g.re)).re)
     } else if nt == 1 && np == 0 {
-
-        let g = R1_GIBBS_ICE * (
-            ((1.0 + tau_t1)/(1.0 - tau_t1)).ln() - 2.0 * tau_t1
-        ) + r2 * (
-            ((1.0 + tau_t2)/(1.0 - tau_t2)).ln() - 2.0 * tau_t2
-        );
+        let g = R1_GIBBS_ICE * (((1.0 + tau_t1) / (1.0 - tau_t1)).ln() - 2.0 * tau_t1)
+            + r2 * (((1.0 + tau_t2) / (1.0 - tau_t2)).ln() - 2.0 * tau_t2);
 
         Ok(-s0 + g.re)
-
     } else if nt == 0 && np == 1 {
-
         let g0p = REC_PT * (G01 + dzi * (2.0 * G02 + dzi * (3.0 * G03 + 4.0 * G04 * dzi)));
 
-        let g = r2p * (
-            tau * ((1.0 + tau_t2)/(1.0 - tau_t2)).ln()
-            + T2 * ((1.0 - sqtau_t2).ln() - sqtau_t2)
-        );
+        let g = r2p
+            * (tau * ((1.0 + tau_t2) / (1.0 - tau_t2)).ln()
+                + T2 * ((1.0 - sqtau_t2).ln() - sqtau_t2));
 
         Ok(g0p + TT * g.re)
-
     } else if nt == 1 && np == 1 {
-
-        let g = r2p * (
-            ((1.0 + tau_t2)/(1.0 - tau_t2)).ln() - 2.0 * tau_t2
-        );
+        let g = r2p * (((1.0 + tau_t2) / (1.0 - tau_t2)).ln() - 2.0 * tau_t2);
 
         Ok(g.re)
+    } else if nt == 2 && np == 0 {
+        // start to rewrite without num-complex
 
-    } else if nt == 2 && np == 0 { // start to rewrite without num-complex
-
-        let g = R1_GIBBS_ICE * (
-            1.0/(T1 - tau) + 1.0/(T1 + tau) - 2.0/T1
-        ) + r2 * (
-            1.0/(T2 - tau)
-        );
+        let g = R1_GIBBS_ICE * (1.0 / (T1 - tau) + 1.0 / (T1 + tau) - 2.0 / T1)
+            + r2 * (1.0 / (T2 - tau));
 
         Ok(REC_TT * g.re)
-
     } else if nt == 0 && np == 2 {
-        
         let sqrec_pt = REC_PT * REC_PT;
 
-        let g0pp = sqrec_pt * (2.0*G02 + dzi*(6.0*G03 + 12.0*G04*dzi));
+        let g0pp = sqrec_pt * (2.0 * G02 + dzi * (6.0 * G03 + 12.0 * G04 * dzi));
 
-        let r2pp = 2.0*R22*sqrec_pt;
+        let r2pp = 2.0 * R22 * sqrec_pt;
 
-        let g = r2pp * (
-            tau * ((1.0 + tau_t2)/(1.0 - tau_t2)).ln()
-            + T2 * ((1.0 - sqtau_t2).ln() - sqtau_t2)
-        );
+        let g = r2pp
+            * (tau * ((1.0 + tau_t2) / (1.0 - tau_t2)).ln()
+                + T2 * ((1.0 - sqtau_t2).ln() - sqtau_t2));
 
         Ok(g0pp + TT * g.re)
-        
     } else {
         Err(Error::OutOfBounds)
     }
@@ -1182,9 +1159,8 @@ fn gibbs_ice(nt: u8, np: u8, t: f64, p: f64) -> Result<f64> {
 #[cfg(test)]
 mod test_gibbs_ice {
 
-    use crate::gsw_internal_funcs::{gibbs_ice};
+    use crate::gsw_internal_funcs::gibbs_ice;
     use crate::Error;
-
 
     #[test]
     fn check_values() {
@@ -1192,14 +1168,20 @@ mod test_gibbs_ice {
         // (nt, np, ans)
         let answers = [
             (0, 0, 98.267598402919248),
-            (1, 0 , 1220.7886612999528),
+            (1, 0, 1220.7886612999528),
             (0, 1, 0.0010908434429264351),
             (1, 1, 1.7436082496084962E-7),
             (2, 0, -9.0784284079463049),
-            (0, 2, -1.2848482463976177E-13)
+            (0, 2, -1.2848482463976177E-13),
         ];
         for (nt, np, ans) in answers.iter() {
-            assert!((gibbs_ice(*nt, *np, 0.0, 0.0).unwrap() - *ans).abs() < f64::EPSILON, "nt = {}, np = {}, ans = {}", nt, np, ans);
+            assert!(
+                (gibbs_ice(*nt, *np, 0.0, 0.0).unwrap() - *ans).abs() < f64::EPSILON,
+                "nt = {}, np = {}, ans = {}",
+                nt,
+                np,
+                ans
+            );
         }
         //assert!((gibbs_ice(0, 0, 4.0, 10.0).unwrap() - 5.029179813607595e3).abs() < f64::EPSILON); // this is super close
     }
@@ -1208,7 +1190,7 @@ mod test_gibbs_ice {
     fn out_of_bounds() {
         match gibbs_ice(0, 3, 0.0, 0.0) {
             Err(Error::OutOfBounds) => (),
-            _ => panic!("error should be OutOfBounds")
+            _ => panic!("error should be OutOfBounds"),
         }
     }
 
@@ -1226,9 +1208,7 @@ mod test_gibbs_ice {
         let v = gibbs_ice(0, 0, f64::NAN, f64::NAN);
         assert!(v.unwrap().is_nan());
     }
-
 }
-
 
 /*
 gsw_SAAR
