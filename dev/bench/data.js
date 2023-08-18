@@ -1,5 +1,5 @@
 window.BENCHMARK_DATA = {
-  "lastUpdate": 1692322568338,
+  "lastUpdate": 1692333094759,
   "repoUrl": "https://github.com/castelao/GSW-rs",
   "entries": {
     "Rust Benchmark": [
@@ -4487,6 +4487,258 @@ window.BENCHMARK_DATA = {
             "name": "z_from_p",
             "value": 19,
             "range": "± 1",
+            "unit": "ns/iter"
+          }
+        ]
+      },
+      {
+        "commit": {
+          "author": {
+            "email": "guilherme@castelao.net",
+            "name": "Guilherme Castelão",
+            "username": "castelao"
+          },
+          "committer": {
+            "email": "noreply@github.com",
+            "name": "GitHub",
+            "username": "web-flow"
+          },
+          "distinct": true,
+          "id": "3555869f77d753a777276ccc095c6ca8759c396d",
+          "message": "Bump version (#54)\n\nNew function gsw_internal_funcs::gibbs_ice(), thanks to @brycemines.",
+          "timestamp": "2023-08-17T22:18:55-06:00",
+          "tree_id": "6bce61367a021c430e1b918a7cd7986a80da6695",
+          "url": "https://github.com/castelao/GSW-rs/commit/3555869f77d753a777276ccc095c6ca8759c396d"
+        },
+        "date": 1692333094320,
+        "tool": "cargo",
+        "benches": [
+          {
+            "name": "specvol",
+            "value": 34,
+            "range": "± 0",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "alpha",
+            "value": 64,
+            "range": "± 0",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "beta",
+            "value": 61,
+            "range": "± 0",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "specvol_sso_0",
+            "value": 4,
+            "range": "± 0",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "specvol_anom_standard",
+            "value": 42,
+            "range": "± 0",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "specvol_alpha_beta",
+            "value": 158,
+            "range": "± 0",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "rho",
+            "value": 40,
+            "range": "± 0",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "rho_alpha_beta",
+            "value": 158,
+            "range": "± 0",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "sigma0",
+            "value": 18,
+            "range": "± 0",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "sigma1",
+            "value": 42,
+            "range": "± 0",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "sigma2",
+            "value": 41,
+            "range": "± 0",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "sigma3",
+            "value": 42,
+            "range": "± 0",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "sigma4",
+            "value": 42,
+            "range": "± 1",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "cabbeling",
+            "value": 210,
+            "range": "± 0",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "sound_speed",
+            "value": 55,
+            "range": "± 0",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "dynamic_enthalpy",
+            "value": 40,
+            "range": "± 0",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "sa_from_rho",
+            "value": 305,
+            "range": "± 1",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "specvol_first_derivatives",
+            "value": 48,
+            "range": "± 0",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "specvol_first_derivatives_wrt_enthalpy",
+            "value": 99,
+            "range": "± 0",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "specvol_second_derivatives",
+            "value": 198,
+            "range": "± 0",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "specvol_second_derivatives_wrt_enthalpy",
+            "value": 63,
+            "range": "± 0",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "alpha_on_beta",
+            "value": 45,
+            "range": "± 0",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "rho_first_derivatives",
+            "value": 77,
+            "range": "± 0",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "rho_second_derivatives",
+            "value": 150,
+            "range": "± 0",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "thermobaric",
+            "value": 148,
+            "range": "± 2",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "enthalpy",
+            "value": 43,
+            "range": "± 0",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "enthalpy_first_derivatives",
+            "value": 43,
+            "range": "± 0",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "enthalpy_second_derivatives",
+            "value": 39,
+            "range": "± 0",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "enthalpy_diff",
+            "value": 81,
+            "range": "± 0",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "kappa",
+            "value": 49,
+            "range": "± 0",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "internal_energy",
+            "value": 76,
+            "range": "± 0",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "internal_energy_first_derivatives",
+            "value": 129,
+            "range": "± 0",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "internal_energy_second_derivatives",
+            "value": 129,
+            "range": "± 0",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "ct_maxdensity",
+            "value": 593,
+            "range": "± 1",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "sp_from_c",
+            "value": 20,
+            "range": "± 0",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "c_from_sp",
+            "value": 20,
+            "range": "± 0",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "sp_salinometer",
+            "value": 8,
+            "range": "± 0",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "z_from_p",
+            "value": 17,
+            "range": "± 0",
             "unit": "ns/iter"
           }
         ]
