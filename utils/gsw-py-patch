@@ -1,18 +1,18 @@
 diff --git a/setup.py b/setup.py
-index 3850823..8ed4bbf 100644
+index 6a33d6e..95c2b27 100644
 --- a/setup.py
 +++ b/setup.py
-@@ -6,6 +6,7 @@ Minimal setup.py for building gswc.
- import os
- import sys
+@@ -7,6 +7,7 @@ import os
  import shutil
+ import sys
+ from distutils.command.build_ext import build_ext as _build_ext
 +import subprocess
  
  import pkg_resources
  from setuptools import Extension, setup
-@@ -22,28 +23,37 @@ def read(*parts):
+@@ -21,36 +22,43 @@ def read(*parts):
  class build_ext(_build_ext):
-     # Extention builder from pandas without the cython stuff
+     # Extension builder from pandas without the cython stuff
      def build_extensions(self):
 +        cmd = ["cargo", "cinstall",
 +               "--manifest-path", "src/GSW-rs/Cargo.toml",
@@ -30,45 +30,46 @@ index 3850823..8ed4bbf 100644
 +            gsw_obj = os.path.join(gsw_obj, "libgsw.a")
 +
 +        # private libs to link on windows
-+        windows_libs = ["advapi32.lib", "bcrypt.lib", "ws2_32.lib", "userenv.lib", "msvcrt.lib"]
++        windows_libs = ["advapi32.lib", "bcrypt.lib", "ws2_32.lib", "userenv.lib", "msvcrt.lib", "ntdll.lib"]
 +
-         numpy_incl = pkg_resources.resource_filename('numpy', 'core/include')
+         numpy_incl = pkg_resources.resource_filename("numpy", "core/include")
  
          for ext in self.extensions:
-             if hasattr(ext, 'include_dirs') and not numpy_incl in ext.include_dirs:
+             if hasattr(ext, "include_dirs") and not numpy_incl in ext.include_dirs:
                  ext.include_dirs.append(numpy_incl)
--        _build_ext.build_extensions(self)
--
-+            if hasattr(ext, 'extra_objects') and not gsw_obj in ext.extra_objects:
++
++            if hasattr(ext, "extra_objects") and not gsw_obj in ext.extra_objects:
 +                ext.extra_objects.append(gsw_obj)
 +                if sys.platform == "win32":
 +                    ext.extra_objects += windows_libs
++
+         _build_ext.build_extensions(self)
+ 
  
 -# MSVC can't handle C complex, and distutils doesn't seem to be able to
 -# let us force C++ compilation of .c files, so we use the following hack for
 -# Windows.
--if sys.platform == 'win32':
--    cext = 'cpp'
--    shutil.copy('src/c_gsw/gsw_oceanographic_toolbox.c',
--                'src/c_gsw/gsw_oceanographic_toolbox.cpp')
--    shutil.copy('src/c_gsw/gsw_saar.c', 'src/c_gsw/gsw_saar.cpp')
+-if sys.platform == "win32":
+-    cext = "cpp"
+-    shutil.copy(
+-        "src/c_gsw/gsw_oceanographic_toolbox.c",
+-        "src/c_gsw/gsw_oceanographic_toolbox.cpp",
+-    )
+-    shutil.copy("src/c_gsw/gsw_saar.c", "src/c_gsw/gsw_saar.cpp")
 -else:
--    cext = 'c'
-+        _build_ext.build_extensions(self)
- 
--ufunc_src_list = ['src/_ufuncs.c',
--                  'src/c_gsw/gsw_oceanographic_toolbox.' + cext,
--                  'src/c_gsw/gsw_saar.' + cext]
-+ufunc_src_list = ['src/_ufuncs.c']
+-    cext = "c"
+-
+-ufunc_src_list = [
+-    "src/_ufuncs.c",
+-    "src/c_gsw/gsw_oceanographic_toolbox." + cext,
+-    "src/c_gsw/gsw_saar." + cext,
+-]
++ufunc_src_list = ["src/_ufuncs.c"]
  
  config = {
-     "use_scm_version": {
-@@ -52,7 +62,7 @@ config = {
-         "tag_regex": r"^(?P<prefix>v)?(?P<version>[^\+]+)(?P<suffix>.*)?$",
-     },
-     "ext_modules": [Extension('gsw._gsw_ufuncs', ufunc_src_list)],
--    "include_dirs": [os.path.join(rootpath, 'src', 'c_gsw')],
-+    "include_dirs": [os.path.join(rootpath, 'src', 'GSW-rs', 'assets')],
+     "ext_modules": [Extension("gsw._gsw_ufuncs", ufunc_src_list)],
+-    "include_dirs": [os.path.join(rootpath, "src", "c_gsw")],
++    "include_dirs": [os.path.join(rootpath, "src", "GSW-rs", "assets")],
      "cmdclass": {"build_ext": build_ext},
  }
  
