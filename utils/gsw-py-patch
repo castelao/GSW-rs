@@ -30,7 +30,7 @@ index 6a33d6e..95c2b27 100644
 +            gsw_obj = os.path.join(gsw_obj, "libgsw.a")
 +
 +        # private libs to link on windows
-+        windows_libs = ["advapi32.lib", "bcrypt.lib", "ws2_32.lib", "userenv.lib", "msvcrt.lib"]
++        windows_libs = ["advapi32.lib", "bcrypt.lib", "ws2_32.lib", "userenv.lib", "msvcrt.lib", "ntdll.lib"]
 +
          numpy_incl = pkg_resources.resource_filename("numpy", "core/include")
  
