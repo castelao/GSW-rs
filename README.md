@@ -37,9 +37,7 @@ cargo build --features compat
 
 ## License
 
-Licensed under either of
-
- * 3-Clause BSD License ([BSD-3-Clause](LICENSE))
+Licensed under the 3-Clause BSD License ([BSD-3-Clause](LICENSE))
 
 ## Contribution
 
