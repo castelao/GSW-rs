@@ -76,7 +76,9 @@
 //! UNESCO (English), 196 pp.
 //!
 //! Note that in GSW-rs, the functions missing references means that we have
-//! not have the chance to review it yet.
+//! not have the chance to review it yet, but we are working on that.
+//!
+//! To cite this library, please check guidance in the README.
 
 ////////////////////////////////////////////////////////////////////////////////
 
