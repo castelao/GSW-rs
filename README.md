@@ -75,6 +75,23 @@ Unless you explicitly state otherwise, any contribution intentionally submitted
 for inclusion in the work by you, as defined in the Apache-2.0 license, shall be
 dual licensed as above, without any additional terms or conditions.
 
+Contributions should be done through GitHub, by forking the repository,
+creating a new branch, and pushing that new branch back as a Pull Request.
+Tests covering the new feature or bugfix must be included, and if relevant,
+the documentation updated. If not familiar with the procedure, we encourage to
+contact us and we will walk you throught the process. Every contribution is
+valuable and will be recognized.
+
+A note on tests. We don't follow the typicall Rust pattern of groupping all the
+tests of the module together. As a scientific library, and a large one, we tend
+to keep tests right after the target tested, so it is easy to verify if a
+certain function covers the desired behavior. Whenever possible, we also add
+tests confirming specific values described in the literature.
+
+A note on references: Please review and add the relevant literature for each
+function. It is particularly important to verify the coefficients and the
+valid range in the original literature.
+
 ## Citation
 
 If you use this library we kindly ask to cite all the three following references:
