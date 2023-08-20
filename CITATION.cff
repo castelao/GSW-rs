@@ -14,4 +14,4 @@ version: 0.0.6
 doi: 10.5281/zenodo.5348561
 date-released: 2021-08-31
 repository-code: https://github.com/castelao/GSW-rs
-license: MIT OR Apache-2.0
+license: BSD-3 Clause
