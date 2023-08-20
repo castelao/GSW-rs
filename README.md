@@ -58,7 +58,7 @@ necessary.
   reference dataset, which we can use to validate our library. Since our goal
   is to also work with microcontrollers, we have to format that dataset in
   such a way that it can be used in microcontrollers, thus validated. There
-  you'll find its own `Cargo.toml` and `src`. We use portcard to encdoe it.
+  you'll find its own `Cargo.toml` and `src`. We use portcard to encode it.
 - We use FFI to expose our library, so it can be used outside as if it was a
   C-library. For instance, to test it, we link the official GSW-Python with our
   Rust library (GSW-rs) instead of the traditional GSW-C, and run the Python
