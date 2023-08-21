@@ -63,7 +63,12 @@ necessary.
   C-library. For instance, to test it, we link the official GSW-Python with our
   Rust library (GSW-rs) instead of the traditional GSW-C, and run the Python
   tests. Take a look on `.github/workflows/gsw-python.yml` to see how we link
-  GSW-Python with GSW-rs.
+  GSW-Python with GSW-rs. The directories `utils`, `include`, `assets`, and
+  `examples/usage-from-c` are all related to that.
+- Integration tests are developed in `tests`, using the specially encoded
+  verification values (using `convert_refdata`) in `tests/data` to validate
+  our results. Note that there is one file per module, which are small enough
+  to fit in the stack memory of resource-limited systems.
 
 ## License
 
