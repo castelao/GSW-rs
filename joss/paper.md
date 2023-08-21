@@ -26,7 +26,7 @@ provides consistent thermodynamic properties of seawater, conversions, and
 other utilities. GSW has been adopted since 2009 by the Intergovernmental
 Oceanographic Commission as the official description of seawater. Although it
 is available in several computer languages, most implementations, such as
-Python, Julia, and R, are wrappers around the C library.
+Python [@GSW-Python], Julia [@GSW-Julia], and R [@GSW-R], are wrappers around the C library [@GSW-C].
 
 Here we introduce a version of GSW implemented in pure Rust (GSW-rs),
 initially developed for inclusion in microcontroller firmware to support
@@ -58,7 +58,7 @@ While GSW is already implemented in several languages, there is no uniformity
 among those. The Matlab implementation (GSW-m) [@GSW-m] is the most
 complete (see Appendix N from @TEOS-10 and up to date, but it is based
 on a commercial language, restricting its use. Several other implementations,
-including those for Julia, Python [@GSW-Python], and R, are wrappers around the
+including those for Julia, Python, and R, are wrappers around the
 C implementation (GSW-C), which is hence the actual foundation for the
 alternative Open Source family of solutions. Although it is powerful, C lacks
 some features and conveniences of modern languages. Here we propose an
