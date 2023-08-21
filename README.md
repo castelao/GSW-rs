@@ -72,13 +72,13 @@ necessary.
 
 ## License
 
-Licensed under the 3-Clause BSD License ([BSD-3-Clause](LICENSE))
+Licensed under the 3-Clause BSD License ([LICENSE](LICENSE))
 
 ## Contribution
 
 Unless you explicitly state otherwise, any contribution intentionally submitted
 for inclusion in the work by you, as defined in the [LICENSE](LICENSE), shall be
-dual licensed as above, without any additional terms or conditions.
+licensed as above, without any additional terms or conditions.
 
 Contributions should be done through GitHub, by forking the repository,
 creating a new branch, and pushing that new branch back as a Pull Request.
