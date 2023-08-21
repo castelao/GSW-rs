@@ -35,14 +35,15 @@
 //! - **std**: Activate the Rust standard library. The default implementation
 //!   does not rely on standard library so it can run in embedded systems.
 //!
-//! For example, to compile it compatible with the Matlab library:
+//! For instance, to compile it compatible with the Matlab library:
 //! ```text
 //! cargo build --features compat
 //! ```
 //!
 //! While compat results in precisely reproducing GSW-Matlab results, there is
 //! no equivalent for GSW-C, which is currently the base for Julia, Python,
-//! and R. The closest option to that is using **invalidasnan**.
+//! and R. The closest option to that is using **invalidasnan**, i.e.
+//! `--features invalidasnan`.
 //!
 //! Since these checks are defined at compiling time, those do not necessarily
 //! imply extra computing cost at running time. For instance, the cost of the
@@ -75,7 +76,9 @@
 //! UNESCO (English), 196 pp.
 //!
 //! Note that in GSW-rs, the functions missing references means that we have
-//! not have the chance to review it yet.
+//! not have the chance to review it yet, but we are working on that.
+//!
+//! To cite this library, please check guidance in the README.
 
 ////////////////////////////////////////////////////////////////////////////////
 

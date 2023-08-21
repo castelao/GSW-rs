@@ -21,29 +21,81 @@ From the Cargo Book: "Cargo 'features' provide a mechanism to express
 conditional compilation and optional dependencies.". The features defined in
 GSW-rs are:
 
-- capi: Include the C-API so that GSW-rs can be accessed as it was a
-        C-library. For instance, the other GSW implementations based on
-        GSW-C could be linked with GSW-rs instead by using this feature.
-- compat: Reproduces the GSW-Matlab implementation for compatibility.
-- invalidasnan: Returns NaN values on failure. The default behavior is to
-                return an error.
-- nodgdz: Ignores vertical variations of gravity, i.e. no dependency on z.
-          This might be useful on some numerical models.
-- std: Activate the Rust standard library. The default implementation does not
-       rely on std so it can run in embedded systems.
+- **capi**: Include the C-API so that GSW-rs can be accessed as it was a
+            C-library. For instance, the other GSW implementations based on
+            GSW-C could be linked with GSW-rs instead by using this feature.
+- **compat**: Reproduces the GSW-Matlab implementation for compatibility.
+- **invalidasnan**: Returns NaN values on failure. The default behavior is to
+                    return an error.
+- **nodgdz**: Ignores vertical variations of gravity, i.e. no dependency on z.
+              This might be useful on some numerical models.
+- **std**: Activate the Rust standard library. The default implementation does
+           not rely on std so it can run in embedded systems.
 
 For example, to compile it compatible with the official Matlab library:
 cargo build --features compat
 
+## Repository structure
+
+For anyone learning Rust, this repository might be overwhelming. We are doing
+many things here, hence more files and directories that would be strictly
+necessary.
+
+- The `Cargo.toml` and `src` are the fundamental Rust components. The first
+  one contains some metadata describing the crate, while the second one groups
+  the source code. This is the core of the crate.
+  - Note that in `src` we group the modules following the TEOS-10 library
+    card. We also isolate the constants, while avoiding repetition.
+  - The `src/lib.rs` is the starting point of the library.
+  - We split the tests so that those are close to the target functions. Usually
+    all the unit tests would go together somewhere, but here, each function has
+    so many tests that it would be an extra work to debug and maintain. Also,
+    we add refrence cases described in the scientific literature.
+- Validation tests are grouped outside the `src`, in the `tests`, which uses
+  the reference `data`.
+- `convert_refdata` is an auxiliary crate. We don't intend to publish that
+  one since it is only used to support GSW-rs. The GSW-Matlab provides a
+  reference dataset, which we can use to validate our library. Since our goal
+  is to also work with microcontrollers, we have to format that dataset in
+  such a way that it can be used in microcontrollers, thus validated. There
+  you'll find its own `Cargo.toml` and `src`. We use portcard to encode it.
+- We use FFI to expose our library, so it can be used outside as if it was a
+  C-library. For instance, to test it, we link the official GSW-Python with our
+  Rust library (GSW-rs) instead of the traditional GSW-C, and run the Python
+  tests. Take a look on `.github/workflows/gsw-python.yml` to see how we link
+  GSW-Python with GSW-rs. The directories `utils`, `include`, `assets`, and
+  `examples/usage-from-c` are all related to that.
+- Integration tests are developed in `tests`, using the specially encoded
+  verification values (using `convert_refdata`) in `tests/data` to validate
+  our results. Note that there is one file per module, which are small enough
+  to fit in the stack memory of resource-limited systems.
+
 ## License
 
-Licensed under the 3-Clause BSD License ([BSD-3-Clause](LICENSE))
+Licensed under the 3-Clause BSD License ([LICENSE](LICENSE))
 
 ## Contribution
 
 Unless you explicitly state otherwise, any contribution intentionally submitted
-for inclusion in the work by you, as defined in the Apache-2.0 license, shall be
-dual licensed as above, without any additional terms or conditions.
+for inclusion in the work by you, as defined in the [LICENSE](LICENSE), shall be
+licensed as above, without any additional terms or conditions.
+
+Contributions should be done through GitHub, by forking the repository,
+creating a new branch, and pushing that new branch back as a Pull Request.
+Tests covering the new feature or bugfix must be included, and if relevant,
+the documentation updated. If not familiar with the procedure, we encourage to
+contact us and we will walk you throught the process. Every contribution is
+valuable and will be recognized.
+
+A note on tests. We don't follow the typicall Rust pattern of groupping all the
+tests of the module together. As a scientific library, and a large one, we tend
+to keep tests right after the target tested, so it is easy to verify if a
+certain function covers the desired behavior. Whenever possible, we also add
+tests confirming specific values described in the literature.
+
+A note on references: Please review and add the relevant literature for each
+function. It is particularly important to verify the coefficients and the
+valid range in the original literature.
 
 ## Citation
 
@@ -76,14 +128,14 @@ to your work, you should at least cite the two following ones. The manual 56
 that summarizes all those publications, and the 'Getting started' publication
 which presents how to use the Toolbox.
 
-IOC, SCOR and IAPSO, 2010: The international thermodynamic equation of
-seawater - 2010: Calculation and use of thermodynamic properties.
-Intergovernmental - Oceanographic Commission, Manuals and Guides No. 56,
-UNESCO (English), 196 pp.
+- IOC, SCOR and IAPSO, 2010: The international thermodynamic equation of
+  seawater - 2010: Calculation and use of thermodynamic properties.
+  Intergovernmental - Oceanographic Commission, Manuals and Guides No. 56,
+  UNESCO (English), 196 pp.
 
-McDougall, T.J. and P.M. Barker, 2011: Getting started with TEOS-10 and the
-Gibbs Seawater (GSW) Oceanographic Toolbox, 28pp., SCOR/IAPSO WG127,
-ISBN 978-0-646-55621-5.
+- McDougall, T.J. and P.M. Barker, 2011: Getting started with TEOS-10 and the
+  Gibbs Seawater (GSW) Oceanographic Toolbox, 28pp., SCOR/IAPSO WG127,
+  ISBN 978-0-646-55621-5.
 
 As we review and expand this library, we add the relevant specific references
 within each function. You can find those in our source code or the manual.
