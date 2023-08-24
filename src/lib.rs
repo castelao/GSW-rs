@@ -15,7 +15,7 @@
 //!
 //! ## Features
 //!
-//! A few customizations can be choosen at compiling time by activating the
+//! A few customizations can be chosen at compiling time by activating the
 //! following features:
 //!
 //! - **capi**: Include the C-API so that GSW-rs can be accessed as if it was
@@ -26,7 +26,7 @@
 //!   notable differences are on handling special cases such as negative
 //!   salinity.
 //! - **invalidasnan**: Returns NaN values on failure. The default behavior is
-//!   to return an error. This is the closest option to reproduce CSW-C
+//!   to return an error. This is the closest option to reproduce GSW-C
 //!   implementation, when that one deviates from GSW-Matlab. The default
 //!   behavior returns NaN if the input is a NaN, or returns an *Error* on
 //!   failure.
@@ -52,9 +52,9 @@
 //!
 //! ## Design considerations
 //!
-//! - Functions that can result in failure return type Result<T>, as usuall
+//! - Functions that can result in failure return type Result<T>, as usual
 //!   in Rust. We prefer to return errors instead of NaN for two main reasons:
-//!   We can shortcut unecessary long calculations, and we can provide more
+//!   We can shortcut unnecessary long calculations, and we can provide more
 //!   information context for the next layer to support automatic decisions.
 //!   For instance, an application using GSW-rs might respond differently
 //!   if gets back an error due to an invalid salinity such as a negative

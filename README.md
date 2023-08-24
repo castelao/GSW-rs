@@ -2,7 +2,7 @@
 
 GSW for microcontrollers.
 
-Note that we do follow TEOS-10 manual and references, but his library is not
+Note that we do follow TEOS-10 manual and references, but this library is not
 endorsed by TEOS-10 committee.
 
 ## Talks
@@ -50,7 +50,7 @@ necessary.
   - We split the tests so that those are close to the target functions. Usually
     all the unit tests would go together somewhere, but here, each function has
     so many tests that it would be an extra work to debug and maintain. Also,
-    we add refrence cases described in the scientific literature.
+    we add reference cases described in the scientific literature.
 - Validation tests are grouped outside the `src`, in the `tests`, which uses
   the reference `data`.
 - `convert_refdata` is an auxiliary crate. We don't intend to publish that
@@ -58,7 +58,7 @@ necessary.
   reference dataset, which we can use to validate our library. Since our goal
   is to also work with microcontrollers, we have to format that dataset in
   such a way that it can be used in microcontrollers, thus validated. There
-  you'll find its own `Cargo.toml` and `src`. We use portcard to encode it.
+  you'll find its own `Cargo.toml` and `src`. We use postcard to encode it.
 - We use FFI to expose our library, so it can be used outside as if it was a
   C-library. For instance, to test it, we link the official GSW-Python with our
   Rust library (GSW-rs) instead of the traditional GSW-C, and run the Python
@@ -84,10 +84,10 @@ Contributions should be done through GitHub, by forking the repository,
 creating a new branch, and pushing that new branch back as a Pull Request.
 Tests covering the new feature or bugfix must be included, and if relevant,
 the documentation updated. If not familiar with the procedure, we encourage to
-contact us and we will walk you throught the process. Every contribution is
+contact us and we will walk you through the process. Every contribution is
 valuable and will be recognized.
 
-A note on tests. We don't follow the typicall Rust pattern of groupping all the
+A note on tests. We don't follow the typical Rust pattern of grouping all the
 tests of the module together. As a scientific library, and a large one, we tend
 to keep tests right after the target tested, so it is easy to verify if a
 certain function covers the desired behavior. Whenever possible, we also add
