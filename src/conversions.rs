@@ -55,6 +55,21 @@ gsw_SA_Sstar_from_SP
 
 /// Reference Salinity from Practical Salinity
 ///
+/// # Arguments
+///
+/// * `sp`: Practical salinity (PSS-78) \[unitless\]
+///
+/// # Returns
+///
+/// * `sr`: Reference salinity \[g kg-1\]
+///
+/// # Features
+///
+/// If compiled with 'compat', $u_{PS}$ is approximated to
+/// 1.004715428571429, which can cause a minimal rounding error.
+///
+/// # References
+///
 /// # Examples
 /// ```
 /// use gsw::conversions::sr_from_sp;
@@ -71,6 +86,22 @@ pub fn sr_from_sp(sp: f64) -> f64 {
 }
 
 /// Practical Salinity from Reference Salinity
+///
+/// # Arguments
+///
+/// * `sr`: Reference salinity \[g kg-1\]
+///
+/// # Returns
+///
+/// * `sp`: Practical salinity (PSS-78) \[unitless\]
+///
+/// # Features
+///
+/// If compiled with 'compat', $1/u_{PS}$ is approximated to
+/// 0.995306702338459, which can cause a minimal rounding error.
+/// # References
+///
+/// # Examples
 ///
 /// # Examples
 /// ```
