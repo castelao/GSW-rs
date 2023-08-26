@@ -50,6 +50,7 @@ pub fn deltasa_from_sp(sp: f64, p: f64, lon: f64, lat: f64) -> Result<f64> {
 */
 
 /*
+gsw_deltaSA_from_SP(gsw_sa_from_sp, gsw_sr_from_sp)
 gsw_SA_Sstar_from_SP
 */
 
@@ -119,7 +120,7 @@ pub fn sp_from_sr(sr: f64) -> f64 {
 }
 
 /*
-gsw_SP_from_SA
+gsw_SP_from_SA(gsw_sp_from_sa_baltic)
 gsw_Sstar_from_SA
 gsw_SA_from_Sstar
 gsw_SP_from_Sstar
@@ -182,9 +183,12 @@ pub fn ct_from_pt(sa: f64, pt: f64) -> Result<f64> {
 }
 
 /*
+gsw_pt_from_CT(gsw_ct_from_pt, gsw_gibbs_pt0_pt0)
+gsw_t_from_CT(gsw_ct_from_pt, gsw_pt_from_t)
+gsw_CT_from_pt
 gsw_pot_enthalpy_from_pt
 gsw_pt_from_t
-gsw_pt0_from_t
+gsw_pt0_from_t(gsw_entropy_part, gsw_entropy_part_zerop, gsw_gibbs_pt0_pt0)
 gsw_t_from_pt0
 */
 
@@ -314,6 +318,7 @@ pub fn p_from_z(
 }
 
 /*
+gsw_p_from_z(gsw_specvol_sso_0)
 gsw_z_from_depth
 gsw_depth_from_z
 */
