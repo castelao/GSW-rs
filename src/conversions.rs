@@ -266,6 +266,29 @@ pub fn t90_from_t68(t68: f64) -> f64 {
     }
 }
 
+/// IPTS-68 temperature from ITS-90 temperature
+///
+/// # Arguments
+///
+/// * `t90`: Temperature ITS-90 \[deg C\]
+///
+/// # Returns
+///
+/// * `t68`: Temperature IPTS-68 \[deg C\]
+///
+/// # References
+///
+/// # Examples
+/// ```
+/// use gsw::conversions::t68_from_t90;
+///
+/// let t = t68_from_t90(13.42);
+/// assert!((t - 13.4232208).abs() <= f64::EPSILON);
+/// ```
+pub fn t68_from_t90(t90: f64) -> f64 {
+    t90 * 1.00024
+}
+
 /// Height from pressure
 ///
 /// Calculates the height z from pressure p
