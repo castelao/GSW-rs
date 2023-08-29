@@ -249,7 +249,8 @@ pub fn t90_from_t48(t48: f64) -> f64 {
 ///
 /// # References
 ///
-/// Saunders 1990
+/// Saunders, P. 1990: The International Temperature Scale of 1990, ITS-90.
+///   WOCE Newsletter 10, IOS, Wormley, UK.
 ///
 /// # Examples
 /// ```
