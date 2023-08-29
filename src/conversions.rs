@@ -130,6 +130,23 @@ gsw_t_from_CT
 
 /// Conservative Temperature from potential temperature
 ///
+/// # Arguments
+///
+/// * `sa`: Absolute salinity \[g kg-1\]
+/// * `pt`: Potential temperature (ITS-90) \[deg C\]
+///
+/// # Returns
+///
+/// * `ct`: Conservative Temperature (ITS-90) \[deg C\]
+///
+/// # Features
+///
+/// * default: Negative salinity returns Error::NegativeSalinity.
+/// * compat: Negative salinity is assumed to be zero.
+/// * invalidasnan: Negative salinity results in NaN.
+///
+/// # References
+///
 /// # Examples
 /// ```
 /// use gsw::conversions::ct_from_pt;
