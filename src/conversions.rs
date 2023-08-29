@@ -211,6 +211,24 @@ gsw_t_from_pt0
 
 /// ITS-90 temperature from IPTS-48 temperature
 ///
+/// # Arguments
+///
+/// * `t48`: Temperature  (IPTS-48) \[deg C\]
+///
+/// # Returns
+///
+/// * `t90`: Temperature ITS-90 \[deg C\]
+///
+/// # References
+///
+/// # Examples
+/// ```
+/// use gsw::conversions::t90_from_t48;
+///
+/// let t90 = t90_from_t48(12.0);
+/// assert!((t90 - 11.992475405902583).abs() <= f64::EPSILON);
+/// ```
+///
 pub fn t90_from_t48(t48: f64) -> f64 {
     (t48 - (4.4e-6) * t48 * (100. - t48)) / 1.00024
 }
@@ -229,11 +247,16 @@ pub fn t90_from_t48(t48: f64) -> f64 {
 ///
 /// * `t90`: Temperature ITS-90 \[deg C\]
 ///
+/// # References
+///
+/// Saunders 1990
+///
 /// # Examples
 /// ```
 /// use gsw::conversions::t90_from_t68;
 ///
 /// let t90 = t90_from_t68(13.42);
+/// assert!((t90 - 13.416779972806527).abs() <= f64::EPSILON);
 /// ```
 pub fn t90_from_t68(t68: f64) -> f64 {
     if cfg!(feature = "compat") {
