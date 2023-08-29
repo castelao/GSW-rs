@@ -71,6 +71,10 @@ gsw_SA_Sstar_from_SP
 ///
 /// # References
 ///
+/// Millero, F. J., R. Feistel, D. G. Wright, and T. J. McDougall, 2008: The
+///   composition of Standard Seawater and the definition of the
+///   Reference-Composition Salinity Scale, Deep-Sea Res. I, 55, 50-72.
+///
 /// # Examples
 /// ```
 /// use gsw::conversions::sr_from_sp;
@@ -101,6 +105,10 @@ pub fn sr_from_sp(sp: f64) -> f64 {
 /// If compiled with 'compat', $1/u_{PS}$ is approximated to
 /// 0.995306702338459, which can cause a minimal rounding error.
 /// # References
+///
+/// Millero, F. J., R. Feistel, D. G. Wright, and T. J. McDougall, 2008: The
+///   composition of Standard Seawater and the definition of the
+///   Reference-Composition Salinity Scale, Deep-Sea Res. I, 55, 50-72.
 ///
 /// # Examples
 ///
