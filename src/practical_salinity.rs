@@ -1,14 +1,11 @@
 //! Practical Salinity
 //!
 
+use crate::conversions::t68_from_t90;
 use crate::gsw_internal_const::*;
 use crate::gsw_internal_funcs::*;
 use crate::gsw_sp_coefficients::*;
 use crate::{Error, Result};
-
-pub(crate) fn t68_from_t90(t90: f64) -> f64 {
-    t90 * 1.00024
-}
 
 /// Practical Salinity from conductivity
 ///
