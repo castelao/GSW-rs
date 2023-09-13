@@ -10,6 +10,19 @@ use crate::{Error, Result};
 /*
 /// Absolute Salinity Anomaly from Practical Salinity
 ///
+/// # Arguments
+///
+/// * `sp`:
+/// * `p`:
+/// * `lon`:
+/// * `lat`:
+///
+/// # Returns
+///
+/// # References
+///
+/// # Examples
+///
 pub fn deltasa_from_sp(sp: f64, p: f64, lon: f64, lat: f64) -> Result<f64> {
     // Remove out of range values
     if ((p < 100.0) & (sp > 120.0)) | ((p >= 100.0) & (sp > 42.0)) {
@@ -104,13 +117,12 @@ pub fn sr_from_sp(sp: f64) -> f64 {
 ///
 /// If compiled with 'compat', $1/u_{PS}$ is approximated to
 /// 0.995306702338459, which can cause a minimal rounding error.
+///
 /// # References
 ///
 /// Millero, F. J., R. Feistel, D. G. Wright, and T. J. McDougall, 2008: The
 ///   composition of Standard Seawater and the definition of the
 ///   Reference-Composition Salinity Scale, Deep-Sea Res. I, 55, 50-72.
-///
-/// # Examples
 ///
 /// # Examples
 /// ```
@@ -134,6 +146,8 @@ gsw_SA_from_Sstar
 gsw_SP_from_Sstar
 gsw_pt_from_CT
 gsw_t_from_CT
+gsw_pt_from_CT(gsw_ct_from_pt, gsw_gibbs_pt0_pt0)
+gsw_t_from_CT(gsw_ct_from_pt, gsw_pt_from_t)
 */
 
 /// Conservative Temperature from potential temperature
@@ -149,8 +163,11 @@ gsw_t_from_CT
 ///
 /// # Features
 ///
-/// * default: Negative salinity returns Error::NegativeSalinity.
-/// * compat: Negative salinity is assumed to be zero.
+/// * default: Negative salinity returns [Error::NegativeSalinity].
+/// * compat:
+///   * Negative salinity is assumed to be zero.
+///   * S factor is approximated to 0.0248826675584615, which can cause a
+///     minimal error.
 /// * invalidasnan: Negative salinity results in NaN.
 ///
 /// # References
@@ -208,9 +225,6 @@ pub fn ct_from_pt(sa: f64, pt: f64) -> Result<f64> {
 }
 
 /*
-gsw_pt_from_CT(gsw_ct_from_pt, gsw_gibbs_pt0_pt0)
-gsw_t_from_CT(gsw_ct_from_pt, gsw_pt_from_t)
-gsw_CT_from_pt
 gsw_pot_enthalpy_from_pt
 gsw_pt_from_t
 gsw_pt0_from_t(gsw_entropy_part, gsw_entropy_part_zerop, gsw_gibbs_pt0_pt0)
@@ -228,6 +242,9 @@ gsw_t_from_pt0
 /// * `t90`: Temperature ITS-90 \[deg C\]
 ///
 /// # References
+///
+/// Saunders, P. 1990: The International Temperature Scale of 1990, ITS-90.
+///   WOCE Newsletter 10, IOS, Wormley, UK.
 ///
 /// # Examples
 /// ```
@@ -254,6 +271,17 @@ pub fn t90_from_t48(t48: f64) -> f64 {
 /// # Returns
 ///
 /// * `t90`: Temperature ITS-90 \[deg C\]
+///
+/// # Features
+///
+/// * default: Calculate precise $t_{68}$ / 1.00024
+/// * compat: Approximate 1 / 1.00024 to 0.999760057586179, which can cause
+///           a negligible error.
+///
+/// # Notes
+///
+/// * TEOS-10 manual recommends to continue using Saunders 1990 instead of
+///   Rusby 1991.
 ///
 /// # References
 ///
@@ -287,6 +315,9 @@ pub fn t90_from_t68(t68: f64) -> f64 {
 ///
 /// # References
 ///
+/// Saunders, P. 1990: The International Temperature Scale of 1990, ITS-90.
+///   WOCE Newsletter 10, IOS, Wormley, UK.
+///
 /// # Examples
 /// ```
 /// use gsw::conversions::t68_from_t90;
@@ -313,7 +344,15 @@ pub fn t68_from_t90(t90: f64) -> f64 {
 /// * `z`: Height \[m\], where z points upward and is zero at the sea level,
 ///        thus it is negative in the ocean.
 ///
+/// # Features
+///
+/// * default: $gamma$ = 2.26e-7.
+/// * nodgdz: $gamma$ = 0, i.e. gravity doesn't depend on depth.
+///
+/// # References
+///
 /// # Notes
+///
 /// If geo_strf_dyn_height was obtained from geo_strf_dyn_height(), reference
 /// pressure (p_ref) must be zero dbar.
 ///
@@ -321,7 +360,8 @@ pub fn t68_from_t90(t90: f64) -> f64 {
 /// ```
 /// use gsw::conversions::z_from_p;
 ///
-/// let z = z_from_p(100.0, -60.250, 0.0, 0.0);
+/// let z = z_from_p(6131., 11.0, 0.0, 0.0);
+/// assert!((z - (-6010.854959777581)).abs() <= f64::EPSILON);
 /// ```
 pub fn z_from_p(
     pressure: f64,
@@ -341,17 +381,34 @@ pub fn z_from_p(
 
 /// Pressure from height (75-term polynomial approximation)
 ///
+/// # Arguments
+///
+/// * `z`: Height \[m\], where z points upward and is zero at the sea level,
+///        thus it is negative in the ocean.
+/// * `lat`: Latitude \[deg\]
+/// * `geo_strf_dyn_height`: Dynamic height anomaly \[m2 s-2\]. Optional
+///   argument, thus can use 'None' to assume it zero.
+/// * `sea_surface_geopotential`: Geopotential at zero sea pressure \[m2 s-2\].
+///   Optional argument, thus can use 'None' to assume it zero.
+///
+/// # Returns
+///
+/// * `pressure`: Sea Pressure \[dbar\], i.e. absolute pressure - 10.1325 dbar.
+///
 /// # Notes
 ///
-/// - The GSW-C does not allow dynamic height anomaly or geopotential at zero
+/// * The GSW-C does not allow dynamic height anomaly or geopotential at zero
 ///   sea pressure.
+/// * Optional arguments might change in the future to require instead an
+///   explicit value.
+///
+/// # References
 ///
 /// # Examples
 /// ```
 /// use gsw::conversions::p_from_z;
 ///
 /// let z = p_from_z(-1000.0, 15., None, None).unwrap();
-/// dbg!(&z);
 /// assert!((z - 1008.321764487538).abs() <= f64::EPSILON);
 /// ```
 pub fn p_from_z(
@@ -390,13 +447,29 @@ pub fn p_from_z(
 }
 
 /*
-gsw_p_from_z(gsw_specvol_sso_0)
 gsw_z_from_depth
 gsw_depth_from_z
 */
 
 /// Absolute Pressure, P, from sea pressure, p
 ///
+/// # Arguments
+///
+/// * `pressure`: Sea Pressure \[dbar\], i.e. absolute pressure - 10.1325 dbar.
+///
+/// # Returns
+///
+/// * absolute_pressure: Absolute pressure \[Pa\]
+///
+/// # References
+///
+/// # Examples
+/// ```
+/// use gsw::conversions::abs_pressure_from_p;
+///
+/// let P = abs_pressure_from_p(100.0);
+/// assert!((P - 1101325.0).abs() <= f64::EPSILON);
+/// ```
 pub fn abs_pressure_from_p(p: f64) -> f64 {
     p * DB2PA + GSW_P0
 }
@@ -405,6 +478,20 @@ pub fn abs_pressure_from_p(p: f64) -> f64 {
 ///
 /// # Arguments
 /// * absolute_pressure: Absolute pressure \[Pa\]
+///
+/// # Returns
+///
+/// * `pressure`: Sea Pressure \[dbar\], i.e. absolute pressure - 10.1325 dbar.
+///
+/// # References
+///
+/// # Examples
+/// ```
+/// use gsw::conversions::p_from_abs_pressure;
+///
+/// let p = p_from_abs_pressure(1101325.0);
+/// assert!((p - 100.0).abs() <= f64::EPSILON);
+/// ```
 pub fn p_from_abs_pressure(absolute_pressure: f64) -> f64 {
     (absolute_pressure - GSW_P0) / DB2PA
 }
@@ -439,5 +526,6 @@ mod tests {
     #[test]
     fn test_z_from_p() {
         assert!((0.0 - z_from_p(0.0, 33.3482, 0.0, 0.0)).abs() < f64::EPSILON);
+        // assert_eq!(-6010.85496, z_from_p(6131.0, 11.0, 0.0, 0.0));
     }
 }
