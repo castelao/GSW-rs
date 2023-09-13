@@ -52,7 +52,7 @@
 //!
 //! ## Design considerations
 //!
-//! - Functions that can result in failure return type Result<T>, as usual
+//! - Functions that can result in failure return type `Result<T>`, as usual
 //!   in Rust. We prefer to return errors instead of NaN for two main reasons:
 //!   We can shortcut unnecessary long calculations, and we can provide more
 //!   information context for the next layer to support automatic decisions.
