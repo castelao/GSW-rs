@@ -67,7 +67,7 @@ gsw_deltaSA_from_SP(gsw_sa_from_sp, gsw_sr_from_sp)
 gsw_SA_Sstar_from_SP
 */
 
-/// Reference Salinity from Practical Salinity
+/// Reference Salinity ($S_R$) from Practical Salinity ($S_P$)
 ///
 /// # Arguments
 ///
@@ -103,7 +103,7 @@ pub fn sr_from_sp(sp: f64) -> f64 {
     }
 }
 
-/// Practical Salinity from Reference Salinity
+/// Practical Salinity ($S_P$) from Reference Salinity ($S_R$)
 ///
 /// # Arguments
 ///
