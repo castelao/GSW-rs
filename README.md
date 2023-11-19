@@ -15,7 +15,22 @@ We presented about goals and progress (as of Apr 2022) at the
 
 Currently the minimum supported Rust version is 1.64.0
 
-## Features
+## Installing
+
+This crate was developed as a library, thus it is intended to be 'imported' by
+other libraries or used by applications. The recommended way to install Rust is
+using [rustup](https://www.rust-lang.org/tools/install). Check the book
+[Rust Programming Language](https://doc.rust-lang.org/book) for more details.
+To include GSW in another crate:
+```shell
+cargo add gsw
+```
+
+To be sure it works properly in your platform, clone this repository and run:
+`cargo test`
+which will compile the library and run all the tests.
+
+### Features
 
 From the Cargo Book: "Cargo 'features' provide a mechanism to express
 conditional compilation and optional dependencies.". The features defined in
@@ -33,7 +48,9 @@ GSW-rs are:
            not rely on std so it can run in embedded systems.
 
 For example, to compile it compatible with the official Matlab library:
+```shell
 cargo build --features compat
+```
 
 ## Repository structure
 
