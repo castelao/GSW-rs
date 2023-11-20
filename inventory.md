@@ -1,5 +1,15 @@
 
-# Module Convertions
+Currently, GSW-Rust do not implement all functions already available in GSW-C.
+This document gives an idea of what is missing. If interested in some specific
+function, please check our official manual as the best reference for what we
+have already done.
+
+Modules and respective functions. The ones unchecked are implemented in GSW-C
+but still missing in GSW-Rust. The goal is to implement all functions
+described in TEOS-10.
+
+
+# Convertions
 
 - [ ] gsw_deltasa_from_sp(sp,p,lon,lat)
 - [X] gsw_sr_from_sp(sp)
@@ -22,23 +32,20 @@
 - [ ] gsw_adiabatic_lapse_rate_from_ct(sa,ct,p)
 
 
-
-
-
 p_from_abs_pressure
 abs_pressure_from_p
 t68_from_t90
 t90_from_t48
 t90_from_t68
 
-# Module Earth
+# Earth
 
 - [X] gsw_grav(lat,p)
 
 coriollis_parameter
 distance
 
-# Module Practival Salinity
+# Practical Salinity
 
 - [X] gsw_sp_from_c(c,t,p)
 - [X] gsw_c_from_sp(sp,t,p)
@@ -52,7 +59,7 @@ distance
 ## Not implemented yet
 - sp_from_sk
 
-# Module Spiceness
+# Spiceness
 
 - [ ] gsw_spiciness0(sa,ct)
 - [ ] gsw_spiciness1(sa,ct)
@@ -64,7 +71,7 @@ distance
 - [ ] gsw_SA_CT_from_sigma1_spiciness1
 - [ ] gsw_SA_CT_from_sigma2_spiciness2
 
-# Module Volume
+# Volume
 
 - [X] gsw_specvol(sa,ct,p)
 - [X] gsw_rho(sa,ct,p)
@@ -104,20 +111,20 @@ internal_energy_second_derivatives
 enthalpy_first_derivatives
 enthalpy_second_derivatives
 
-# Module geostrophic streamfunctions, acoustic travel time and geostrophic velocity
+# Geostrophic streamfunctions, acoustic travel time and geostrophic velocity
 - [ ] gsw_geo_strf_dyn_height (sa, ct, p, p_ref)
 
-# Module Volume Exact
+# Volume Exact
 
-# Module Derivatives
+# Derivatives
 
-# Module Ice
+# Ice
 
-# Module vertical stability and interpolation
+# Vertical stability and interpolation
 
-# Module thermodynamic interaction between ice and seawater
+# Thermodynamic interaction between ice and seawater
 
-# Module Absolute Salinity (SA), Preformed Salinity (Sstar) and Conservative Temperature (CT)
+# Absolute Salinity (SA), Preformed Salinity (Sstar) and Conservative Temperature (CT)
 
 # Internal Functions
 
@@ -128,7 +135,7 @@ enthalpy_second_derivatives
 - [X] gsw_gibbs_ice (nt, np, t, p)
 
 
-# Missing in Rust implementation
+# Missing in GSW-Rust implementation
 
 - [ ] gsw_adiabatic_lapse_rate_ice (t, p)
 - [ ] gsw_alpha_wrt_t_exact(sa,t,p)
