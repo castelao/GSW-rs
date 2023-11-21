@@ -1,12 +1,13 @@
 
-Currently, GSW-Rust do not implement all functions already available in GSW-C.
-This document gives an idea of what is missing. If interested in some specific
-function, please check our official manual as the best reference for what we
-have already done.
+Currently, GSW-Rust do not implement all functions already available in
+GSW-C or GSW-Matlab. This document gives an idea of what is missing. If
+interested in some specific function, please check our official manual as
+the best reference for what we have already done.
 
-Modules and respective functions. The ones unchecked are implemented in GSW-C
-but still missing in GSW-Rust. The goal is to implement all functions
-described in TEOS-10.
+We organized the functions in modules following the toolbox card from
+TEOS-10 main document. The functions unchecked are missing in GSW-Rust.
+The goal is to implement all functions described in TEOS-10, but the
+priority is to do it right.
 
 
 # Convertions
@@ -32,18 +33,22 @@ described in TEOS-10.
 - [ ] gsw_adiabatic_lapse_rate_from_ct(sa,ct,p)
 
 
-p_from_abs_pressure
-abs_pressure_from_p
-t68_from_t90
-t90_from_t48
-t90_from_t68
+## Missing on GSW-C
+
+- p_from_abs_pressure
+- abs_pressure_from_p
+- t68_from_t90
+- t90_from_t48
+- t90_from_t68
 
 # Earth
 
 - [X] gsw_grav(lat,p)
 
-coriollis_parameter
-distance
+## Missing on GSW-C
+
+- coriollis_parameter()
+- distance()
 
 # Practical Salinity
 
@@ -53,11 +58,9 @@ distance
 - [ ] gsw_sp_from_sk(sk)
 
 ## Missing on GSW-C
+
 - sp_from_r
 - r_from_sp
-
-## Not implemented yet
-- sp_from_sk
 
 # Spiceness
 
@@ -97,19 +100,20 @@ distance
 - [ ] gsw_specvol_ice (t, p)
 
 
-rho_alpha_beta
-rho_first_derivatives
-rho_second_derivatives
-specvol_alpha_beta
-specvol_first_derivatives
-specvol_second_derivatives
-specvol_first_derivatives_wrt_enthalpy
-specvol_second_derivatives_wrt_enthalpy
-specvol_anom
-internal_energy_first_derivatives
-internal_energy_second_derivatives
-enthalpy_first_derivatives
-enthalpy_second_derivatives
+
+- rho_alpha_beta
+- rho_first_derivatives
+- rho_second_derivatives
+- specvol_alpha_beta
+- specvol_first_derivatives
+- specvol_second_derivatives
+- specvol_first_derivatives_wrt_enthalpy
+- specvol_second_derivatives_wrt_enthalpy
+- specvol_anom
+- internal_energy_first_derivatives
+- internal_energy_second_derivatives
+- enthalpy_first_derivatives
+- enthalpy_second_derivatives
 
 # Geostrophic streamfunctions, acoustic travel time and geostrophic velocity
 - [ ] gsw_geo_strf_dyn_height (sa, ct, p, p_ref)
