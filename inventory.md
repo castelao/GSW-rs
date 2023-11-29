@@ -10,7 +10,7 @@ The goal is to implement all functions described in TEOS-10, but the
 priority is to do it right.
 
 
-# Convertions
+# Conversions
 
 - [ ] gsw_deltasa_from_sp(sp,p,lon,lat)
 - [X] gsw_sr_from_sp(sp)
