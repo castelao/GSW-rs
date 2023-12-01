@@ -1,9 +1,13 @@
 # Unofficial TEOS-10 GSW Oceanographic Toolbox in Rust
 
-GSW for microcontrollers.
+GSW for microcontrollers and full computers.
 
 Note that we do follow TEOS-10 manual and references, but this library is not
 endorsed by TEOS-10 committee.
+
+We have already implemented approximately 53 of the public functions described
+on TEOS-10, and we do intend to eventually cover all of them. While we're
+working on that, we'll keep and [inventory.md] list.
 
 ## Talks
 
