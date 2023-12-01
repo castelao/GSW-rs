@@ -13,6 +13,7 @@ priority is to do it right.
 # Conversions
 
 - [ ] gsw_deltasa_from_sp(sp,p,lon,lat)
+- [ ] gsw_sstar_from_sp(sp,p,lon,lat)
 - [X] gsw_sr_from_sp(sp)
 - [X] gsw_sp_from_sr(sr)
 - [ ] gsw_sp_from_sa(sa,p,lon,lat)
@@ -30,16 +31,26 @@ priority is to do it right.
 - [ ] gsw_ct_from_entropy (sa, entropy)
 - [ ] gsw_entropy_from_pt (sa, pt)
 - [ ] gsw_pt_from_entropy (sa, entropy)
+- [ ] gsw_entropy_from_t(sa,t,p)
 - [ ] gsw_adiabatic_lapse_rate_from_ct(sa,ct,p)
+
 
 
 ## Missing on GSW-C
 
-- p_from_abs_pressure
-- abs_pressure_from_p
-- t68_from_t90
-- t90_from_t48
-- t90_from_t68
+- [ ] pot_enthalpy_from_pt
+- [ ] t_from_pt0
+- [X] t90_from_t48()
+- [X] t90_from_t68()
+- [ ] z_from_depth
+- [ ] depth_from_z
+- [X] abs_pressure_from_p()
+- [X] p_from_abs_pressure()
+- [ ] t_from_entropy()
+- [ ] adiabatic_lapse_rate_from_t()
+- [ ] molality_from_sa
+- [ ] ionic_strength_from_sa
+- [X] t68_from_t90()
 
 # Earth
 
@@ -47,8 +58,8 @@ priority is to do it right.
 
 ## Missing on GSW-C
 
-- coriollis_parameter()
-- distance()
+- [X] coriollis_parameter()
+- [X] distance()
 
 # Practical Salinity
 
@@ -59,8 +70,8 @@ priority is to do it right.
 
 ## Missing on GSW-C
 
-- sp_from_r
-- r_from_sp
+- [X] sp_from_r
+- [X] r_from_sp
 
 # Spiceness
 
@@ -77,11 +88,11 @@ priority is to do it right.
 # Volume
 
 - [X] gsw_specvol(sa,ct,p)
-- [X] gsw_rho(sa,ct,p)
 - [X] gsw_alpha(sa,ct,p)
 - [X] gsw_beta(sa,ct,p)
 - [X] gsw_alpha_on_beta(sa,ct,p)
 - [X] gsw_specvol_anom_standard(sa,ct,p)
+- [X] gsw_rho(sa,ct,p)
 - [X] gsw_sigma0(sa,ct)
 - [X] gsw_sigma1(sa,ct)
 - [X] gsw_sigma2(sa,ct)
@@ -91,31 +102,35 @@ priority is to do it right.
 - [X] gsw_thermobaric(sa,ct,p)
 - [X] gsw_enthalpy(sa,ct,p)
 - [X] gsw_enthalpy_diff (sa, ct, p_shallow, p_deep)
+- [X] gsw_dynamic_enthalpy(sa,ct,p)
 - [X] gsw_sound_speed(sa,ct,p)
 - [X] gsw_kappa(sa,ct,p)
 - [X] gsw_internal_energy(sa,ct,p)
-- [X] gsw_dynamic_enthalpy(sa,ct,p)
+- [ ] gsw_ct_from_enthalpy (sa, h, p)
 - [X] gsw_sa_from_rho(rho,ct,p)
 - [X] gsw_ct_maxdensity (sa, p)
-- [ ] gsw_specvol_ice (t, p)
 
+## Missing on GSW-C
 
-
-- rho_alpha_beta
-- rho_first_derivatives
-- rho_second_derivatives
-- specvol_alpha_beta
-- specvol_first_derivatives
-- specvol_second_derivatives
-- specvol_first_derivatives_wrt_enthalpy
-- specvol_second_derivatives_wrt_enthalpy
-- specvol_anom
-- internal_energy_first_derivatives
-- internal_energy_second_derivatives
-- enthalpy_first_derivatives
-- enthalpy_second_derivatives
+- [X] specvol_alpha_beta
+- [X] specvol_first_derivatives
+- [X] specvol_second_derivatives
+- [X] specvol_first_derivatives_wrt_enthalpy
+- [X] specvol_second_derivatives_wrt_enthalpy
+- [X] specvol_anom
+- [X] rho_alpha_beta
+- [X] rho_first_derivatives
+- [X] rho_second_derivatives
+- [ ] rho_first_derivatives_wrt_enthalpy
+- [ ] rho_second_derivatives_wrt_enthalpy
+- [ ] enthalpy_first_derivatives
+- [ ] enthalpy_second_derivatives
+- [ ] internal_energy_first_derivatives
+- [ ] internal_energy_second_derivatives
+- [ ] ct_from_rho
 
 # Geostrophic streamfunctions, acoustic travel time and geostrophic velocity
+
 - [ ] gsw_geo_strf_dyn_height (sa, ct, p, p_ref)
 
 # Volume Exact
@@ -151,7 +166,6 @@ priority is to do it right.
 - [ ] gsw_cp_t_exact(sa,t,p)
 - [ ] gsw_ct_freezing (sa, p, saturation_fraction)
 - [ ] gsw_ct_freezing_poly (sa, p, saturation_fraction)
-- [ ] gsw_ct_from_enthalpy (sa, h, p)
 - [ ] gsw_ct_from_enthalpy_exact (sa, h, p)
 - [ ] gsw_ct_from_t(sa,t,p)
 - [ ] gsw_deltasa_atlas(p,lon,lat)
@@ -159,7 +173,6 @@ priority is to do it right.
 - [ ] gsw_enthalpy_ct_exact (sa, ct, p)
 - [ ] gsw_enthalpy_ice (t, p)
 - [ ] gsw_enthalpy_t_exact(sa,t,p)
-- [ ] gsw_entropy_from_t(sa,t,p)
 - [ ] gsw_entropy_ice (t, p)
 - [ ] gsw_entropy_part(sa,t,p)
 - [ ] gsw_entropy_part_zerop(sa,pt0)
@@ -222,4 +235,4 @@ priority is to do it right.
 - [ ] gsw_util_linear_interp (x, y, x_i) result(y_i)
 - [ ] gsw_util_sort_real (rarray) result(iarray)
 - [ ] gsw_util_xinterp1(x,y,n,x0)
-- [ ] gsw_sstar_from_sp(sp,p,lon,lat)
+- [ ] gsw_specvol_ice (t, p)
