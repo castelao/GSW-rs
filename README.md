@@ -7,7 +7,7 @@ endorsed by TEOS-10 committee.
 
 We have already implemented approximately 53 of the public functions described
 on TEOS-10, and we do intend to eventually cover all of them. While we're
-working on that, we'll keep and [inventory.md] list.
+working on that, we'll keep an [inventory list](inventory.md).
 
 ## Talks
 
