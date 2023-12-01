@@ -38,19 +38,19 @@ priority is to do it right.
 
 ## Missing on GSW-C
 
-- [ ] pot_enthalpy_from_pt
-- [ ] t_from_pt0
-- [X] t90_from_t48()
-- [X] t90_from_t68()
-- [ ] z_from_depth
-- [ ] depth_from_z
-- [X] abs_pressure_from_p()
-- [X] p_from_abs_pressure()
-- [ ] t_from_entropy()
-- [ ] adiabatic_lapse_rate_from_t()
-- [ ] molality_from_sa
-- [ ] ionic_strength_from_sa
-- [X] t68_from_t90()
+- [ ] gsw_pot_enthalpy_from_pt
+- [ ] gsw_t_from_pt0
+- [X] gsw_t90_from_t48()
+- [X] gsw_t90_from_t68()
+- [ ] gsw_z_from_depth
+- [ ] gsw_depth_from_z
+- [X] gsw_abs_pressure_from_p()
+- [X] gsw_p_from_abs_pressure()
+- [ ] gsw_t_from_entropy()
+- [ ] gsw_adiabatic_lapse_rate_from_t()
+- [ ] gsw_molality_from_sa
+- [ ] gsw_ionic_strength_from_sa
+- [X] gsw_t68_from_t90()
 
 # Earth
 
@@ -59,7 +59,7 @@ priority is to do it right.
 ## Missing on GSW-C
 
 - [X] coriollis_parameter()
-- [X] distance()
+- [X] gsw_distance()
 
 # Practical Salinity
 
@@ -70,8 +70,8 @@ priority is to do it right.
 
 ## Missing on GSW-C
 
-- [X] sp_from_r
-- [X] r_from_sp
+- [X] gsw_sp_from_r
+- [X] gsw_r_from_sp
 
 # Spiceness
 
@@ -112,22 +112,22 @@ priority is to do it right.
 
 ## Missing on GSW-C
 
-- [X] specvol_alpha_beta
-- [X] specvol_first_derivatives
-- [X] specvol_second_derivatives
-- [X] specvol_first_derivatives_wrt_enthalpy
-- [X] specvol_second_derivatives_wrt_enthalpy
-- [X] specvol_anom
-- [X] rho_alpha_beta
-- [X] rho_first_derivatives
-- [X] rho_second_derivatives
-- [ ] rho_first_derivatives_wrt_enthalpy
-- [ ] rho_second_derivatives_wrt_enthalpy
-- [ ] enthalpy_first_derivatives
-- [ ] enthalpy_second_derivatives
-- [ ] internal_energy_first_derivatives
-- [ ] internal_energy_second_derivatives
-- [ ] ct_from_rho
+- [X] gsw_specvol_alpha_beta
+- [X] gsw_specvol_first_derivatives
+- [X] gsw_specvol_second_derivatives
+- [X] gsw_specvol_first_derivatives_wrt_enthalpy
+- [X] gsw_specvol_second_derivatives_wrt_enthalpy
+- [X] gsw_specvol_anom
+- [X] gsw_rho_alpha_beta
+- [X] gsw_rho_first_derivatives
+- [X] gsw_rho_second_derivatives
+- [ ] gsw_rho_first_derivatives_wrt_enthalpy
+- [ ] gsw_rho_second_derivatives_wrt_enthalpy
+- [ ] gsw_enthalpy_first_derivatives
+- [ ] gsw_enthalpy_second_derivatives
+- [ ] gsw_internal_energy_first_derivatives
+- [ ] gsw_internal_energy_second_derivatives
+- [ ] gsw_ct_from_rho
 
 # Geostrophic streamfunctions, acoustic travel time and geostrophic velocity
 
