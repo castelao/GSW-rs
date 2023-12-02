@@ -61,7 +61,7 @@ on a commercial language, restricting its use. Several other implementations,
 including those for Julia, Python, and R, are wrappers around the
 C implementation (GSW-C), which is hence the actual foundation for the
 alternative Open Source family of solutions. Although it is powerful, C lacks
-some features and conveniences of modern languages. Here we propose an
+some features and conveniences of modern languages. Here we present an
 alternative using Rust language, resulting in comparable performance to GSW-C,
 while providing an efficient framework that accelerates the development effort
 and minimizes errors. For embedded systems, GSW-rs is a requirement for a
