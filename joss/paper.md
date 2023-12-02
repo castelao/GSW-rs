@@ -66,6 +66,6 @@ alternative using Rust language, resulting in comparable performance to GSW-C,
 while providing an efficient framework that accelerates the development effort
 and minimizes errors. For embedded systems, GSW-rs is a requirement for a
 pure Rust firmware able to make sense of sensor measurements in real time.
-Beyond embedded applications, GSW-rs is also compatible with regular computers, thus providing an open-source alternative for the scientific community that guarantees reproducibility with GSW-m.
+In addition, for any application, GSW-rs provides the option to conform more closely to GSW-m than does the present GSW-C implementation. Function coverage, however, does not yet match either GSW-C or GSW-m.
 
 # References
