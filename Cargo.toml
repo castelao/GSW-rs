@@ -8,6 +8,7 @@ documentation = "https://docs.rs/gsw"
 license = "BSD-3-Clause"
 repository = "https://github.com/castelao/GSW-rs"
 keywords = ["oceanography", "seawater"]
+categories = ["science", "no-std"]
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
