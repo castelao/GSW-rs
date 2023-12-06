@@ -16,12 +16,12 @@ jobs:
           path: |
             ~/.nix-portable/store
             ~/bin/nix-portable
-          key: nix-${{ hashFiles('shell.nix') }}-${{ hashFiles('nix/**') }}-v009
+          key: nix-${{ hashFiles('shell.nix') }}-${{ hashFiles('nix/**') }}-v010
 
       - name: Install nix-portable
         if: steps.cache-nix.outputs.cache-hit != 'true'
         run: |
           mkdir ~/bin
-          wget -qO ~/bin/nix-portable https://github.com/DavHau/nix-portable/releases/download/v009/nix-portable
+          wget -qO ~/bin/nix-portable https://github.com/DavHau/nix-portable/releases/download/v010/nix-portable
           chmod +x ~/bin/nix-portable
       - run: ~/bin/nix-portable nix-build . -A defaultPackage.x86_64-linux
