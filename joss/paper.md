@@ -56,7 +56,7 @@ to high-performance computing.
 
 While GSW is already implemented in several languages, there is no uniformity
 among those. The Matlab implementation (GSW-m) [@GSW-m] is the most
-complete (see Appendix N from @TEOS-10 and up to date, but it is based
+complete (see Appendix N from @TEOS-10) and up to date, but it is based
 on a commercial language, restricting its use. Several other implementations,
 including those for Julia, Python, and R, are wrappers around the
 C implementation (GSW-C), which is hence the actual foundation for the
