@@ -17,7 +17,7 @@ rust-version = "1.64.0"
 members = ["convert_refdata"]
 
 [dependencies]
-libm = "0.2"
+libm = "0.2.8"
 libc = { version = "0.2", optional = true }
 thiserror = { version = "1.0.24", optional = true }
 num-complex = "0.4.3"
