@@ -5,6 +5,14 @@ GSW for microcontrollers and full computers.
 Note that we do follow TEOS-10 manual and references, but this library is not
 endorsed by TEOS-10 committee.
 
+The initial motivation for developing GSW-rs was to support pure Rust firmware
+for microcontrollers used in autonomous oceanography platforms -- such as
+underwater gliders and Argo floats. Rust stands out as an ideal solution due to
+its robustness and reliability complemented by an integrated testing system and
+a robust package manager to handle dependencies. Our Rust implementation
+achieves speeds comparable with C while capitalizing on Rust's explicit and
+intuitive syntax which makes it an optimal choice for scientific applications.
+
 We have already implemented approximately 53 of the public functions described
 on TEOS-10, and we do intend to eventually cover all of them. While we're
 working on that, we'll keep an [inventory list](inventory.md).
