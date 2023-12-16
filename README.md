@@ -21,7 +21,7 @@ working on that, we'll keep an [inventory list](inventory.md).
 
 We presented about goals and progress (as of Apr 2022) at the
 [SEA Improving Scientific Software 2022](https://sea.ucar.edu/conference/2022),
-[slides available here](https://github.com/castelao/GSW-rs/tree/main/doc/talks).
+[slides available here](https://gsw.castelao.net/talks/).
 
 ## Minimum supported Rust version
 
