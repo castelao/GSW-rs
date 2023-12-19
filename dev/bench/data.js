@@ -1,5 +1,5 @@
 window.BENCHMARK_DATA = {
-  "lastUpdate": 1702761344049,
+  "lastUpdate": 1703015171871,
   "repoUrl": "https://github.com/castelao/GSW-rs",
   "entries": {
     "Rust Benchmark": [
@@ -7739,6 +7739,258 @@ window.BENCHMARK_DATA = {
             "name": "ct_maxdensity",
             "value": 485,
             "range": "± 3",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "sp_from_c",
+            "value": 18,
+            "range": "± 0",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "c_from_sp",
+            "value": 18,
+            "range": "± 0",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "sp_salinometer",
+            "value": 9,
+            "range": "± 0",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "z_from_p",
+            "value": 13,
+            "range": "± 0",
+            "unit": "ns/iter"
+          }
+        ]
+      },
+      {
+        "commit": {
+          "author": {
+            "email": "guilherme@castelao.net",
+            "name": "Guilherme Castelão",
+            "username": "castelao"
+          },
+          "committer": {
+            "email": "noreply@github.com",
+            "name": "GitHub",
+            "username": "web-flow"
+          },
+          "distinct": true,
+          "id": "658744724e1e144a9e45c2708b56b9627b31e3da",
+          "message": "JOSS (#45)\n\n* Adding core references\r\n\r\n* Creating basic information on paper\r\n\r\n* Paper first version\r\n\r\n* Compile paper draft on every update\r\n\r\n* Fixing references, spaces instead of tabs\r\n\r\n* Typo in the TEOS-10 bib alias\r\n\r\n* Fixing path for the PDF output\r\n\r\n* Missing reference to GSW-Python\r\n\r\nIt seems like it was the only implementation with a doi missing. It\r\nmight be worth figure out how to cite the other implementation, even if\r\nthose other ones don't have a doi or any proper citation descriptor.\r\n\r\n* Adding references to other repositories\r\n\r\n* Fixing DOIs, missing and bad syntax\r\n\r\n* Fixing reference\r\n\r\nType techreport might be more adequate. Other minor fixes.\r\n\r\n* Better wording\r\n\r\nThanks to @efiring.\r\n\r\n* Editing confusing sentence\r\n\r\n@efiring, thanks for the note. Is it bette now? The point behind is that\r\nwith `features='compat'` we guarantee compatibility with GSW-m. While\r\nGSW-C has some minor differences.\r\n\r\n* Bug, manual type is expected to be a software\r\n\r\nSomehow JOSS processing assumes that a bib reference type manual should\r\nbe from a software and adds '[Computer software]' to the refence.\r\n\r\nLet's see if a techreport resolves that.\r\n\r\n* Improving TEOS-10 reference\r\n\r\nPlaying with bib file.\r\n\r\n* Fix: Using total pages lead to wrong result\r\n\r\nBack to pages 1--28 instead of 28pp\r\n\r\n* Adding missing total pages\r\n\r\nIt's up to JOSS references style to decide showing it or not.\r\n\r\n* Improving compatibility comment and not on limited coverage\r\n\r\nPerfect! Clear message. Thanks @efiring!\r\n\r\n* typo: Missing a closing parenthesis\r\n\r\n* typo: Actually the correct syntax is using [ ]!\r\n\r\n* Using manual instead of article\r\n\r\nFor the software without DOI, reference type 'manual' might be better\r\nthan 'article'.",
+          "timestamp": "2023-12-19T16:35:47-03:00",
+          "tree_id": "7d29e3202e7a8d8efa7443a1d2e5e89c5bdea139",
+          "url": "https://github.com/castelao/GSW-rs/commit/658744724e1e144a9e45c2708b56b9627b31e3da"
+        },
+        "date": 1703015170885,
+        "tool": "cargo",
+        "benches": [
+          {
+            "name": "specvol",
+            "value": 27,
+            "range": "± 1",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "alpha",
+            "value": 45,
+            "range": "± 0",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "beta",
+            "value": 52,
+            "range": "± 0",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "specvol_sso_0",
+            "value": 3,
+            "range": "± 0",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "specvol_anom_standard",
+            "value": 33,
+            "range": "± 0",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "specvol_alpha_beta",
+            "value": 138,
+            "range": "± 0",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "rho",
+            "value": 33,
+            "range": "± 0",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "rho_alpha_beta",
+            "value": 138,
+            "range": "± 0",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "sigma0",
+            "value": 19,
+            "range": "± 0",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "sigma1",
+            "value": 34,
+            "range": "± 0",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "sigma2",
+            "value": 34,
+            "range": "± 0",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "sigma3",
+            "value": 34,
+            "range": "± 1",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "sigma4",
+            "value": 34,
+            "range": "± 0",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "cabbeling",
+            "value": 148,
+            "range": "± 0",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "sound_speed",
+            "value": 43,
+            "range": "± 0",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "dynamic_enthalpy",
+            "value": 31,
+            "range": "± 0",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "sa_from_rho",
+            "value": 230,
+            "range": "± 0",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "specvol_first_derivatives",
+            "value": 36,
+            "range": "± 0",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "specvol_first_derivatives_wrt_enthalpy",
+            "value": 80,
+            "range": "± 0",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "specvol_second_derivatives",
+            "value": 152,
+            "range": "± 0",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "specvol_second_derivatives_wrt_enthalpy",
+            "value": 44,
+            "range": "± 0",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "alpha_on_beta",
+            "value": 35,
+            "range": "± 0",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "rho_first_derivatives",
+            "value": 57,
+            "range": "± 0",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "rho_second_derivatives",
+            "value": 113,
+            "range": "± 3",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "thermobaric",
+            "value": 107,
+            "range": "± 0",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "enthalpy",
+            "value": 35,
+            "range": "± 0",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "enthalpy_first_derivatives",
+            "value": 36,
+            "range": "± 0",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "enthalpy_second_derivatives",
+            "value": 32,
+            "range": "± 0",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "enthalpy_diff",
+            "value": 65,
+            "range": "± 0",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "kappa",
+            "value": 40,
+            "range": "± 0",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "internal_energy",
+            "value": 60,
+            "range": "± 0",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "internal_energy_first_derivatives",
+            "value": 100,
+            "range": "± 0",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "internal_energy_second_derivatives",
+            "value": 99,
+            "range": "± 0",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "ct_maxdensity",
+            "value": 484,
+            "range": "± 1",
             "unit": "ns/iter"
           },
           {
