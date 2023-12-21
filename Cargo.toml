@@ -1,7 +1,10 @@
 [package]
 name = "gsw"
 version = "0.1.4"
-authors = ["Guilherme Castelão <guilherme@castelao.net>", "Luiz Irber <luiz.irber@gmail.com>"]
+authors = [
+  "Guilherme Castelão <guilherme@castelao.net>",
+  "Luiz Irber <luiz.irber@gmail.com>"
+  ]
 edition = "2018"
 description = "TEOS-10 v3.06.12 Gibbs Seawater Oceanographic Toolbox in Rust"
 documentation = "https://docs.rs/gsw"
