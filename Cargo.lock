@@ -205,6 +205,12 @@ dependencies = [
 ]
 
 [[package]]
+name = "cobs"
+version = "0.2.3"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "67ba02a97a2bd10f4b59b25c7973101c79642302776489e030cd13cdab09ed15"
+
+[[package]]
 name = "cortex-m"
 version = "0.7.6"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -412,7 +418,7 @@ dependencies = [
  "libc",
  "libm",
  "num-complex",
- "postcard",
+ "postcard 1.0.8",
  "regex",
  "serde",
  "thiserror",
@@ -425,7 +431,7 @@ dependencies = [
  "heapless",
  "matfile",
  "ndarray",
- "postcard",
+ "postcard 0.7.3",
  "serde",
 ]
 
@@ -813,6 +819,17 @@ checksum = "a25c0b0ae06fcffe600ad392aabfa535696c8973f2253d9ac83171924c58a858"
 dependencies = [
  "heapless",
  "postcard-cobs",
+ "serde",
+]
+
+[[package]]
+name = "postcard"
+version = "1.0.8"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "a55c51ee6c0db07e68448e336cf8ea4131a620edefebf9893e759b2d793420f8"
+dependencies = [
+ "cobs",
+ "heapless",
  "serde",
 ]
 
