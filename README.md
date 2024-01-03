@@ -1,3 +1,5 @@
+[![DOI](https://joss.theoj.org/papers/10.21105/joss.05988/status.svg)](https://doi.org/10.21105/joss.05988)
+
 # Unofficial TEOS-10 GSW Oceanographic Toolbox in Rust
 
 GSW for microcontrollers and full computers.
