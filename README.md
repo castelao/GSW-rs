@@ -1,5 +1,3 @@
-[![DOI](https://joss.theoj.org/papers/10.21105/joss.05988/status.svg)](https://doi.org/10.21105/joss.05988)
-
 # Unofficial TEOS-10 GSW Oceanographic Toolbox in Rust
 
 GSW for microcontrollers and full computers.
@@ -132,21 +130,25 @@ valid range in the original literature.
 
 If you use this library we kindly ask to cite all the three following references:
 
-[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.5348561.svg)](https://doi.org/10.5281/zenodo.5348561)
+[![DOI](https://joss.theoj.org/papers/10.21105/joss.05988/status.svg)](https://doi.org/10.21105/joss.05988)
 
-Castelao, G., & Irber, L. (2021). Unofficial Gibbs Sea Water Oceanographic
-Toolbox of TEOS-10 implemented in Rust (Version 0.1.1) [Computer software].
-https://doi.org/10.5281/zenodo.5348561
+Castelao, G., & Irber, L. (2024). Gibbs Sea Water Oceanographic Toolbox of
+TEOS-10 implemented in Rust. Journal of Open Source Software, 9(93), 5988,
+https://doi.org/10.21105/joss.05988
+
 
 ```text
-@software{Castelao_Gibbs_Sea_Water_2021,
-  title = {{Gibbs Sea Water Oceanographic Toolbox of TEOS-10 implemented in Rust}},
-  author = {Castelao, Guilherme and Irber, Luiz},
-  year = {2021},
-  license = {BSD-3-Clause},
-  version = {0.1.1},
-  doi = {10.5281/zenodo.5348561},
-  url = {https://github.com/castelao/GSW-rs}
+@article{Castelao2024,
+  doi = {10.21105/joss.05988},
+  url = {https://doi.org/10.21105/joss.05988},
+  year = {2024},
+  publisher = {The Open Journal},
+  volume = {9},
+  number = {93},
+  pages = {5988},
+  author = {Guilherme P. Castelao and Luiz Irber},
+  title = {Gibbs Sea Water Oceanographic Toolbox of TEOS-10 implemented in Rust},
+  journal = {Journal of Open Source Software}
   }
 ```
 
