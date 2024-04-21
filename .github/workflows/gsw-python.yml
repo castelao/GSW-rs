@@ -16,7 +16,7 @@ jobs:
       - uses: actions/checkout@v2
         with:
           repository: "TEOS-10/GSW-Python"
-          ref: dc77e960ee1b615b83973536a6a8c9e87f2e4aae
+          ref: f9b3f6e4895e9eba37e0bb509291c2046c71c5ee
 
       - uses: actions/checkout@v2
         with:
