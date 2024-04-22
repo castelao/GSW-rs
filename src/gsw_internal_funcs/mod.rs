@@ -1068,7 +1068,7 @@ mod test_gibbs {
 ///     - pressure derivatives in: \[(J/kg) (Pa)^(-np)\]
 ///     - mixed derivatives in \[(J/kg) (K)^(-nt) (Pa)^(-np)\]
 #[allow(dead_code)]
-fn gibbs_ice(nt: u8, np: u8, t: f64, p: f64) -> Result<f64> {
+pub(crate) fn gibbs_ice(nt: u8, np: u8, t: f64, p: f64) -> Result<f64> {
     // use a complex number crate. eventually replaced by calculations by hand
     use num_complex::Complex;
 
