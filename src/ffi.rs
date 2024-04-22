@@ -348,6 +348,17 @@ pub unsafe extern "C" fn gsw_z_from_p(
     crate::conversions::z_from_p(p, lat, geo_strf_dyn_height, sea_surface_geopotential)
 }
 
+#[no_mangle]
+pub unsafe extern "C" fn gsw_p_from_z(
+    z: f64,
+    lat: f64,
+    geo_strf_dyn_height: f64,
+    sea_surface_geopotential: f64,
+) -> f64 {
+    crate::conversions::p_from_z(z, lat, Some(geo_strf_dyn_height), Some(sea_surface_geopotential))
+        .unwrap_or(GSW_INVALID_VALUE)
+}
+
 /////////////////////////
 // To be implemented
 /////////////////////////
@@ -1530,17 +1541,6 @@ pub unsafe extern "C" fn gsw_util_pchip_interp(
 ) -> ::libc::c_int {
     //unimplemented!()
     0
-}
-
-#[no_mangle]
-pub unsafe extern "C" fn gsw_p_from_z(
-    z: f64,
-    lat: f64,
-    geo_strf_dyn_height: f64,
-    sea_surface_geopotential: f64,
-) -> f64 {
-    //unimplemented!()
-    f64::NAN
 }
 
 #[cfg(test)]
