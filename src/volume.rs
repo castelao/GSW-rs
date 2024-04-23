@@ -2098,7 +2098,7 @@ pub fn enthalpy_second_derivatives(sa: f64, ct: f64, p: f64) -> Result<(f64, f64
                         + 3.0 * H303 * s2
                         + tau * (-H113 + tau * (-H123 - H133 * tau))
                         + pi * (-H104 - H114 * tau - H105 * pi)))));
-    let h_sa_sa = 1e8 * 0.25 * GSW_SFAC * dynamic_h_sa_sa_part / (s * s * s);
+    let h_sa_sa = 1e8 * 0.25 * GSW_SFAC * GSW_SFAC * dynamic_h_sa_sa_part / (s * s * s);
 
     let dynamic_h_sa_ct_part = pi
         * (H111
