@@ -2234,7 +2234,7 @@ mod test_sa_from_rho {
 /// ```
 /// use gsw::volume::ct_maxdensity;
 /// let ct = ct_maxdensity(32.0, 100.0).unwrap();
-/// assert!((ct - (-3.337428439202098)).abs() <= f64::EPSILON);
+/// assert!((ct - (-3.3374284392020974)).abs() <= f64::EPSILON);
 /// ```
 ///
 /// # Notes
@@ -2248,15 +2248,14 @@ pub fn ct_maxdensity(sa: f64, p: f64) -> Result<f64> {
     // Initial guess of Conservative Temperature
     let mut ct = 3.978 - 0.22072 * sa;
     // Initial guess for d alpha / d CT
-    let dalpha_dct = 1.1e-5;
+    let mut dalpha_dct = 1.1e-5;
 
     for _ in 0..number_of_iterations {
         let ct_old = ct;
         let a = alpha(sa, ct_old, p)?;
         ct = ct_old - a / dalpha_dct;
         let ct_mean = 0.5 * (ct + ct_old);
-        let dalpha_dct =
-            (alpha(sa, ct_mean + dct, p)? - alpha(sa, ct_mean - dct, p)?) / (2.0 * dct);
+        dalpha_dct = (alpha(sa, ct_mean + dct, p)? - alpha(sa, ct_mean - dct, p)?) / (dct + dct);
         ct = ct_old - a / dalpha_dct;
     }
 
