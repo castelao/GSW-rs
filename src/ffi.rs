@@ -200,6 +200,11 @@ pub unsafe extern "C" fn gsw_enthalpy_second_derivatives(
 }
 
 #[no_mangle]
+pub unsafe extern "C" fn gsw_enthalpy_sso_0(p: f64) -> f64 {
+    crate::gsw_internal_funcs::enthalpy_sso_0(p)
+}
+
+#[no_mangle]
 pub unsafe extern "C" fn gsw_sa_from_rho(rho: f64, ct: f64, p: f64) -> f64 {
     crate::volume::sa_from_rho(rho, ct, p).unwrap_or(GSW_INVALID_VALUE)
 }
@@ -306,6 +311,34 @@ pub unsafe extern "C" fn gsw_enthalpy(sa: f64, ct: f64, p: f64) -> f64 {
 #[no_mangle]
 pub unsafe extern "C" fn gsw_enthalpy_diff(sa: f64, ct: f64, p_shallow: f64, p_deep: f64) -> f64 {
     crate::volume::enthalpy_diff(sa, ct, p_shallow, p_deep).unwrap_or(GSW_INVALID_VALUE)
+}
+
+#[no_mangle]
+pub unsafe extern "C" fn gsw_gibbs_ice(
+    nt: ::libc::c_int,
+    np: ::libc::c_int,
+    t: f64,
+    p: f64,
+) -> f64 {
+    crate::gsw_internal_funcs::gibbs_ice(nt as u8, np as u8, t, p).unwrap_or(GSW_INVALID_VALUE)
+}
+
+#[no_mangle]
+pub unsafe extern "C" fn gsw_gibbs(
+    ns: ::libc::c_int,
+    nt: ::libc::c_int,
+    np: ::libc::c_int,
+    sa: f64,
+    t: f64,
+    p: f64,
+) -> f64 {
+    crate::gsw_internal_funcs::gibbs(ns as u8, nt as u8, np as u8, sa, t, p)
+        .unwrap_or(GSW_INVALID_VALUE)
+}
+
+#[no_mangle]
+pub unsafe extern "C" fn gsw_hill_ratio_at_sp2(t: f64) -> f64 {
+    crate::gsw_internal_funcs::hill_ratio_at_sp2(t)
 }
 
 #[no_mangle]
@@ -587,12 +620,6 @@ pub unsafe extern "C" fn gsw_enthalpy_second_derivatives_ct_exact(
 }
 
 #[no_mangle]
-pub unsafe extern "C" fn gsw_enthalpy_sso_0(p: f64) -> f64 {
-    //unimplemented!()
-    f64::NAN
-}
-
-#[no_mangle]
 pub unsafe extern "C" fn gsw_enthalpy_t_exact(sa: f64, t: f64, p: f64) -> f64 {
     //unimplemented!()
     f64::NAN
@@ -763,17 +790,6 @@ pub unsafe extern "C" fn gsw_geo_strf_dyn_height_pc(
 }
 
 #[no_mangle]
-pub unsafe extern "C" fn gsw_gibbs_ice(
-    nt: ::libc::c_int,
-    np: ::libc::c_int,
-    t: f64,
-    p: f64,
-) -> f64 {
-    //unimplemented!()
-    f64::NAN
-}
-
-#[no_mangle]
 pub unsafe extern "C" fn gsw_gibbs_ice_part_t(t: f64, p: f64) -> f64 {
     //unimplemented!()
     f64::NAN
@@ -792,19 +808,6 @@ pub unsafe extern "C" fn gsw_gibbs_ice_pt0_pt0(pt0: f64) -> f64 {
 }
 
 #[no_mangle]
-pub unsafe extern "C" fn gsw_gibbs(
-    ns: ::libc::c_int,
-    nt: ::libc::c_int,
-    np: ::libc::c_int,
-    sa: f64,
-    t: f64,
-    p: f64,
-) -> f64 {
-    //unimplemented!()
-    f64::NAN
-}
-
-#[no_mangle]
 pub unsafe extern "C" fn gsw_gibbs_pt0_pt0(sa: f64, pt0: f64) -> f64 {
     //unimplemented!()
     f64::NAN
@@ -818,12 +821,6 @@ pub unsafe extern "C" fn gsw_grav(lat: f64, p: f64) -> f64 {
 
 #[no_mangle]
 pub unsafe extern "C" fn gsw_helmholtz_energy_ice(t: f64, p: f64) -> f64 {
-    //unimplemented!()
-    f64::NAN
-}
-
-#[no_mangle]
-pub unsafe extern "C" fn gsw_hill_ratio_at_sp2(t: f64) -> f64 {
     //unimplemented!()
     f64::NAN
 }
