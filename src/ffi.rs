@@ -388,8 +388,13 @@ pub unsafe extern "C" fn gsw_p_from_z(
     geo_strf_dyn_height: f64,
     sea_surface_geopotential: f64,
 ) -> f64 {
-    crate::conversions::p_from_z(z, lat, Some(geo_strf_dyn_height), Some(sea_surface_geopotential))
-        .unwrap_or(GSW_INVALID_VALUE)
+    crate::conversions::p_from_z(
+        z,
+        lat,
+        Some(geo_strf_dyn_height),
+        Some(sea_surface_geopotential),
+    )
+    .unwrap_or(GSW_INVALID_VALUE)
 }
 
 /////////////////////////
