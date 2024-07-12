@@ -466,8 +466,7 @@ pub fn p_from_z(
     // initial value of the derivative of f
     let df_dp = DB2PA * crate::gsw_internal_funcs::specvol_sso_0(p);
 
-    let f = crate::gsw_internal_funcs::enthalpy_sso_0(p)
-        + gs * (z - 0.5 * GAMMA * (z * z))
+    let f = crate::gsw_internal_funcs::enthalpy_sso_0(p) + gs * (z - 0.5 * GAMMA * (z * z))
         - (geo_strf_dyn_height.unwrap_or(0.0) + sea_surface_geopotental.unwrap_or(0.0));
     let p_old = p;
     let p = p_old - f / df_dp;
