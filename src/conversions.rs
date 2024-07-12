@@ -435,8 +435,7 @@ pub fn p_from_z(
 
     let f = crate::gsw_internal_funcs::enthalpy_sso_0(p)
         + gs * (z - 0.5 * GAMMA * (z * z))
-        + geo_strf_dyn_height.unwrap_or(0.0)
-        + sea_surface_geopotental.unwrap_or(0.0);
+        - (geo_strf_dyn_height.unwrap_or(0.0) + sea_surface_geopotental.unwrap_or(0.0));
     let p_old = p;
     let p = p_old - f / df_dp;
     let p_mid = 0.5 * (p + p_old);
