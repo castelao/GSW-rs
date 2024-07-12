@@ -134,8 +134,8 @@ jobs:
         if: startsWith(matrix.os, 'macos') || startsWith(matrix.os, 'ubuntu')
         run: |
           set -x
-          test "$(pkg-config --cflags gsw)" = "-I/usr/local/include"
-          test "$(pkg-config --libs gsw)" = "-L/usr/local/lib -lgsw"
+          test "`echo $(pkg-config --cflags gsw) | xargs`" = "-I/usr/local/include"
+          test "`echo $(pkg-config --libs gsw) | xargs`" = "-L/usr/local/lib -lgsw"
 
       - name: Update dynamic linker cache
         if: startsWith(matrix.os, 'ubuntu')

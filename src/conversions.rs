@@ -379,6 +379,39 @@ pub fn z_from_p(
     -2.0 * c / (b + libm::sqrt(b * b - 4.0 * a * c))
 }
 
+#[cfg(test)]
+mod test_z_from_p {
+    use super::{p_from_z, z_from_p};
+
+    #[test]
+    fn surface() {
+        assert!((0.0 - z_from_p(0.0, 33.3482, 0.0, 0.0)).abs() < f64::EPSILON);
+        // assert_eq!(-6010.85496, z_from_p(6131.0, 11.0, 0.0, 0.0));
+    }
+
+    #[test]
+    fn roundtrip() {
+        let p1 = 6131.0;
+        let lat = 11.0;
+        let p2 = p_from_z(z_from_p(p1, lat, 0.0, 0.0), lat, Some(0.0), Some(0.0)).unwrap();
+        // Precision defined by (McDougall and Wotherspoon, 2013)
+        assert!((p1 - p2).abs() <= 1.6e-10);
+    }
+
+    #[test]
+    fn roundtrip_with_extras() {
+        let p1 = 6131.0;
+        let lat = 11.0;
+        for dh in [0.0, 1.0] {
+            for gp in [0.0, 1.0] {
+                let p2 = p_from_z(z_from_p(p1, lat, dh, gp), lat, Some(dh), Some(gp)).unwrap();
+                // Precision defined by (McDougall and Wotherspoon, 2013)
+                assert!((p1 - p2).abs() <= 1.6e-10);
+            }
+        }
+    }
+}
+
 /// Pressure from height (75-term polynomial approximation)
 ///
 /// # Arguments
@@ -433,8 +466,7 @@ pub fn p_from_z(
     // initial value of the derivative of f
     let df_dp = DB2PA * crate::gsw_internal_funcs::specvol_sso_0(p);
 
-    let f = crate::gsw_internal_funcs::enthalpy_sso_0(p)
-        + gs * (z - 0.5 * GAMMA * (z * z))
+    let f = crate::gsw_internal_funcs::enthalpy_sso_0(p) + gs * (z - 0.5 * GAMMA * (z * z))
         - (geo_strf_dyn_height.unwrap_or(0.0) + sea_surface_geopotental.unwrap_or(0.0));
     let p_old = p;
     let p = p_old - f / df_dp;
@@ -510,7 +542,7 @@ gsw_ionic_strength_from_SA
 
 #[cfg(test)]
 mod tests {
-    use super::{t90_from_t68, z_from_p};
+    use super::t90_from_t68;
 
     #[test]
     fn test_t90_from_t68() {
@@ -520,11 +552,5 @@ mod tests {
         } else {
             assert!((10.0 - t90_from_t68(10.0024)).abs() < f64::EPSILON);
         }
-    }
-
-    #[test]
-    fn test_z_from_p() {
-        assert!((0.0 - z_from_p(0.0, 33.3482, 0.0, 0.0)).abs() < f64::EPSILON);
-        // assert_eq!(-6010.85496, z_from_p(6131.0, 11.0, 0.0, 0.0));
     }
 }
