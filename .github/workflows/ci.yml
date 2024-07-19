@@ -267,15 +267,12 @@ jobs:
       - name: check if README matches MSRV defined here
         run: grep '1.68.0' README.md
 
-      - uses: actions-rs/toolchain@v1
+      - uses: dtolnay/rust-toolchain@master
         with:
           toolchain: 1.68.0
-          override: true
 
       - name: Check if it builds
-        uses: actions-rs/cargo@v1
-        with:
-          command: build
+        run: cargo build
 
   publish:
     name: Publish (dry-run)
