@@ -284,15 +284,11 @@ jobs:
       - name: Checkout sources
         uses: actions/checkout@v2
 
-      - name: Install stable toolchain
-        uses: actions-rs/toolchain@v1
+      - uses: prefix-dev/setup-pixi@v0.8.1
         with:
-          profile: minimal
-          toolchain: stable
-          override: true
+          pixi-version: v0.25.0
+          cache: true
+          frozen: true
 
       - name: Make sure we can publish
-        uses: actions-rs/cargo@v1
-        with:
-          command: publish
-          args: --dry-run
+        run: pixi run cargo publish --dry-run
