@@ -26,7 +26,7 @@ thiserror = { version = "1.0.24", optional = true }
 num-complex = "0.4.3"
 
 [dev-dependencies]
-heapless = "0.8"
+heapless = "0.7.17"
 inline-c = "0.1"
 postcard = "1.0.2"
 serde = "1.0.126"
