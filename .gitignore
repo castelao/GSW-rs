@@ -1,3 +1,4 @@
 /target
 Cargo.lock
 convert_refdata/data/gsw_*_validation.bin
+.pixi/
