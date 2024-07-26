@@ -29,13 +29,14 @@ jobs:
           pixi-version: v0.25.0
           cache: true
           frozen: true
+          manifest-path: src/GSW-rs/pixi.toml
 
       - name: Install patched GSW-Python
         run: |
           git apply src/GSW-rs/utils/gsw-py-patch
-          pixi run python -m pip install .
+          pixi run --manifest-path src/GSW-rs/pixi.toml python -m pip install .
 
       - name: Run pytest
         continue-on-error: true
         run: |
-          pixi run pytest -s -rxs -v gsw/tests
+          pixi run --manifest-path src/GSW-rs/pixi.toml pytest -s -rxs -v gsw/tests
