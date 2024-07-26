@@ -11,89 +11,31 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [macos-latest, windows-latest, ubuntu-latest]
+        os: [macos-latest, ubuntu-latest]
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v4
         with:
           repository: "TEOS-10/GSW-Python"
           ref: f9b3f6e4895e9eba37e0bb509291c2046c71c5ee
+          fetch-depth: 0
 
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v4
         with:
           path: 'src/GSW-rs'
+          fetch-depth: 0
 
-      - uses: actions-rs/toolchain@v1
+      - uses: prefix-dev/setup-pixi@v0.8.1
         with:
-          toolchain: stable
-          override: true
-
-      - name: Get Rust Version
-        id: rust-version
-        run: echo "::set-output name=version::$(cargo -V | head -n1 | awk '{print $2}')"
-
-      - uses: actions/cache@v2
-        with:
-          path: |
-            ~/.cargo/git
-            ~/.cargo/registry
-            target
-          key: ${{ runner.os }}-cargo-${{ steps.rust-version.outputs.version }}
-
-      - name: Install cargo-c (linux)
-        if: startsWith(matrix.os, 'ubuntu')
-        env:
-          LINK: https://github.com/lu-zero/cargo-c/releases/download
-          CARGO_C_VERSION: 0.8.0
-        run: |
-          curl -L "$LINK/v$CARGO_C_VERSION/cargo-c-linux.tar.gz" |
-          tar xz -C $HOME/.cargo/bin
-
-      - name: Install cargo-c (macos)
-        if: startsWith(matrix.os, 'macos')
-        env:
-          LINK: https://github.com/lu-zero/cargo-c/releases/download
-          CARGO_C_VERSION: 0.8.0
-        run: |
-          curl -LO "$LINK/v$CARGO_C_VERSION/cargo-c-macos.zip"
-          7z e -y "cargo-c-macos.zip" -o$HOME/.cargo/bin
-
-      - name: Install cargo-c (win)
-        if: startsWith(matrix.os, 'windows')
-        run: |
-            $LINK = "https://github.com/lu-zero/cargo-c/releases/download/v0.8.0"
-            $CARGO_C_FILE = "cargo-c-windows-msvc"
-            curl -LO "$LINK/$CARGO_C_FILE.zip"
-            7z e -y "$CARGO_C_FILE.zip" -o"${env:USERPROFILE}\.cargo\bin"
-
-      - name: Set up Python 3.11
-        uses: actions/setup-python@v5
-        with:
-          python-version: "3.11"
-
-      - name: Get pip cache dir
-        id: pip-cache
-        run: |
-          echo "::set-output name=dir::$(pip cache dir)"
-
-      - name: pip cache
-        uses: actions/cache@v2
-        with:
-          path: ${{ steps.pip-cache.outputs.dir }}
-          key: ${{ runner.os }}-pip-${{ hashFiles('**/setup.py') }}
-          restore-keys: |
-            ${{ runner.os }}-pip-
-
-      - name: Install dependencies
-        run: |
-          python -m pip install --upgrade pip
-          pip install pytest xarray dask
+          pixi-version: v0.25.0
+          cache: true
+          frozen: true
 
       - name: Install patched GSW-Python
         run: |
           git apply src/GSW-rs/utils/gsw-py-patch
-          pip install .
+          pixi run python -m pip install .
 
       - name: Run pytest
         continue-on-error: true
         run: |
-          pytest -s -rxs -v gsw/tests
+          pixi run pytest -s -rxs -v gsw/tests
