@@ -2048,6 +2048,28 @@ pub fn enthalpy_first_derivatives(sa: f64, ct: f64, p: f64) -> Result<(f64, f64)
 }
 
 /// Second derivatives of enthalphy  (75-term polynomial approximation)
+///
+/// # Arguments
+///
+/// * `sa`: Absolute Salinity \[ g kg-1 \]
+/// * `ct`: Conservative Temperature (ITS-90) \[ deg C \]
+/// * `p`: sea pressure \[ dbar \] (i.e. absolute pressure - 10.1325 dbar)
+///
+/// # Returns
+///
+/// * `h_sa_sa`
+/// * `h_sa_ct`
+/// * `h_ct_ct`
+///
+/// # Example
+/// ```
+/// use gsw::volume::enthalpy_second_derivatives;
+/// let (sa_sa, sa_ct, ct_ct) = enthalpy_second_derivatives(32.0, 10.0, 100.0).unwrap();
+/// assert!((sa_sa - 0.000991418837118621).abs() <= f64::EPSILON);
+/// assert!((sa_ct - 0.0022484715893934326).abs() <= f64::EPSILON);
+/// assert!((ct_ct - 0.009923131263268556).abs() <= f64::EPSILON);
+/// ```
+///
 pub fn enthalpy_second_derivatives(sa: f64, ct: f64, p: f64) -> Result<(f64, f64, f64)> {
     let s: f64 = non_dimensional_sa(sa)?;
     let tau: f64 = ct / GSW_CTU;
