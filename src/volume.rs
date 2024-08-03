@@ -2149,6 +2149,53 @@ pub fn enthalpy_second_derivatives(sa: f64, ct: f64, p: f64) -> Result<(f64, f64
     Ok((h_sa_sa, h_sa_ct, h_ct_ct))
 }
 
+#[cfg(test)]
+mod test_enthaply_second_derivatives {
+    use super::enthalpy_second_derivatives;
+
+    #[test]
+    fn checking_some_values() {
+        let values = [
+            (
+                0.0,
+                0.0,
+                100.0,
+                (
+                    0.004718466663787883,
+                    0.003972891301960524,
+                    0.016214415072100922,
+                ),
+            ),
+            (
+                20.0,
+                20.0,
+                100.0,
+                (
+                    0.0009885322799460053,
+                    0.001775127322073198,
+                    0.00887579007965542,
+                ),
+            ),
+            (
+                30.0,
+                10.0,
+                1000.0,
+                (
+                    0.009759550216647447,
+                    0.02205128100265564,
+                    0.09713432880909768,
+                ),
+            ),
+        ];
+        for (sa, ct, p, ans) in values.iter() {
+            let (h_sa_sa, h_sa_ct, h_ct_ct) = enthalpy_second_derivatives(*sa, *ct, *p).unwrap();
+            assert!((h_sa_sa - ans.0).abs() <= f64::EPSILON);
+            assert!((h_sa_ct - ans.1).abs() <= f64::EPSILON);
+            assert!((h_ct_ct - ans.2).abs() <= f64::EPSILON);
+        }
+    }
+}
+
 #[allow(clippy::manual_range_contains)]
 /// Absolute salinity of seawater from given density, Conservative
 /// Temperature, and pressure.
