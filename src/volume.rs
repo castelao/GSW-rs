@@ -2169,8 +2169,8 @@ pub fn enthalpy_second_derivatives(sa: f64, ct: f64, p: f64) -> Result<(f64, f64
 /// # Notes:
 ///
 /// - According to the Matlab GSW toolbox, after two iterations of this
-/// modified Newton-Raphson iteration, the error in SA is no larger than
-/// 8e-13 g/kg, which is machine precision for this calculation.
+///   modified Newton-Raphson iteration, the error in SA is no larger than
+///   8e-13 g/kg, which is machine precision for this calculation.
 pub fn sa_from_rho(rho: f64, ct: f64, p: f64) -> Result<f64> {
     let v_lab = 1.0 / rho;
     let v_0 = specvol(0.0, ct, p)?;
