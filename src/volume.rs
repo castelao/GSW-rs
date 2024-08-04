@@ -2048,6 +2048,28 @@ pub fn enthalpy_first_derivatives(sa: f64, ct: f64, p: f64) -> Result<(f64, f64)
 }
 
 /// Second derivatives of enthalphy  (75-term polynomial approximation)
+///
+/// # Arguments
+///
+/// * `sa`: Absolute Salinity \[ g kg-1 \]
+/// * `ct`: Conservative Temperature (ITS-90) \[ deg C \]
+/// * `p`: sea pressure \[ dbar \] (i.e. absolute pressure - 10.1325 dbar)
+///
+/// # Returns
+///
+/// * `h_sa_sa`
+/// * `h_sa_ct`
+/// * `h_ct_ct`
+///
+/// # Example
+/// ```
+/// use gsw::volume::enthalpy_second_derivatives;
+/// let (sa_sa, sa_ct, ct_ct) = enthalpy_second_derivatives(32.0, 10.0, 100.0).unwrap();
+/// assert!((sa_sa - 0.000991418837118621).abs() <= f64::EPSILON);
+/// assert!((sa_ct - 0.0022484715893934326).abs() <= f64::EPSILON);
+/// assert!((ct_ct - 0.009923131263268556).abs() <= f64::EPSILON);
+/// ```
+///
 pub fn enthalpy_second_derivatives(sa: f64, ct: f64, p: f64) -> Result<(f64, f64, f64)> {
     let s: f64 = non_dimensional_sa(sa)?;
     let tau: f64 = ct / GSW_CTU;
@@ -2127,6 +2149,53 @@ pub fn enthalpy_second_derivatives(sa: f64, ct: f64, p: f64) -> Result<(f64, f64
     Ok((h_sa_sa, h_sa_ct, h_ct_ct))
 }
 
+#[cfg(test)]
+mod test_enthaply_second_derivatives {
+    use super::enthalpy_second_derivatives;
+
+    #[test]
+    fn checking_some_values() {
+        let values = [
+            (
+                0.0,
+                0.0,
+                100.0,
+                (
+                    0.004718466663787883,
+                    0.003972891301960524,
+                    0.016214415072100922,
+                ),
+            ),
+            (
+                20.0,
+                20.0,
+                100.0,
+                (
+                    0.0009885322799460053,
+                    0.001775127322073198,
+                    0.00887579007965542,
+                ),
+            ),
+            (
+                30.0,
+                10.0,
+                1000.0,
+                (
+                    0.009759550216647447,
+                    0.02205128100265564,
+                    0.09713432880909768,
+                ),
+            ),
+        ];
+        for (sa, ct, p, ans) in values.iter() {
+            let (h_sa_sa, h_sa_ct, h_ct_ct) = enthalpy_second_derivatives(*sa, *ct, *p).unwrap();
+            assert!((h_sa_sa - ans.0).abs() <= f64::EPSILON);
+            assert!((h_sa_ct - ans.1).abs() <= f64::EPSILON);
+            assert!((h_ct_ct - ans.2).abs() <= f64::EPSILON);
+        }
+    }
+}
+
 #[allow(clippy::manual_range_contains)]
 /// Absolute salinity of seawater from given density, Conservative
 /// Temperature, and pressure.
@@ -2147,8 +2216,8 @@ pub fn enthalpy_second_derivatives(sa: f64, ct: f64, p: f64) -> Result<(f64, f64
 /// # Notes:
 ///
 /// - According to the Matlab GSW toolbox, after two iterations of this
-/// modified Newton-Raphson iteration, the error in SA is no larger than
-/// 8e-13 g/kg, which is machine precision for this calculation.
+///   modified Newton-Raphson iteration, the error in SA is no larger than
+///   8e-13 g/kg, which is machine precision for this calculation.
 pub fn sa_from_rho(rho: f64, ct: f64, p: f64) -> Result<f64> {
     let v_lab = 1.0 / rho;
     let v_0 = specvol(0.0, ct, p)?;
