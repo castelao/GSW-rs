@@ -20,20 +20,20 @@ rust-version = "1.68.0"
 members = ["convert_refdata"]
 
 [dependencies]
-libm = "0.2.8"
+libm = "0.2.9"
 libc = { version = "0.2", optional = true }
-thiserror = { version = "1.0.24", optional = true }
+thiserror = { version = "1.0.65", optional = true }
 num-complex = "0.4.3"
 
 [dev-dependencies]
 heapless = "0.7.17"
 inline-c = "0.1"
-postcard = "1.0.2"
-serde = "1.0.126"
+postcard = "1.0.10"
+serde = "1.0.213"
 criterion = "0.5.1"
 
 [build-dependencies]
-cbindgen = { version = "0.26.0", optional = true }
+cbindgen = { version = "0.27.0", optional = true }
 
 [features]
 default = []
