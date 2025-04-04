@@ -1,5 +1,5 @@
 diff --git a/setup.py b/setup.py
-index 4e08805..a3c29fd 100644
+index 6924b1b..a909a18 100644
 --- a/setup.py
 +++ b/setup.py
 @@ -6,6 +6,7 @@ Minimal setup.py for building gswc.
@@ -8,7 +8,7 @@ index 4e08805..a3c29fd 100644
  import sys
 +import subprocess
  
- import numpy
+ import pkg_resources
  from setuptools import Extension, setup
 @@ -21,36 +22,43 @@ def read(*parts):
  class build_ext(_build_ext):
@@ -32,7 +32,7 @@ index 4e08805..a3c29fd 100644
 +        # private libs to link on windows
 +        windows_libs = ["advapi32.lib", "bcrypt.lib", "ws2_32.lib", "userenv.lib", "msvcrt.lib", "ntdll.lib"]
 +
-         numpy_incl = numpy.get_include()
+         numpy_incl = pkg_resources.resource_filename("numpy", "core/include")
  
          for ext in self.extensions:
              if hasattr(ext, "include_dirs") and not numpy_incl in ext.include_dirs:
