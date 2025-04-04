@@ -614,7 +614,7 @@ double gsw_z_from_p(double p,
                     double sea_surface_geopotential);
 
 #ifdef __cplusplus
-} // extern "C"
-#endif // __cplusplus
+}  // extern "C"
+#endif  // __cplusplus
 
-#endif /* GSWTEOS_10_H */
+#endif  /* GSWTEOS_10_H */
