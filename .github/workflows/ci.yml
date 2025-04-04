@@ -156,7 +156,7 @@ jobs:
         id: tarpaulin-version
         run: echo "::set-output name=version::$(wget -qO- 'https://api.github.com/repos/xd009642/tarpaulin/releases/latest' | jq -r '.tag_name')"
 
-      - uses: actions/cache@v2
+      - uses: actions/cache@v4
         with:
           path: |
             ~/.cargo/bin/cargo-tarpaulin
