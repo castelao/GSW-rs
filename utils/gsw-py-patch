@@ -18,12 +18,12 @@ index 6924b1b..a909a18 100644
 +               "--manifest-path", "src/GSW-rs/Cargo.toml",
 +               f"--destdir={self.build_temp}",
 +               "--prefix=gsw",
-+               "--libdir=gsw"]
++               "--libdir=lib"]
 +        rv = subprocess.Popen(cmd).wait()
 +        if rv != 0:
 +            sys.exit(rv)
 +
-+        gsw_obj = os.path.join(self.build_temp, "gsw")
++        gsw_obj = os.path.join(self.build_temp, "gsw", "lib")
 +        if sys.platform == "win32":
 +            gsw_obj = os.path.join(gsw_obj, "gsw.lib")
 +        else:
