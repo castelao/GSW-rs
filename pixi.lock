@@ -158,6 +158,7 @@ environments:
       - conda: https://conda.anaconda.org/conda-forge/linux-64/pillow-11.0.0-py311h49e9ac3_0.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/pip-24.2-pyh8b19718_1.conda
       - conda: https://conda.anaconda.org/conda-forge/linux-64/pkg-config-0.29.2-h4bc722e_1009.conda
+      - conda: https://conda.anaconda.org/conda-forge/linux-64/pkgconf-2.4.3-hd0c01bc_0.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/pluggy-1.5.0-pyhd8ed1ab_0.conda
       - conda: https://conda.anaconda.org/conda-forge/linux-64/psutil-6.1.0-py311h9ecbd09_0.conda
       - conda: https://conda.anaconda.org/conda-forge/linux-64/pthread-stubs-0.4-hb9d3cd8_1002.conda
@@ -351,6 +352,7 @@ environments:
       - conda: https://conda.anaconda.org/conda-forge/osx-arm64/pillow-11.0.0-py311h3894ae9_0.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/pip-24.2-pyh8b19718_1.conda
       - conda: https://conda.anaconda.org/conda-forge/osx-arm64/pkg-config-0.29.2-hde07d2e_1009.conda
+      - conda: https://conda.anaconda.org/conda-forge/osx-arm64/pkgconf-2.4.3-h48c0fde_0.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/pluggy-1.5.0-pyhd8ed1ab_0.conda
       - conda: https://conda.anaconda.org/conda-forge/osx-arm64/psutil-6.1.0-py311hae2e1ce_0.conda
       - conda: https://conda.anaconda.org/conda-forge/osx-arm64/pthread-stubs-0.4-hd74edd7_1002.conda
@@ -5500,6 +5502,35 @@ packages:
   license_family: GPL
   size: 49724
   timestamp: 1720806128118
+- kind: conda
+  name: pkgconf
+  version: 2.4.3
+  build: h48c0fde_0
+  subdir: osx-arm64
+  url: https://conda.anaconda.org/conda-forge/osx-arm64/pkgconf-2.4.3-h48c0fde_0.conda
+  sha256: 1a13067f8aded6ef4d2c6b60b65a1ac09bc88f6f8c06ba10470462d664182b3a
+  md5: 768cd999ad23c752dc4cc4cce1547975
+  depends:
+  - __osx >=11.0
+  license: MIT
+  license_family: MIT
+  size: 65042
+  timestamp: 1742865235214
+- kind: conda
+  name: pkgconf
+  version: 2.4.3
+  build: hd0c01bc_0
+  subdir: linux-64
+  url: https://conda.anaconda.org/conda-forge/linux-64/pkgconf-2.4.3-hd0c01bc_0.conda
+  sha256: c85eea08cbc4118a73edcf11b06e18698d0d5253e5e69671d3a784c81f3aa00c
+  md5: 46f3602ed772107a723c6d8a4596f002
+  depends:
+  - libgcc >=13
+  - __glibc >=2.17,<3.0.a0
+  license: MIT
+  license_family: MIT
+  size: 74874
+  timestamp: 1742865174113
 - kind: conda
   name: pluggy
   version: 1.5.0
