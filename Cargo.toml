@@ -60,7 +60,7 @@ bench = false
 [package.metadata.capi]
 # Configures the minimum required cargo-c version. Trying to run with an
 # older version causes an error.
-min_version = "0.7.3"
+min_version = "0.10.11"
 
 [package.metadata.capi.header]
 # Used as header file name. By default this is equal to the crate name.
