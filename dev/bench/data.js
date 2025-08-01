@@ -1,5 +1,5 @@
 window.BENCHMARK_DATA = {
-  "lastUpdate": 1722735105933,
+  "lastUpdate": 1754014262135,
   "repoUrl": "https://github.com/castelao/GSW-rs",
   "entries": {
     "Rust Benchmark": [
@@ -11536,6 +11536,258 @@ window.BENCHMARK_DATA = {
           {
             "name": "sp_salinometer",
             "value": 9,
+            "range": "± 0",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "z_from_p",
+            "value": 13,
+            "range": "± 0",
+            "unit": "ns/iter"
+          }
+        ]
+      },
+      {
+        "commit": {
+          "author": {
+            "email": "guilherme@castelao.net",
+            "name": "Guilherme Castelão",
+            "username": "castelao"
+          },
+          "committer": {
+            "email": "noreply@github.com",
+            "name": "GitHub",
+            "username": "web-flow"
+          },
+          "distinct": true,
+          "id": "a3bab537eb7dfec046bc1b1542b668df6062ecb8",
+          "message": "Edition 2021 (#74)\n\n* Moving to edition 2021\n\n* Bump minimum Rust version to 1.68\n\n* Updating heapless & criterion requirements\n\n* convert to pixi\n\n* update MSRV CI check\n\n* cargo cross CI update\n\n* keep heapless 0.7\n\n* try cargo-c CI fix\n\n* Updating actions/checkout to v4\n\n* pixify gsw-python CI\n\n* try manifest in another dir\n\n* disable capi tests for regular tests\n\n* test: Actions with latest pixi\n\n* fix, test: Typo on requirement version\n\n* cfg: Updating pixi.lock\n\n* cfg: Removing JOSS paper draft compilation\n\nWe don't need to build this draft anymore since it is already published.\nAnyone interested should go directly to the official paper.\n\n* cfg: Updating some requirements\n\n* update to latest gsw-python\n\n* update patch\n\n* update cargo-c\n\n* Revert \"update to latest gsw-python\"\n\nThis reverts commit c74f87f63eadd85dd507d3e30bb80ab3a3b10a8a.\n\n* Revert \"update patch\"\n\nThis reverts commit de8e76b584e8c20a4ca09433ec3303c445f3c380.\n\n* fix gsw static lib location\n\n* Updating gswteos-10.h\n\nMinor change on syntax related to number of spaces.\n\n* Updating CI's cache to v4\n\n* fix capi tests by updating include location\n\n* try out pkgconf\n\n* try skipping pkgconf\n\n* cfg: Moving to dtolnay's toolchain\n\n* style:\n\n* Temporarily removing test_c_api",
+          "timestamp": "2025-07-31T20:00:58-06:00",
+          "tree_id": "acb46f1de75ae1af47f782ff2314ce0c9911ba00",
+          "url": "https://github.com/castelao/GSW-rs/commit/a3bab537eb7dfec046bc1b1542b668df6062ecb8"
+        },
+        "date": 1754014261507,
+        "tool": "cargo",
+        "benches": [
+          {
+            "name": "specvol",
+            "value": 27,
+            "range": "± 0",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "alpha",
+            "value": 45,
+            "range": "± 0",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "beta",
+            "value": 47,
+            "range": "± 0",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "specvol_sso_0",
+            "value": 3,
+            "range": "± 0",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "specvol_anom_standard",
+            "value": 31,
+            "range": "± 0",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "specvol_alpha_beta",
+            "value": 139,
+            "range": "± 0",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "rho",
+            "value": 33,
+            "range": "± 0",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "rho_alpha_beta",
+            "value": 139,
+            "range": "± 0",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "sigma0",
+            "value": 16,
+            "range": "± 0",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "sigma1",
+            "value": 34,
+            "range": "± 0",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "sigma2",
+            "value": 34,
+            "range": "± 0",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "sigma3",
+            "value": 34,
+            "range": "± 0",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "sigma4",
+            "value": 34,
+            "range": "± 0",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "cabbeling",
+            "value": 147,
+            "range": "± 0",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "sound_speed",
+            "value": 40,
+            "range": "± 0",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "dynamic_enthalpy",
+            "value": 31,
+            "range": "± 0",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "sa_from_rho",
+            "value": 229,
+            "range": "± 3",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "specvol_first_derivatives",
+            "value": 36,
+            "range": "± 0",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "specvol_first_derivatives_wrt_enthalpy",
+            "value": 80,
+            "range": "± 0",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "specvol_second_derivatives",
+            "value": 154,
+            "range": "± 0",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "specvol_second_derivatives_wrt_enthalpy",
+            "value": 45,
+            "range": "± 0",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "alpha_on_beta",
+            "value": 35,
+            "range": "± 0",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "rho_first_derivatives",
+            "value": 58,
+            "range": "± 0",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "rho_second_derivatives",
+            "value": 117,
+            "range": "± 0",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "thermobaric",
+            "value": 108,
+            "range": "± 0",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "enthalpy",
+            "value": 35,
+            "range": "± 0",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "enthalpy_first_derivatives",
+            "value": 40,
+            "range": "± 0",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "enthalpy_second_derivatives",
+            "value": 33,
+            "range": "± 0",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "enthalpy_diff",
+            "value": 65,
+            "range": "± 0",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "kappa",
+            "value": 39,
+            "range": "± 0",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "internal_energy",
+            "value": 60,
+            "range": "± 0",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "internal_energy_first_derivatives",
+            "value": 101,
+            "range": "± 0",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "internal_energy_second_derivatives",
+            "value": 101,
+            "range": "± 0",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "ct_maxdensity",
+            "value": 496,
+            "range": "± 1",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "sp_from_c",
+            "value": 17,
+            "range": "± 0",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "c_from_sp",
+            "value": 18,
+            "range": "± 0",
+            "unit": "ns/iter"
+          },
+          {
+            "name": "sp_salinometer",
+            "value": 10,
             "range": "± 0",
             "unit": "ns/iter"
           },
