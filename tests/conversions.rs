@@ -1,3 +1,5 @@
+#![cfg(not(feature = "capi"))]
+
 use heapless::{FnvIndexMap, String, Vec};
 use postcard::from_bytes;
 use serde::{Deserialize, Serialize};

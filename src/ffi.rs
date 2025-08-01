@@ -1556,7 +1556,7 @@ mod test {
         let result: f64 = crate::volume::specvol(1., 1., 1.).unwrap();
         (assert_c! {
             #include <stdio.h>
-            #include "gswteos-10.h"
+            #include "include/gswteos-10.h"
 
             int main() {
                 printf("%.15f", gsw_specvol(1., 1., 1.));
@@ -1565,7 +1565,7 @@ mod test {
             }
         })
         .success()
-        .stdout(format!("{:.15}", result));
+        .stdout(format!("{result:.15}"));
     }
 
     #[test]
@@ -1573,7 +1573,7 @@ mod test {
         let result: f64 = crate::volume::alpha(1., 1., 1.).unwrap();
         (assert_c! {
             #include <stdio.h>
-            #include "gswteos-10.h"
+            #include "include/gswteos-10.h"
 
             int main() {
                 printf("%.15f", gsw_alpha(1., 1., 1.));
@@ -1582,7 +1582,7 @@ mod test {
             }
         })
         .success()
-        .stdout(format!("{:.15}", result));
+        .stdout(format!("{result:.15}"));
     }
 
     #[test]
@@ -1590,7 +1590,7 @@ mod test {
         let result: f64 = crate::volume::beta(1., 1., 1.).unwrap();
         (assert_c! {
             #include <stdio.h>
-            #include "gswteos-10.h"
+            #include "include/gswteos-10.h"
 
             int main() {
                 printf("%.15f", gsw_beta(1., 1., 1.));
@@ -1599,7 +1599,7 @@ mod test {
             }
         })
         .success()
-        .stdout(format!("{:.15}", result));
+        .stdout(format!("{result:.15}"));
     }
 
     #[test]
@@ -1607,7 +1607,7 @@ mod test {
         let result: f64 = crate::volume::specvol_sso_0(1.);
         (assert_c! {
             #include <stdio.h>
-            #include "gswteos-10.h"
+            #include "include/gswteos-10.h"
 
             int main() {
                 printf("%.15f", gsw_specvol_sso_0(1.));
@@ -1616,7 +1616,7 @@ mod test {
             }
         })
         .success()
-        .stdout(format!("{:.15}", result));
+        .stdout(format!("{result:.15}"));
     }
 
     #[test]
@@ -1624,7 +1624,7 @@ mod test {
         let result: f64 = crate::volume::specvol_anom_standard(1., 1., 1.).unwrap();
         (assert_c! {
             #include <stdio.h>
-            #include "gswteos-10.h"
+            #include "include/gswteos-10.h"
 
             int main() {
                 printf("%.15f", gsw_specvol_anom_standard(1., 1., 1.));
@@ -1633,7 +1633,7 @@ mod test {
             }
         })
         .success()
-        .stdout(format!("{:.15}", result));
+        .stdout(format!("{result:.15}"));
     }
 
     #[test]
@@ -1641,7 +1641,7 @@ mod test {
         let result = crate::volume::specvol_alpha_beta(1., 1., 1.).unwrap();
         (assert_c! {
             #include <stdio.h>
-            #include "gswteos-10.h"
+            #include "include/gswteos-10.h"
 
             int main() {
                 double specvol, alpha, beta;
@@ -1663,7 +1663,7 @@ mod test {
         let result: f64 = crate::volume::rho(1., 1., 1.).unwrap();
         (assert_c! {
             #include <stdio.h>
-            #include "gswteos-10.h"
+            #include "include/gswteos-10.h"
 
             int main() {
                 printf("%.15f", gsw_rho(1., 1., 1.));
@@ -1672,6 +1672,6 @@ mod test {
             }
         })
         .success()
-        .stdout(format!("{:.15}", result));
+        .stdout(format!("{result:.15}"));
     }
 }

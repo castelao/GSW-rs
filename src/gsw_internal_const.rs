@@ -1,4 +1,4 @@
-/// ! GSW TEOS10 Constants
+//! GSW TEOS10 Constants
 
 #[allow(clippy::approx_constant)]
 /// Pi

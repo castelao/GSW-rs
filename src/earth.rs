@@ -165,11 +165,11 @@ mod test_gravity {
 ///  * `lon1`: longitude of the first waypoint \[decimal degrees\]
 ///  * `lat1`: latitude of the first waypoint \[decimal degrees\]
 ///  * `p1`: sea pressure of the first waypoint \[dbar\] (i.e. absolute
-///          pressure - 10.1325 dbar)
+///    pressure - 10.1325 dbar)
 ///  * `lon2`: longitude of the second waypoint \[decimal degrees\]
 ///  * `lat2`: latitude of the second waypoint \[decimal degrees\]
 ///  * `p2`: sea pressure of the second waypoint \[dbar\] (i.e. absolute
-///          pressure - 10.1325 dbar)
+///    pressure - 10.1325 dbar)
 ///
 /// # Returns
 /// * The 'horizontal' distance between two coordinates \[m\]
