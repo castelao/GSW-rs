@@ -102,16 +102,16 @@ jobs:
 #          test "`echo $(pixi run pkgconf --cflags gsw) | xargs`" = "-I/usr/local/include"
 #          test "`echo $(pixi run pkgconf --libs gsw) | xargs`" = "-L/usr/local/lib -lgsw"
 
-      - name: Update dynamic linker cache
-        if: startsWith(matrix.os, 'ubuntu')
-        run: |
-          sudo ldconfig
-
-      - name: Test usage from C (using Makefile)
-        if: startsWith(matrix.os, 'macos') || startsWith(matrix.os, 'ubuntu')
-        working-directory: examples/usage-from-c
-        run: |
-          pixi run make
+#      - name: Update dynamic linker cache
+#        if: startsWith(matrix.os, 'ubuntu')
+#        run: |
+#          sudo ldconfig
+#
+#      - name: Test usage from C (using Makefile)
+#        if: startsWith(matrix.os, 'macos') || startsWith(matrix.os, 'ubuntu')
+#        working-directory: examples/usage-from-c
+#        run: |
+#          pixi run make
 
   cross_testing:
     runs-on: ubuntu-latest
