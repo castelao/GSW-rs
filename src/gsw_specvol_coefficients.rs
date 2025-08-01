@@ -1,4 +1,4 @@
-/// ! Specific volume constants
+//! Specific volume constants
 
 pub const A000: f64 = -1.56497346750e-5;
 pub const A001: f64 = 1.85057654290e-5;

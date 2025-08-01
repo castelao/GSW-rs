@@ -276,7 +276,7 @@ pub fn t90_from_t48(t48: f64) -> f64 {
 ///
 /// * default: Calculate precise $t_{68}$ / 1.00024
 /// * compat: Approximate 1 / 1.00024 to 0.999760057586179, which can cause
-///           a negligible error.
+///   a negligible error.
 ///
 /// # Notes
 ///
@@ -342,7 +342,7 @@ pub fn t68_from_t90(t90: f64) -> f64 {
 /// # Returns
 ///
 /// * `z`: Height \[m\], where z points upward and is zero at the sea level,
-///        thus it is negative in the ocean.
+///   thus it is negative in the ocean.
 ///
 /// # Features
 ///
@@ -417,7 +417,7 @@ mod test_z_from_p {
 /// # Arguments
 ///
 /// * `z`: Height \[m\], where z points upward and is zero at the sea level,
-///        thus it is negative in the ocean.
+///   thus it is negative in the ocean.
 /// * `lat`: Latitude \[deg\]
 /// * `geo_strf_dyn_height`: Dynamic height anomaly \[m2 s-2\]. Optional
 ///   argument, thus can use 'None' to assume it zero.

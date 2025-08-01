@@ -1177,10 +1177,7 @@ mod test_gibbs_ice {
         for (nt, np, ans) in answers.iter() {
             assert!(
                 (gibbs_ice(*nt, *np, 0.0, 0.0).unwrap() - *ans).abs() < f64::EPSILON,
-                "nt = {}, np = {}, ans = {}",
-                nt,
-                np,
-                ans
+                "nt = {nt}, np = {np}, ans = {ans}"
             );
         }
         //assert!((gibbs_ice(0, 0, 4.0, 10.0).unwrap() - 5.029179813607595e3).abs() < f64::EPSILON); // this is super close

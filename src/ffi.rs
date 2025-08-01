@@ -1565,7 +1565,7 @@ mod test {
             }
         })
         .success()
-        .stdout(format!("{:.15}", result));
+        .stdout(format!("{result:.15}"));
     }
 
     #[test]
@@ -1582,7 +1582,7 @@ mod test {
             }
         })
         .success()
-        .stdout(format!("{:.15}", result));
+        .stdout(format!("{result:.15}"));
     }
 
     #[test]
@@ -1599,7 +1599,7 @@ mod test {
             }
         })
         .success()
-        .stdout(format!("{:.15}", result));
+        .stdout(format!("{result:.15}"));
     }
 
     #[test]
@@ -1616,7 +1616,7 @@ mod test {
             }
         })
         .success()
-        .stdout(format!("{:.15}", result));
+        .stdout(format!("{result:.15}"));
     }
 
     #[test]
@@ -1633,7 +1633,7 @@ mod test {
             }
         })
         .success()
-        .stdout(format!("{:.15}", result));
+        .stdout(format!("{result:.15}"));
     }
 
     #[test]
@@ -1672,6 +1672,6 @@ mod test {
             }
         })
         .success()
-        .stdout(format!("{:.15}", result));
+        .stdout(format!("{result:.15}"));
     }
 }
