@@ -22,7 +22,7 @@ members = ["convert_refdata"]
 [dependencies]
 libm = "0.2.15"
 libc = { version = "0.2.174", optional = true }
-thiserror = { version = "1.0.65", optional = true }
+thiserror = { version = "2.0.12", optional = true }
 num-complex = "0.4.3"
 
 [dev-dependencies]
