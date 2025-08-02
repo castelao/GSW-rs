@@ -1,6 +1,6 @@
 [package]
 name = "gsw"
-version = "0.2.2"
+version = "0.2.3"
 authors = [
   "Guilherme Castelão <guilherme@castelao.net>",
   "Luiz Irber <luiz.irber@gmail.com>"
@@ -12,7 +12,7 @@ license = "BSD-3-Clause"
 repository = "https://github.com/castelao/GSW-rs"
 keywords = ["oceanography", "seawater"]
 categories = ["science", "no-std"]
-rust-version = "1.68.0"
+rust-version = "1.74.0"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
@@ -20,20 +20,20 @@ rust-version = "1.68.0"
 members = ["convert_refdata"]
 
 [dependencies]
-libm = "0.2.9"
-libc = { version = "0.2", optional = true }
-thiserror = { version = "1.0.65", optional = true }
+libm = "0.2.15"
+libc = { version = "0.2.174", optional = true }
+thiserror = { version = "2.0.12", optional = true }
 num-complex = "0.4.3"
 
 [dev-dependencies]
 heapless = "0.7.17"
 inline-c = "0.1"
-postcard = "1.0.10"
-serde = "1.0.213"
+postcard = "1.1.3"
+serde = "1.0.219"
 criterion = "0.5.1"
 
 [build-dependencies]
-cbindgen = { version = "0.27.0", optional = true }
+cbindgen = { version = "0.29.0", optional = true }
 
 [features]
 default = []
