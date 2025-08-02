@@ -29,7 +29,7 @@ num-complex = "0.4.3"
 heapless = "0.7.17"
 inline-c = "0.1"
 postcard = "1.0.10"
-serde = "1.0.213"
+serde = "1.0.219"
 criterion = "0.5.1"
 
 [build-dependencies]
