@@ -1224,7 +1224,55 @@ gsw_linear_interp_SA_CT
 gsw_pchip_interp_SA_CT
 gsw_rr68_interp_SA_CT
 gsw_spline_interp_SA_CT
-gsw_gibbs_pt0_pt0
 gsw_gibbs_ice_part_t
 gsw_gibbs_ice_pt0
 */
+
+
+pub fn gibbs_pt0_pt0(sa: f64, pt0: f64) -> Result<f64> {
+
+    let sa: f64 = if sa < 0.0 {
+        if cfg!(feature = "compat") {
+            0.0
+        } else if cfg!(feature = "invalidasnan") {
+            return Ok(f64::NAN);
+        } else {
+            return Err(Error::NegativeSalinity);
+        }
+    } else {
+        sa
+    };
+
+    let x2 = GSW_SFAC * sa;
+    let x  = libm::sqrt(x2);
+    let y  = pt0 * 0.025;
+
+    let g03 = -24_715.571_866_078
+        + y * (4_420.447_224_909_672_5
+            + y * (-1_778.231_237_203_896
+                + y * (1_160.518_251_685_141_9
+                    + y * (-569.531_539_542_516
+                        + y * 128.134_291_524_946_15
+    ))));
+
+    let g08 =
+        x2 * (1_760.062_705_994_408
+            + x * (-86.132_935_195_608_4
+                + x * (-137.114_501_840_898_2
+                    + y * (296.200_616_913_752_36
+                        + y * (-205.677_092_903_745_63
+                            + y * 49.939_401_913_901_6
+                )))
+                + y * (-60.136_422_517_125
+                    + y * 10.507_207_941_707_34
+                )
+            )
+            + y * (-1_351.605_895_580_406
+                + y * (1_097.112_537_301_510_9
+                    + y * (-433.206_481_750_622_06
+                        + y * 63.905_091_254_154_904
+            )))
+        );
+    Ok((g03 + g08) * 0.000_625)
+}
+
