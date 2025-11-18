@@ -567,8 +567,7 @@ pub unsafe extern "C" fn gsw_ct_from_rho(
 
 #[no_mangle]
 pub unsafe extern "C" fn gsw_ct_from_t(sa: f64, t: f64, p: f64) -> f64 {
-    //unimplemented!()
-    f64::NAN
+    crate::conversions::ct_from_t(sa, t, p).unwrap_or(GSW_INVALID_VALUE)
 }
 
 #[no_mangle]

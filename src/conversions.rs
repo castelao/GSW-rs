@@ -224,6 +224,58 @@ pub fn ct_from_pt(sa: f64, pt: f64) -> Result<f64> {
     Ok(pot_enthalpy / GSW_CP0)
 }
 
+/// Conservative Temperature from in-situ (ITS-90) temperature
+///
+/// # Arguments
+///
+/// * `sa`: Absolute salinity [g kg-1]
+/// * `t`: in-situ temperature (ITS-90) [deg C]
+/// * `p`: sea pressure [dbar]
+///
+/// # Returns
+///
+/// * `ct`: Conservative Temperature (ITS-90) [deg C]
+///
+/// # Notes
+///
+/// This routine computes the Conservative Temperature by first computing
+/// the specific enthalpy at the provided (SA, t, p) using the Gibbs
+/// function and then finding the potential temperature (pt) that yields
+/// the same potential enthalpy at the reference pressure (0 dbar). The
+/// Conservative Temperature is then computed from that potential
+/// temperature using `ct_from_pt`.
+pub fn ct_from_t(sa: f64, t: f64, p: f64) -> Result<f64> {
+    // Handle negative salinity as in ct_from_pt
+    let sa = match sa {
+        x if x < 0.0 => {
+            if cfg!(feature = "compat") {
+                0.0
+            } else if cfg!(feature = "invalidasnan") {
+                return Ok(f64::NAN);
+            } else {
+                return Err(Error::NegativeSalinity);
+            }
+        }
+        x => x,
+    };
+
+    // Target entropy at (sa, t, p)
+    let g_t_target = crate::gsw_internal_funcs::gibbs(0, 1, 0, sa, t, p)?;
+
+    // Newton-Raphson to determine pt at p=0
+    let mut pt = t;
+    for _ in 0..20 {
+        let g0_t = crate::gsw_internal_funcs::gibbs(0, 1, 0, sa, pt, 0.0)?;
+        let df_dpt = crate::gsw_internal_funcs::gibbs(0, 2, 0, sa, pt, 0.0)?;
+        let delta = g0_t - g_t_target;
+        if delta.abs() < 1e-9 || df_dpt.abs() < 1e-12 {
+            break;
+        }
+        pt -= delta / df_dpt;
+    }
+    ct_from_pt(sa, pt)
+}
+
 /*
 gsw_pot_enthalpy_from_pt
 gsw_pt_from_t
@@ -552,5 +604,63 @@ mod tests {
         } else {
             assert!((10.0 - t90_from_t68(10.0024)).abs() < f64::EPSILON);
         }
+    }
+}
+
+#[cfg(test)]
+mod test_ct_from_t {
+    use super::{ct_from_pt, ct_from_t};
+    use crate::gsw_internal_funcs::gibbs;
+
+    #[test]
+    fn p0_matches_ct_from_pt() {
+        let cases = [(32.0, 10.0), (35.0, 2.0), (0.0, 20.0)];
+        for (sa, t) in cases {
+            let ct1 = ct_from_t(sa, t, 0.0).unwrap();
+            let ct2 = ct_from_pt(sa, t).unwrap();
+            assert!((ct1 - ct2).abs() <= 1e-12);
+        }
+    }
+
+    #[test]
+    fn entropy_consistency() {
+        // This test uses the TEOS-10 relationship that specific entropy
+        // is given by the negative derivative of the Gibbs function
+        // with respect to in-situ temperature at constant salinity
+        // and pressure (eta = -g_t). For a given (SA, t, p), the
+        // potential temperature pt at reference pressure 0 dbar is
+        // defined such that the entropy is conserved along an
+        // adiabatic, isohaline displacement:
+        //
+        //   eta(SA, t, p) = eta(SA, pt, 0)
+        //   <=> -g_t(SA, t, p) = -g_t(SA, pt, 0).
+        //
+        // The implementation of ct_from_t solves for this pt and then
+        // converts it to Conservative Temperature. Here we numerically
+        // recover pt from ct by inverting ct_from_pt and check that
+        // the Gibbs-entropy relation holds to tight tolerance.
+        //
+        // See TEOS-10 Manual (IOC et al., 2010), in particular
+        // McDougall & Barker (2011), for the definition of Conservative
+        // Temperature and its relation to the Gibbs function.
+        let cases = [(32.0, 10.0, 0.0), (32.0, 10.0, 100.0), (35.0, 2.0, 500.0)];
+        cases.iter().for_each(|&(sa, t, p)| {
+            let ct = ct_from_t(sa, t, p).unwrap();
+            let g_t_target = gibbs(0, 1, 0, sa, t, p).unwrap();
+            let mut pt = t;
+            let mut iter = 0;
+            while iter < 20 {
+                let ct_guess = ct_from_pt(sa, pt).unwrap();
+                let ct_pt = (ct_from_pt(sa, pt + 1e-6).unwrap() - ct_guess) / 1e-6;
+                let f = ct_guess - ct;
+                if f.abs() < 1e-10 {
+                    break;
+                }
+                pt -= f / ct_pt;
+                iter += 1;
+            }
+            let g_t_pt0 = gibbs(0, 1, 0, sa, pt, 0.0).unwrap();
+            assert!((g_t_pt0 - g_t_target).abs() <= 1e-8);
+        });
     }
 }
