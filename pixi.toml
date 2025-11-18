@@ -1,8 +1,11 @@
-[project]
+[workspace]
 name = "gsw"
-version = "0.2.1"
-description = "Asynchronous download of support data"
-authors = ["Guilherme Castelao <guilherme@castelao.net>", "Luiz Irber <github@luizirber.org>"]
+version = "0.2.3"
+description = "TEOS-10 v3.06.12 Gibbs Seawater Oceanographic Toolbox in Rust"
+authors = [
+  "Guilherme Castelao <guilherme@castelao.net>",
+  "Luiz Irber <github@luizirber.org>"
+  ]
 channels = ["conda-forge"]
 platforms = ["linux-64", "osx-arm64"]
 
