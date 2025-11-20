@@ -9,7 +9,6 @@ TEOS-10 main document. The functions unchecked are missing in GSW-Rust.
 The goal is to implement all functions described in TEOS-10, but the
 priority is to do it right.
 
-
 # Conversions
 
 - [ ] gsw_deltasa_from_sp(sp,p,lon,lat)
@@ -33,8 +32,6 @@ priority is to do it right.
 - [ ] gsw_pt_from_entropy (sa, entropy)
 - [ ] gsw_entropy_from_t(sa,t,p)
 - [ ] gsw_adiabatic_lapse_rate_from_ct(sa,ct,p)
-
-
 
 ## Missing on GSW-C
 
@@ -152,7 +149,7 @@ priority is to do it right.
 - [X] gsw_hill_ratio_at_sp2(t)
 - [X] gsw_gibbs(ns,nt,np,sa,t,p)
 - [X] gsw_gibbs_ice (nt, np, t, p)
-
+- [X] gsw_entropy_part(sa,t,p)
 
 # Missing in GSW-Rust implementation
 
@@ -174,7 +171,6 @@ priority is to do it right.
 - [ ] gsw_enthalpy_ice (t, p)
 - [ ] gsw_enthalpy_t_exact(sa,t,p)
 - [ ] gsw_entropy_ice (t, p)
-- [ ] gsw_entropy_part(sa,t,p)
 - [ ] gsw_entropy_part_zerop(sa,pt0)
 - [ ] gsw_fdelta(p,lon,lat)
 - [ ] gsw_gibbs_ice_part_t (t, p)
