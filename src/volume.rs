@@ -2,7 +2,7 @@
 //!
 
 use crate::gsw_internal_const::*;
-use crate::gsw_internal_funcs::non_dimensional_p;
+use crate::gsw_internal_funcs::{non_dimensional_p, sanitize_sa};
 use crate::gsw_specvol_coefficients::*;
 use crate::{Error, Result};
 
@@ -11,20 +11,7 @@ pub use crate::gsw_internal_funcs::specvol_sso_0;
 #[inline]
 /// Non-dimensional salinity
 pub(crate) fn non_dimensional_sa(sa: f64) -> Result<f64> {
-    // Other implementations force negative SA to be 0. That is dangerous
-    // since it can hide error by processing unrealistic inputs
-    let sa: f64 = if sa < 0.0 {
-        if cfg!(feature = "compat") {
-            0.0
-        } else if cfg!(feature = "invalidasnan") {
-            return Ok(f64::NAN);
-        } else {
-            return Err(Error::NegativeSalinity);
-        }
-    } else {
-        sa
-    };
-
+    let sa = sanitize_sa(sa)?;
     Ok(libm::sqrt(GSW_SFAC * sa + OFFSET))
 }
 

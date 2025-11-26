@@ -2,7 +2,7 @@
 //!
 //! Functions not intended to be used outside this library
 
-use crate::gsw_internal_const::{DB2PA, GSW_PU, GSW_SFAC};
+use crate::gsw_internal_const::{DB2PA, GSW_CTU, GSW_PU, GSW_SFAC};
 use crate::gsw_sp_coefficients::*;
 use crate::gsw_specvol_coefficients::{V005, V006};
 use crate::{Error, Result};
@@ -17,6 +17,27 @@ const G6: f64 = -5.923_731_174_730_784e-13;
 const G7: f64 = 8.057_771_569_962_299e-15;
 const G8: f64 = -7.054_313_817_447_962e-17;
 const G9: f64 = 2.859_992_717_347_235e-19;
+
+#[inline]
+/// Validates Absolute Salinity (SA) according to feature flags:
+/// - "compat": clamp negatives to 0.0
+/// - "invalidasnan": return NaN
+/// - default: return Error::NegativeSalinity
+pub(crate) fn sanitize_sa(sa: f64) -> Result<f64> {
+    // Other implementations force negative SA to be 0. That is dangerous
+    // since it can hide error by processing unrealistic inputs
+    if sa < 0.0 {
+        if cfg!(feature = "compat") {
+            Ok(0.0)
+        } else if cfg!(feature = "invalidasnan") {
+            Ok(f64::NAN)
+        } else {
+            Err(Error::NegativeSalinity)
+        }
+    } else {
+        Ok(sa)
+    }
+}
 
 #[inline]
 /// Non-dimensional pressure
@@ -1223,10 +1244,11 @@ mod test_gibbs_ice {
 /// Reference:
 /// * TEOS-10 Manual and official GSW-C source (gsw_entropy_part).
 #[allow(clippy::excessive_precision)]
-pub(crate) fn entropy_part(sa: f64, t: f64, p: f64) -> f64 {
+pub(crate) fn entropy_part(sa: f64, t: f64, p: f64) -> Result<f64> {
+    let sa = sanitize_sa(sa)?;
     let x2 = GSW_SFAC * sa;
     let x = libm::sqrt(x2);
-    let y = t * 0.025;
+    let y = t / GSW_CTU;
     let z = non_dimensional_p(p);
 
     let g03 = z
@@ -1287,7 +1309,24 @@ pub(crate) fn entropy_part(sa: f64, t: f64, p: f64) -> f64 {
                     + z * (-356.629_112_415_276
                         + (88.408_071_661_6 - 15.840_030_944_233_64 * z) * z))));
 
-    -(g03 + g08) * 0.025
+    Ok(-(g03 + g08) * 0.025)
+}
+
+#[cfg(test)]
+mod test_entropy_part {
+    use super::entropy_part;
+
+    #[test]
+    fn nan() {
+        let entropy = entropy_part(f64::NAN, 1.0, 1.0).unwrap();
+        assert!(entropy.is_nan());
+
+        let entropy = entropy_part(1.0, f64::NAN, 1.0).unwrap();
+        assert!(entropy.is_nan());
+
+        let entropy = entropy_part(1.0, 1.0, f64::NAN).unwrap();
+        assert!(entropy.is_nan());
+    }
 }
 
 /*
