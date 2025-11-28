@@ -677,7 +677,61 @@ gsw_CT_from_entropy
 gsw_entropy_from_pt
 gsw_pt_from_entropy
 gsw_entropy_from_t
-gsw_t_from_entropy
+*/
+
+pub fn t_from_entropy(sa: f64, entropy: f64, p: f64) -> Result<f64> {
+    use crate::gsw_internal_const::{GSW_CP0, GSW_SSO, GSW_T0};
+
+    // Ensure SA is non-negative
+    let sa = if sa < 0.0 {
+        if cfg!(feature = "compat") {
+            0.0
+        } else if cfg!(feature = "invalidasnan") {
+            return Ok(f64::NAN);
+        } else {
+            return Err(Error::NegativeSalinity);
+        }
+    } else {
+        sa
+    };
+
+    // Find the initial value of t using potential temperature as starting point
+    // First get PT from entropy
+    let part1 = 1.0 - sa / GSW_SSO;
+    let part2 = 1.0 - 0.05 * part1;
+    let ent_sa = (GSW_CP0 / GSW_T0) * part1 * (1.0 - 1.01 * part1);
+    let c = (entropy - ent_sa) * (part2 / GSW_CP0);
+    let pt = GSW_T0 * (libm::exp(c) - 1.0);
+
+    // Use pt as initial guess and adjust for pressure
+    let s1 = sa * (35.0 / GSW_SSO);
+    let mut t = pt
+        - p * (8.65483913395442e-6 - s1 * 1.41636299744881e-6 - p * 7.38286467135737e-9
+            + pt * (-8.38241357039698e-6
+                + s1 * 2.83933368585534e-8
+                + pt * 1.77803965218656e-8
+                + p * 1.71155619208233e-10));
+
+    // Initial estimate of derivative
+    let mut dentropy_dt = GSW_CP0 / ((GSW_T0 + t) * part2);
+
+    // Modified Newton-Raphson iteration
+    for _ in 0..3 {
+        let t_old = t;
+        let dentropy = entropy_from_t(sa, t_old, p)? - entropy;
+        t = t_old - dentropy / dentropy_dt; // half way through the modified method
+        let tm = 0.5 * (t + t_old);
+        dentropy_dt = -gibbs(0, 2, 0, sa, tm, p)?;
+        t = t_old - dentropy / dentropy_dt;
+    }
+
+    Ok(t)
+}
+
+
+
+
+/*
 gsw_adiabatic_lapse_rate_from_CT
 gsw_adiabatic_lapse_rate_from_t
 gsw_molality_from_SA
