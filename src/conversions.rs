@@ -333,7 +333,44 @@ pub fn ct_from_pt(sa: f64, pt: f64) -> Result<f64> {
 
 /*
 gsw_pot_enthalpy_from_pt
-gsw_pt_from_t
+*/
+pub fn pt_from_t(sa: f64, t: f64, p: f64, p_ref:f64) -> {
+
+    let sa: f64 = if sa < 0.0 {
+        if cfg!(feature = "compat") {
+            0.0
+        } else if cfg!(feature = "invalidasnan") {
+            return Ok(f64::NAN);
+        } else {
+            return Err(Error::NegativeSalinity);
+        }
+    } else {
+        sa
+    };
+    let s1 = sa / GSW_UPS;;
+
+        let pt      = t+(p-p_ref)*( 8.65483913395442e-6  -
+                          s1 *  1.41636299744881e-6  -
+                   (p+p_ref) *  7.38286467135737e-9  +
+                          t  *(-8.38241357039698e-6  +
+                          s1 *  2.83933368585534e-8  +
+                          t  *  1.77803965218656e-8  +
+                   (p+p_ref) *  1.71155619208233e-10));
+
+      let  dentropy_dt     = GSW_P0/((273.15 + pt)*(1.0-0.05*(1.0 - sa/GSW_SSO)));
+      let  true_entropy_part       = gsw_entropy_part(sa,t,p);
+        for (no_iter=1; no_iter <= 2; no_iter++) {
+            pt_old      = pt;
+            dentropy    = gsw_entropy_part(sa,pt_old,p_ref) - true_entropy_part;
+            pt          = pt_old - dentropy/dentropy_dt;
+            ptm         = 0.5*(pt + pt_old);
+            dentropy_dt = -gsw_gibbs(n0,n2,n0,sa,ptm,p_ref);
+            pt          = pt_old - dentropy/dentropy_dt;
+        }
+
+        pt
+}
+/*
 gsw_pt0_from_t(gsw_entropy_part, gsw_entropy_part_zerop, gsw_gibbs_pt0_pt0)
 gsw_t_from_pt0
 */
