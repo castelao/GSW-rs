@@ -222,6 +222,41 @@ pub fn pt_from_ct(sa: f64, ct: f64) -> Result<f64> {
 gsw_t_from_CT(gsw_ct_from_pt, gsw_pt_from_t)
 */
 
+pub fn t_from_ct(sa: f64, ct: f64, p: f64) -> Result<f64> {
+    // Ensure SA is non-negative
+    let sa = if sa < 0.0 {
+        if cfg!(feature = "compat") {
+            0.0
+        } else if cfg!(feature = "invalidasnan") {
+            return Ok(f64::NAN);
+        } else {
+            return Err(Error::NegativeSalinity);
+        }
+    } else {
+        sa
+    };
+
+    // Calculate potential temperature at reference pressure 0 dbar
+    let pt0 = pt_from_ct(sa, ct)?;
+
+    // Convert potential temperature at p_ref=0 to in-situ temperature at pressure p
+    // This is equivalent to: pt_from_t(sa, pt0, 0.0, p)
+    let t = pt_from_t(sa, pt0, 0.0, p)?;
+
+    // Find values that are out of range, set them to NaN
+    let t = if p < 100.0 && (t > 80.0 || t < -12.0) {
+        f64::NAN
+    } else if p >= 100.0 && (t > 50.0 || t < -12.0) {
+        f64::NAN
+    } else {
+        t
+    };
+
+    Ok(t)
+}
+
+
+
 /// Conservative Temperature from potential temperature
 ///
 /// # Arguments
