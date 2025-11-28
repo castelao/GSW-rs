@@ -139,14 +139,86 @@ pub fn sp_from_sr(sr: f64) -> f64 {
     }
 }
 
+pub fn sp_from_sa(sa: f64, p: f64, lon: f64, lat: f64) -> Result<f64> {
+    todo!()
+}
+
 /*
 gsw_SP_from_SA(gsw_sp_from_sa_baltic)
 gsw_Sstar_from_SA
 gsw_SA_from_Sstar
 gsw_SP_from_Sstar
-gsw_pt_from_CT
-gsw_t_from_CT
-gsw_pt_from_CT(gsw_ct_from_pt, gsw_gibbs_pt0_pt0)
+*/
+
+pub fn pt_from_ct(sa: f64, ct: f64) -> Result<f64> {
+    use crate::gsw_internal_const::GSW_CP0;
+
+    // Ensure SA is non-negative
+    let sa = if sa < 0.0 {
+        if cfg!(feature = "compat") {
+            0.0
+        } else if cfg!(feature = "invalidasnan") {
+            return Ok(f64::NAN);
+        } else {
+            return Err(Error::NegativeSalinity);
+        }
+    } else {
+        sa
+    };
+
+    // Constants for the rational function initial approximation
+    let s1 = sa * 0.995306702338459; // Note that 0.995306702338459 = (35./35.16504)
+
+    let a0 = -1.446013646344788e-2;
+    let a1 = -3.305308995852924e-3;
+    let a2 = 1.062415929128982e-4;
+    let a3 = 9.477566673794488e-1;
+    let a4 = 2.166591947736613e-3;
+    let a5 = 3.828842955039902e-3;
+
+    let b0 = 1.0;
+    let b1 = 6.506097115635800e-4;
+    let b2 = 3.830289486850898e-3;
+    let b3 = 1.247811760368034e-6;
+
+    let a5ct = a5 * ct;
+    let b3ct = b3 * ct;
+    let ct_factor = a3 + a4 * s1 + a5ct;
+    let pt_num = a0 + s1 * (a1 + a2 * s1) + ct * ct_factor;
+    let pt_recden = 1.0 / (b0 + b1 * s1 + ct * (b2 + b3ct));
+    let mut pt = pt_num * pt_recden;
+    // At this point the abs max error is 1.5e-2 deg C
+
+    let mut dpt_dct = (ct_factor + a5ct - (b2 + b3ct + b3ct) * pt) * pt_recden;
+
+    // Start the 1.5 iterations through the modified Newton-Raphson iterative
+    // method (McDougall and Wotherspoon, 2014).
+
+    let mut ct_diff = ct_from_pt(sa, pt)? - ct;
+    let mut pt_old = pt;
+    pt = pt_old - ct_diff * dpt_dct; // 1/2-way through the 1st modified N-R loop
+                                     // At this point the abs max error is 6.6e-5 deg C
+
+    let mut ptm = 0.5 * (pt + pt_old);
+
+    // This routine calls gibbs_pt0_pt0(SA,pt0) to get the second derivative
+    // of the Gibbs function with respect to temperature at zero sea pressure.
+    dpt_dct = -GSW_CP0 / ((ptm + GSW_T0) * gibbs_pt0_pt0(sa, ptm)?);
+    pt = pt_old - ct_diff * dpt_dct; // end of 1st full modified N-R iteration
+                                     // At this point the abs max error is 1.0e-10 deg C
+
+    ct_diff = ct_from_pt(sa, pt)? - ct;
+    pt_old = pt;
+    pt = pt_old - ct_diff * dpt_dct; // 1.5 iterations of the modified N-R method
+
+    // The abs max error of the result is 1.42e-14 deg C
+
+    Ok(pt)
+}
+
+
+
+/*
 gsw_t_from_CT(gsw_ct_from_pt, gsw_pt_from_t)
 */
 
