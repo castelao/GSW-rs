@@ -678,6 +678,46 @@ gsw_entropy_from_pt
 gsw_pt_from_entropy
 */
 
+pub fn pt_from_entropy(sa: f64, entropy: f64) -> Result<f64> {
+    use crate::gsw_internal_const::{GSW_CP0, GSW_SSO, GSW_T0};
+
+    // Ensure SA is non-negative
+    let sa = if sa < 0.0 {
+        if cfg!(feature = "compat") {
+            0.0
+        } else if cfg!(feature = "invalidasnan") {
+            return Ok(f64::NAN);
+        } else {
+            return Err(Error::NegativeSalinity);
+        }
+    } else {
+        sa
+    };
+
+    // Find the initial value of pt
+    let part1 = 1.0 - sa / GSW_SSO;
+    let part2 = 1.0 - 0.05 * part1;
+    let ent_sa = (GSW_CP0 / GSW_T0) * part1 * (1.0 - 1.01 * part1);
+    let c = (entropy - ent_sa) * (part2 / GSW_CP0);
+    let mut pt = GSW_T0 * (libm::exp(c) - 1.0);
+
+    // This is the initial value of dentropy_dt
+    let mut dentropy_dt = GSW_CP0 / ((GSW_T0 + pt) * part2);
+
+    // Two iterations of the modified Newton-Raphson method
+    // (McDougall and Wotherspoon, 2013)
+    for _ in 0..2 {
+        let pt_old = pt;
+        let dentropy = entropy_from_pt(sa, pt_old)? - entropy;
+        pt = pt_old - dentropy / dentropy_dt; // half way through the modified method
+        let ptm = 0.5 * (pt + pt_old);
+        dentropy_dt = -gibbs_pt0_pt0(sa, ptm)?;
+        pt = pt_old - dentropy / dentropy_dt;
+    }
+
+    Ok(pt)
+}
+
 pub fn entropy_from_t(sa: f64, t: f64, p: f64) -> Result<f64> {
     // Ensure SA is non-negative
     let sa = if sa < 0.0 {
