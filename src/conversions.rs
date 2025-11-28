@@ -676,8 +676,30 @@ gsw_entropy_from_CT
 gsw_CT_from_entropy
 gsw_entropy_from_pt
 gsw_pt_from_entropy
-gsw_entropy_from_t
 */
+
+pub fn entropy_from_t(sa: f64, t: f64, p: f64) -> Result<f64> {
+    // Ensure SA is non-negative
+    let sa = if sa < 0.0 {
+        if cfg!(feature = "compat") {
+            0.0
+        } else if cfg!(feature = "invalidasnan") {
+            return Ok(f64::NAN);
+        } else {
+            return Err(Error::NegativeSalinity);
+        }
+    } else {
+        sa
+    };
+
+    // Entropy is -g_T where g is the Gibbs function and subscript T denotes
+    // derivative with respect to temperature
+    // gibbs(0, 1, 0, SA, t, p) is ∂g/∂T at constant SA and p
+    let entropy = -gibbs(0, 1, 0, sa, t, p)?;
+
+    Ok(entropy)
+}
+
 
 pub fn t_from_entropy(sa: f64, entropy: f64, p: f64) -> Result<f64> {
     use crate::gsw_internal_const::{GSW_CP0, GSW_SSO, GSW_T0};
