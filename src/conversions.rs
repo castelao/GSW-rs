@@ -671,8 +671,33 @@ pub fn p_from_abs_pressure(absolute_pressure: f64) -> f64 {
     (absolute_pressure - GSW_P0) / DB2PA
 }
 
+
+pub fn entropy_from_ct(sa: f64, ct: f64) -> Result<f64> {
+    // Ensure SA is non-negative
+    let sa = if sa < 0.0 {
+        if cfg!(feature = "compat") {
+            0.0
+        } else if cfg!(feature = "invalidasnan") {
+            return Ok(f64::NAN);
+        } else {
+            return Err(Error::NegativeSalinity);
+        }
+    } else {
+        sa
+    };
+
+    // Convert Conservative Temperature to potential temperature
+    let pt0 = pt_from_ct(sa, ct)?;
+
+    // Calculate entropy from potential temperature
+    let pr0 = 0.0;
+    let entropy = -gibbs(0, 1, 0, sa, pt0, pr0)?;
+
+    Ok(entropy)
+}
+
+
 /*
-gsw_entropy_from_CT
 gsw_CT_from_entropy
 gsw_entropy_from_pt
 gsw_pt_from_entropy
