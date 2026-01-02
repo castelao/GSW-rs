@@ -4,7 +4,7 @@
 //! and height.
 
 use crate::gsw_internal_const::{DB2PA, DEG2RAD, GAMMA, GSW_CP0, GSW_P0, GSW_SFAC, GSW_UPS};
-use crate::gsw_internal_funcs::enthalpy_sso_0;
+use crate::gsw_internal_funcs::{enthalpy_sso_0, sanitize_sa};
 use crate::{Error, Result};
 
 /*
@@ -180,18 +180,7 @@ gsw_t_from_CT(gsw_ct_from_pt, gsw_pt_from_t)
 /// assert!((ct - 10.047455620469973).abs() <= f64::EPSILON);
 /// ```
 pub fn ct_from_pt(sa: f64, pt: f64) -> Result<f64> {
-    // Doesn't apply the offset so can't use non_dimensional_sa
-    let sa: f64 = if sa < 0.0 {
-        if cfg!(feature = "compat") {
-            0.0
-        } else if cfg!(feature = "invalidasnan") {
-            return Ok(f64::NAN);
-        } else {
-            return Err(Error::NegativeSalinity);
-        }
-    } else {
-        sa
-    };
+    let sa = sanitize_sa(sa)?;
 
     let x2 = GSW_SFAC * sa;
     let x = libm::sqrt(x2);
