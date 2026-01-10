@@ -139,16 +139,123 @@ pub fn sp_from_sr(sr: f64) -> f64 {
     }
 }
 
+pub fn sp_from_sa(sa: f64, p: f64, lon: f64, lat: f64) -> Result<f64> {
+    todo!()
+}
+
 /*
 gsw_SP_from_SA(gsw_sp_from_sa_baltic)
 gsw_Sstar_from_SA
 gsw_SA_from_Sstar
 gsw_SP_from_Sstar
-gsw_pt_from_CT
-gsw_t_from_CT
-gsw_pt_from_CT(gsw_ct_from_pt, gsw_gibbs_pt0_pt0)
+*/
+
+pub fn pt_from_ct(sa: f64, ct: f64) -> Result<f64> {
+    use crate::gsw_internal_const::GSW_CP0;
+
+    // Ensure SA is non-negative
+    let sa = if sa < 0.0 {
+        if cfg!(feature = "compat") {
+            0.0
+        } else if cfg!(feature = "invalidasnan") {
+            return Ok(f64::NAN);
+        } else {
+            return Err(Error::NegativeSalinity);
+        }
+    } else {
+        sa
+    };
+
+    // Constants for the rational function initial approximation
+    let s1 = sa * 0.995306702338459; // Note that 0.995306702338459 = (35./35.16504)
+
+    let a0 = -1.446013646344788e-2;
+    let a1 = -3.305308995852924e-3;
+    let a2 = 1.062415929128982e-4;
+    let a3 = 9.477566673794488e-1;
+    let a4 = 2.166591947736613e-3;
+    let a5 = 3.828842955039902e-3;
+
+    let b0 = 1.0;
+    let b1 = 6.506097115635800e-4;
+    let b2 = 3.830289486850898e-3;
+    let b3 = 1.247811760368034e-6;
+
+    let a5ct = a5 * ct;
+    let b3ct = b3 * ct;
+    let ct_factor = a3 + a4 * s1 + a5ct;
+    let pt_num = a0 + s1 * (a1 + a2 * s1) + ct * ct_factor;
+    let pt_recden = 1.0 / (b0 + b1 * s1 + ct * (b2 + b3ct));
+    let mut pt = pt_num * pt_recden;
+    // At this point the abs max error is 1.5e-2 deg C
+
+    let mut dpt_dct = (ct_factor + a5ct - (b2 + b3ct + b3ct) * pt) * pt_recden;
+
+    // Start the 1.5 iterations through the modified Newton-Raphson iterative
+    // method (McDougall and Wotherspoon, 2014).
+
+    let mut ct_diff = ct_from_pt(sa, pt)? - ct;
+    let mut pt_old = pt;
+    pt = pt_old - ct_diff * dpt_dct; // 1/2-way through the 1st modified N-R loop
+                                     // At this point the abs max error is 6.6e-5 deg C
+
+    let mut ptm = 0.5 * (pt + pt_old);
+
+    // This routine calls gibbs_pt0_pt0(SA,pt0) to get the second derivative
+    // of the Gibbs function with respect to temperature at zero sea pressure.
+    dpt_dct = -GSW_CP0 / ((ptm + GSW_T0) * gibbs_pt0_pt0(sa, ptm)?);
+    pt = pt_old - ct_diff * dpt_dct; // end of 1st full modified N-R iteration
+                                     // At this point the abs max error is 1.0e-10 deg C
+
+    ct_diff = ct_from_pt(sa, pt)? - ct;
+    pt_old = pt;
+    pt = pt_old - ct_diff * dpt_dct; // 1.5 iterations of the modified N-R method
+
+    // The abs max error of the result is 1.42e-14 deg C
+
+    Ok(pt)
+}
+
+
+
+/*
 gsw_t_from_CT(gsw_ct_from_pt, gsw_pt_from_t)
 */
+
+pub fn t_from_ct(sa: f64, ct: f64, p: f64) -> Result<f64> {
+    // Ensure SA is non-negative
+    let sa = if sa < 0.0 {
+        if cfg!(feature = "compat") {
+            0.0
+        } else if cfg!(feature = "invalidasnan") {
+            return Ok(f64::NAN);
+        } else {
+            return Err(Error::NegativeSalinity);
+        }
+    } else {
+        sa
+    };
+
+    // Calculate potential temperature at reference pressure 0 dbar
+    let pt0 = pt_from_ct(sa, ct)?;
+
+    // Convert potential temperature at p_ref=0 to in-situ temperature at pressure p
+    // This is equivalent to: pt_from_t(sa, pt0, 0.0, p)
+    let t = pt_from_t(sa, pt0, 0.0, p)?;
+
+    // Find values that are out of range, set them to NaN
+    let t = if p < 100.0 && (t > 80.0 || t < -12.0) {
+        f64::NAN
+    } else if p >= 100.0 && (t > 50.0 || t < -12.0) {
+        f64::NAN
+    } else {
+        t
+    };
+
+    Ok(t)
+}
+
+
 
 /// Conservative Temperature from potential temperature
 ///
@@ -226,7 +333,44 @@ pub fn ct_from_pt(sa: f64, pt: f64) -> Result<f64> {
 
 /*
 gsw_pot_enthalpy_from_pt
-gsw_pt_from_t
+*/
+pub fn pt_from_t(sa: f64, t: f64, p: f64, p_ref:f64) -> {
+
+    let sa: f64 = if sa < 0.0 {
+        if cfg!(feature = "compat") {
+            0.0
+        } else if cfg!(feature = "invalidasnan") {
+            return Ok(f64::NAN);
+        } else {
+            return Err(Error::NegativeSalinity);
+        }
+    } else {
+        sa
+    };
+    let s1 = sa / GSW_UPS;;
+
+        let pt      = t+(p-p_ref)*( 8.65483913395442e-6  -
+                          s1 *  1.41636299744881e-6  -
+                   (p+p_ref) *  7.38286467135737e-9  +
+                          t  *(-8.38241357039698e-6  +
+                          s1 *  2.83933368585534e-8  +
+                          t  *  1.77803965218656e-8  +
+                   (p+p_ref) *  1.71155619208233e-10));
+
+      let  dentropy_dt     = GSW_P0/((273.15 + pt)*(1.0-0.05*(1.0 - sa/GSW_SSO)));
+      let  true_entropy_part       = gsw_entropy_part(sa,t,p);
+        for (no_iter=1; no_iter <= 2; no_iter++) {
+            pt_old      = pt;
+            dentropy    = gsw_entropy_part(sa,pt_old,p_ref) - true_entropy_part;
+            pt          = pt_old - dentropy/dentropy_dt;
+            ptm         = 0.5*(pt + pt_old);
+            dentropy_dt = -gsw_gibbs(n0,n2,n0,sa,ptm,p_ref);
+            pt          = pt_old - dentropy/dentropy_dt;
+        }
+
+        pt
+}
+/*
 gsw_pt0_from_t(gsw_entropy_part, gsw_entropy_part_zerop, gsw_gibbs_pt0_pt0)
 gsw_t_from_pt0
 */
@@ -527,13 +671,182 @@ pub fn p_from_abs_pressure(absolute_pressure: f64) -> f64 {
     (absolute_pressure - GSW_P0) / DB2PA
 }
 
+
+pub fn entropy_from_ct(sa: f64, ct: f64) -> Result<f64> {
+    // Ensure SA is non-negative
+    let sa = if sa < 0.0 {
+        if cfg!(feature = "compat") {
+            0.0
+        } else if cfg!(feature = "invalidasnan") {
+            return Ok(f64::NAN);
+        } else {
+            return Err(Error::NegativeSalinity);
+        }
+    } else {
+        sa
+    };
+
+    // Convert Conservative Temperature to potential temperature
+    let pt0 = pt_from_ct(sa, ct)?;
+
+    // Calculate entropy from potential temperature
+    let pr0 = 0.0;
+    let entropy = -gibbs(0, 1, 0, sa, pt0, pr0)?;
+
+    Ok(entropy)
+}
+
+
 /*
-gsw_entropy_from_CT
 gsw_CT_from_entropy
+*/
+
+pub fn entropy_from_pt(sa: f64, pt: f64) -> Result<f64> {
+    // Ensure SA is non-negative
+    let sa = if sa < 0.0 {
+        if cfg!(feature = "compat") {
+            0.0
+        } else if cfg!(feature = "invalidasnan") {
+            return Ok(f64::NAN);
+        } else {
+            return Err(Error::NegativeSalinity);
+        }
+    } else {
+        sa
+    };
+
+    // Reference pressure is zero
+    let pr0 = 0.0;
+
+    // Entropy is -g_T where g is the Gibbs function and subscript T denotes
+    // derivative with respect to temperature
+    // gibbs(0, 1, 0, SA, pt, pr0) is ∂g/∂T at constant SA and p
+    let entropy = -gibbs(0, 1, 0, sa, pt, pr0)?;
+
+    Ok(entropy)
+}
+
+
 gsw_entropy_from_pt
 gsw_pt_from_entropy
-gsw_entropy_from_t
-gsw_t_from_entropy
+*/
+
+pub fn pt_from_entropy(sa: f64, entropy: f64) -> Result<f64> {
+    use crate::gsw_internal_const::{GSW_CP0, GSW_SSO, GSW_T0};
+
+    // Ensure SA is non-negative
+    let sa = if sa < 0.0 {
+        if cfg!(feature = "compat") {
+            0.0
+        } else if cfg!(feature = "invalidasnan") {
+            return Ok(f64::NAN);
+        } else {
+            return Err(Error::NegativeSalinity);
+        }
+    } else {
+        sa
+    };
+
+    // Find the initial value of pt
+    let part1 = 1.0 - sa / GSW_SSO;
+    let part2 = 1.0 - 0.05 * part1;
+    let ent_sa = (GSW_CP0 / GSW_T0) * part1 * (1.0 - 1.01 * part1);
+    let c = (entropy - ent_sa) * (part2 / GSW_CP0);
+    let mut pt = GSW_T0 * (libm::exp(c) - 1.0);
+
+    // This is the initial value of dentropy_dt
+    let mut dentropy_dt = GSW_CP0 / ((GSW_T0 + pt) * part2);
+
+    // Two iterations of the modified Newton-Raphson method
+    // (McDougall and Wotherspoon, 2013)
+    for _ in 0..2 {
+        let pt_old = pt;
+        let dentropy = entropy_from_pt(sa, pt_old)? - entropy;
+        pt = pt_old - dentropy / dentropy_dt; // half way through the modified method
+        let ptm = 0.5 * (pt + pt_old);
+        dentropy_dt = -gibbs_pt0_pt0(sa, ptm)?;
+        pt = pt_old - dentropy / dentropy_dt;
+    }
+
+    Ok(pt)
+}
+
+pub fn entropy_from_t(sa: f64, t: f64, p: f64) -> Result<f64> {
+    // Ensure SA is non-negative
+    let sa = if sa < 0.0 {
+        if cfg!(feature = "compat") {
+            0.0
+        } else if cfg!(feature = "invalidasnan") {
+            return Ok(f64::NAN);
+        } else {
+            return Err(Error::NegativeSalinity);
+        }
+    } else {
+        sa
+    };
+
+    // Entropy is -g_T where g is the Gibbs function and subscript T denotes
+    // derivative with respect to temperature
+    // gibbs(0, 1, 0, SA, t, p) is ∂g/∂T at constant SA and p
+    let entropy = -gibbs(0, 1, 0, sa, t, p)?;
+
+    Ok(entropy)
+}
+
+
+pub fn t_from_entropy(sa: f64, entropy: f64, p: f64) -> Result<f64> {
+    use crate::gsw_internal_const::{GSW_CP0, GSW_SSO, GSW_T0};
+
+    // Ensure SA is non-negative
+    let sa = if sa < 0.0 {
+        if cfg!(feature = "compat") {
+            0.0
+        } else if cfg!(feature = "invalidasnan") {
+            return Ok(f64::NAN);
+        } else {
+            return Err(Error::NegativeSalinity);
+        }
+    } else {
+        sa
+    };
+
+    // Find the initial value of t using potential temperature as starting point
+    // First get PT from entropy
+    let part1 = 1.0 - sa / GSW_SSO;
+    let part2 = 1.0 - 0.05 * part1;
+    let ent_sa = (GSW_CP0 / GSW_T0) * part1 * (1.0 - 1.01 * part1);
+    let c = (entropy - ent_sa) * (part2 / GSW_CP0);
+    let pt = GSW_T0 * (libm::exp(c) - 1.0);
+
+    // Use pt as initial guess and adjust for pressure
+    let s1 = sa * (35.0 / GSW_SSO);
+    let mut t = pt
+        - p * (8.65483913395442e-6 - s1 * 1.41636299744881e-6 - p * 7.38286467135737e-9
+            + pt * (-8.38241357039698e-6
+                + s1 * 2.83933368585534e-8
+                + pt * 1.77803965218656e-8
+                + p * 1.71155619208233e-10));
+
+    // Initial estimate of derivative
+    let mut dentropy_dt = GSW_CP0 / ((GSW_T0 + t) * part2);
+
+    // Modified Newton-Raphson iteration
+    for _ in 0..3 {
+        let t_old = t;
+        let dentropy = entropy_from_t(sa, t_old, p)? - entropy;
+        t = t_old - dentropy / dentropy_dt; // half way through the modified method
+        let tm = 0.5 * (t + t_old);
+        dentropy_dt = -gibbs(0, 2, 0, sa, tm, p)?;
+        t = t_old - dentropy / dentropy_dt;
+    }
+
+    Ok(t)
+}
+
+
+
+
+/*
 gsw_adiabatic_lapse_rate_from_CT
 gsw_adiabatic_lapse_rate_from_t
 gsw_molality_from_SA
