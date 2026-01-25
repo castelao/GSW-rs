@@ -2,7 +2,7 @@
 //!
 //! Functions not intended to be used outside this library
 
-use crate::gsw_internal_const::{DB2PA, GSW_PU, GSW_SFAC};
+use crate::gsw_internal_const::{DB2PA, GSW_PU, GSW_SFAC, OFFSET};
 use crate::gsw_sp_coefficients::*;
 use crate::gsw_specvol_coefficients::{V005, V006};
 use crate::{Error, Result};
@@ -55,6 +55,12 @@ pub(crate) fn sanitize_salinity(sa: f64) -> Result<f64> {
     } else {
         Ok(sa)
     }
+}
+
+#[inline]
+/// Non-dimensional salinity
+pub(crate) fn non_dimensional_sa(sa: f64) -> Result<f64> {
+    Ok(libm::sqrt(GSW_SFAC * sanitize_salinity(sa)? + OFFSET))
 }
 
 #[inline]
