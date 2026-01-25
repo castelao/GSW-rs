@@ -19,6 +19,45 @@ const G8: f64 = -7.054_313_817_447_962e-17;
 const G9: f64 = 2.859_992_717_347_235e-19;
 
 #[inline]
+/// Sanitize Absolute Salinity
+///
+/// Absolute Salinity (SA) must be greater or equal to zero by definition,
+/// Other implementations of TEOS-10 functions often silently replace
+/// negative SA values by 0, which might hide errors in the user's data
+/// pipeline. We offer three different strategies to handle negative
+/// values of salinity through features, i.e. at compiling time.
+///
+/// # Arguments
+///
+/// * `sa`: Absolute Salinity [g/kg]
+///
+/// # Returns
+///
+/// * `Result<f64>`: Sanitized Absolute Salinity
+///
+/// # Features
+///
+/// - Default: Return an error (NegativeSalinity).
+/// - `compat`: Silently replace negative SA values by 0.0, thus
+///   reproducing the behavior of the MatLab implementation.
+/// - `invalidasnan`: Replace negative SA values by NaN, thus
+///   closer to the C implementation.
+///
+pub(crate) fn sanitize_salinity(sa: f64) -> Result<f64> {
+    if sa < 0.0 {
+        if cfg!(feature = "compat") {
+            Ok(0.0)
+        } else if cfg!(feature = "invalidasnan") {
+            Ok(f64::NAN)
+        } else {
+            Err(Error::NegativeSalinity)
+        }
+    } else {
+        Ok(sa)
+    }
+}
+
+#[inline]
 /// Non-dimensional pressure
 ///
 /// The polynomial approximation solutions proposed by Roquet (2015) are based
