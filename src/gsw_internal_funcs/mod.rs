@@ -21,11 +21,12 @@ const G9: f64 = 2.859_992_717_347_235e-19;
 #[inline]
 /// Sanitize Absolute Salinity
 ///
-/// Absolute Salinity (SA) must be greater or equal to zero by definition,
-/// Other implementations of TEOS-10 functions often silently replace
-/// negative SA values by 0, which might hide errors in the user's data
-/// pipeline. We offer three different strategies to handle negative
-/// values of salinity through features, i.e. at compiling time.
+/// Absolute Salinity (SA) must be greater or equal to zero by
+/// definition. Other implementations of TEOS-10 functions often
+/// silently replace negative SA values by 0, which might hide errors
+/// in the user's data pipeline. We offer three different strategies
+/// to handle negative values of salinity through features, i.e. at
+/// compiling time.
 ///
 /// # Arguments
 ///
