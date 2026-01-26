@@ -71,9 +71,9 @@ jobs:
         with:
           fetch-depth: 0
 
-      - uses: prefix-dev/setup-pixi@v0.8.1
+      - uses: prefix-dev/setup-pixi@82d477f15f3a381dbcc8adc1206ce643fe110fb7 # v0.9.3
         with:
-          pixi-version: v0.34.0
+          pixi-version: v0.59.0
           cache: true
           frozen: true
 
@@ -245,9 +245,9 @@ jobs:
       - name: Checkout sources
         uses: actions/checkout@v4
 
-      - uses: prefix-dev/setup-pixi@v0.8.1
+      - uses: prefix-dev/setup-pixi@82d477f15f3a381dbcc8adc1206ce643fe110fb7 # v0.9.3
         with:
-          pixi-version: v0.34.0
+          pixi-version: v0.59.0
           cache: true
           frozen: true
 
