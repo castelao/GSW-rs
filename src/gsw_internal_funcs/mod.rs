@@ -1228,6 +1228,7 @@ gsw_gibbs_ice_part_t
 gsw_gibbs_ice_pt0
 */
 
+#[allow(dead_code)]
 pub(crate) fn gibbs_pt0_pt0(sa: f64, pt0: f64) -> Result<f64> {
     let sa: f64 = if sa < 0.0 {
         if cfg!(feature = "compat") {
