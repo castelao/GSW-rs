@@ -2,7 +2,7 @@
 //!
 //! Functions not intended to be used outside this library
 
-use crate::gsw_internal_const::{DB2PA, GSW_PU, GSW_SFAC, OFFSET, GSW_SSO};
+use crate::gsw_internal_const::{DB2PA, GSW_PU, GSW_SFAC, GSW_SSO, OFFSET};
 use crate::gsw_sp_coefficients::*;
 use crate::gsw_specvol_coefficients::{V005, V006};
 use crate::{Error, Result};
@@ -1274,13 +1274,11 @@ gsw_gibbs_ice_part_t
 gsw_gibbs_ice_pt0
 */
 
-
 // GSW_BALTIC_DATA
 const XB_LEFT: [f64; 3] = [12.6, 7.0, 26.0];
 const YB_LEFT: [f64; 3] = [50.0, 59.0, 69.0];
 const XB_RIGHT: [f64; 2] = [45.0, 26.0];
 const YB_RIGHT: [f64; 2] = [50.0, 69.0];
-
 
 fn util_indx(arr: &[f64], x: &f64) -> usize {
     match arr.iter().position(|val| val > x) {
@@ -1294,10 +1292,10 @@ fn util_indx(arr: &[f64], x: &f64) -> usize {
     }
 }
 
-fn util_xinterp1<const N: usize>(x: &[f64; N], y: &[f64; N], x0: &f64) -> f64{
+fn util_xinterp1<const N: usize>(x: &[f64; N], y: &[f64; N], x0: &f64) -> f64 {
     let k = util_indx(x, x0);
-    let r = (x0 - x[k])/(x[k+1] - x[k]);
-    y[k] + r*(y[k+1]-y[k])
+    let r = (x0 - x[k]) / (x[k + 1] - x[k]);
+    y[k] + r * (y[k + 1] - y[k])
 }
 
 #[allow(dead_code)]
@@ -1306,15 +1304,15 @@ fn in_baltic(lon: &f64, lat: &f64) -> bool {
     if !(YB_LEFT[0]..=YB_LEFT[2]).contains(lat) {
         return false;
     }
-    if !(XB_LEFT[1]..=XB_RIGHT[0]).contains(lon){
-        return false
+    if !(XB_LEFT[1]..=XB_RIGHT[0]).contains(lon) {
+        return false;
     }
 
     let xx_left = util_xinterp1(&YB_LEFT, &XB_LEFT, lat);
     let xx_right = util_xinterp1(&YB_RIGHT, &XB_RIGHT, lat);
 
-    if !(xx_left..=xx_right).contains(lon){
-        return false
+    if !(xx_left..=xx_right).contains(lon) {
+        return false;
     }
 
     true
@@ -1322,15 +1320,15 @@ fn in_baltic(lon: &f64, lat: &f64) -> bool {
 
 #[allow(dead_code)]
 pub(crate) fn sa_from_sp_baltic(sp: f64, lon: f64, lat: f64) -> Result<f64> {
-    if in_baltic(&lon, &lat){
-        Ok(((GSW_SSO - 0.087)/35.0)*sp + 0.087)
+    if in_baltic(&lon, &lat) {
+        Ok(((GSW_SSO - 0.087) / 35.0) * sp + 0.087)
     } else {
         Err(Error::OutOfBounds)
     }
 }
 
 #[cfg(test)]
-mod test_sa_from_sp_baltic{
+mod test_sa_from_sp_baltic {
     use super::sa_from_sp_baltic;
 
     #[test]
@@ -1348,10 +1346,9 @@ mod test_sa_from_sp_baltic{
                 (sa_from_sp_baltic(*sp, *lon, *lat).unwrap() - *ans).abs() < f64::EPSILON,
                 "sp = {sp}, lon = {lon}, lat = {lat}, ans = {ans}"
             );
-        } 
+        }
     }
 }
-
 
 #[allow(dead_code)]
 pub(crate) fn gibbs_pt0_pt0(sa: f64, pt0: f64) -> Result<f64> {
