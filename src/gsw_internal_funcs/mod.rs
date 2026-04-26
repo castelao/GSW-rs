@@ -2,7 +2,7 @@
 //!
 //! Functions not intended to be used outside this library
 
-use crate::gsw_internal_const::{DB2PA, GSW_CTU, GSW_PU, GSW_SFAC};
+use crate::gsw_internal_const::{DB2PA, GSW_CTU, GSW_PU, GSW_SFAC, OFFSET};
 use crate::gsw_sp_coefficients::*;
 use crate::gsw_specvol_coefficients::{V005, V006};
 use crate::{Error, Result};
@@ -19,13 +19,32 @@ const G8: f64 = -7.054_313_817_447_962e-17;
 const G9: f64 = 2.859_992_717_347_235e-19;
 
 #[inline]
-/// Validates Absolute Salinity (SA) according to feature flags:
-/// - "compat": clamp negatives to 0.0
-/// - "invalidasnan": return NaN
-/// - default: return Error::NegativeSalinity
-pub(crate) fn sanitize_sa(sa: f64) -> Result<f64> {
-    // Other implementations force negative SA to be 0. That is dangerous
-    // since it can hide error by processing unrealistic inputs
+/// Sanitize Absolute Salinity
+///
+/// Absolute Salinity (SA) must be greater or equal to zero by
+/// definition. Other implementations of TEOS-10 functions often
+/// silently replace negative SA values by 0, which might hide errors
+/// in the user's data pipeline. We offer three different strategies
+/// to handle negative values of salinity through features, i.e. at
+/// compiling time.
+///
+/// # Arguments
+///
+/// * `sa`: Absolute Salinity [g/kg]
+///
+/// # Returns
+///
+/// * `Result<f64>`: Sanitized Absolute Salinity
+///
+/// # Features
+///
+/// - Default: Return an error (NegativeSalinity).
+/// - `compat`: Silently replace negative SA values by 0.0, thus
+///   reproducing the behavior of the MatLab implementation.
+/// - `invalidasnan`: Replace negative SA values by NaN, thus
+///   closer to the C implementation.
+///
+pub(crate) fn sanitize_salinity(sa: f64) -> Result<f64> {
     if sa < 0.0 {
         if cfg!(feature = "compat") {
             Ok(0.0)
@@ -37,6 +56,12 @@ pub(crate) fn sanitize_sa(sa: f64) -> Result<f64> {
     } else {
         Ok(sa)
     }
+}
+
+#[inline]
+/// Non-dimensional salinity
+pub(crate) fn non_dimensional_sa(sa: f64) -> Result<f64> {
+    Ok(libm::sqrt(GSW_SFAC * sanitize_salinity(sa)? + OFFSET))
 }
 
 #[inline]
@@ -1352,7 +1377,43 @@ gsw_linear_interp_SA_CT
 gsw_pchip_interp_SA_CT
 gsw_rr68_interp_SA_CT
 gsw_spline_interp_SA_CT
-gsw_gibbs_pt0_pt0
 gsw_gibbs_ice_part_t
 gsw_gibbs_ice_pt0
 */
+
+#[allow(dead_code)]
+pub(crate) fn gibbs_pt0_pt0(sa: f64, pt0: f64) -> Result<f64> {
+    let sa: f64 = if sa < 0.0 {
+        if cfg!(feature = "compat") {
+            0.0
+        } else if cfg!(feature = "invalidasnan") {
+            return Ok(f64::NAN);
+        } else {
+            return Err(Error::NegativeSalinity);
+        }
+    } else {
+        sa
+    };
+
+    let x2 = GSW_SFAC * sa;
+    let x = libm::sqrt(x2);
+    let y = pt0 * 0.025;
+
+    let g03 = -24_715.571_866_078
+        + y * (4_420.447_224_909_672_5
+            + y * (-1_778.231_237_203_896
+                + y * (1_160.518_251_685_141_9
+                    + y * (-569.531_539_542_516 + y * 128.134_291_524_946_15))));
+
+    let g08 = x2
+        * (1_760.062_705_994_408
+            + x * (-86.132_935_195_608_4
+                + x * (-137.114_501_840_898_2
+                    + y * (296.200_616_913_752_36
+                        + y * (-205.677_092_903_745_63 + y * 49.939_401_913_901_6)))
+                + y * (-60.136_422_517_125 + y * 10.507_207_941_707_34))
+            + y * (-1_351.605_895_580_406
+                + y * (1_097.112_537_301_510_9
+                    + y * (-433.206_481_750_622_06 + y * 63.905_091_254_154_904))));
+    Ok((g03 + g08) * 0.000_625)
+}

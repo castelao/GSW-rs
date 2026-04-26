@@ -4,7 +4,7 @@
 //! and height.
 
 use crate::gsw_internal_const::{DB2PA, DEG2RAD, GAMMA, GSW_CP0, GSW_P0, GSW_SFAC, GSW_UPS};
-use crate::gsw_internal_funcs::{enthalpy_sso_0, sanitize_sa};
+use crate::gsw_internal_funcs::{enthalpy_sso_0, sanitize_salinity};
 use crate::{Error, Result};
 
 /*
@@ -180,9 +180,7 @@ gsw_t_from_CT(gsw_ct_from_pt, gsw_pt_from_t)
 /// assert!((ct - 10.047455620469973).abs() <= f64::EPSILON);
 /// ```
 pub fn ct_from_pt(sa: f64, pt: f64) -> Result<f64> {
-    let sa = sanitize_sa(sa)?;
-
-    let x2 = GSW_SFAC * sa;
+    let x2 = GSW_SFAC * sanitize_salinity(sa)?;
     let x = libm::sqrt(x2);
     let y = pt * 0.025;
     let pot_enthalpy = 61.01362420681071e0
