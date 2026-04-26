@@ -1268,9 +1268,9 @@ mod test_gibbs_ice {
 ///
 /// Reference:
 /// * TEOS-10 Manual and official GSW-C source (gsw_entropy_part).
-#[allow(clippy::excessive_precision)]
+#[allow(clippy::excessive_precision, dead_code)]
 pub(crate) fn entropy_part(sa: f64, t: f64, p: f64) -> Result<f64> {
-    let sa = sanitize_sa(sa)?;
+    let sa = sanitize_salinity(sa)?;
     let x2 = GSW_SFAC * sa;
     let x = libm::sqrt(x2);
     let y = t / GSW_CTU;
