@@ -677,8 +677,7 @@ pub unsafe extern "C" fn gsw_entropy_ice(t: f64, p: f64) -> f64 {
 
 #[no_mangle]
 pub unsafe extern "C" fn gsw_entropy_part(sa: f64, t: f64, p: f64) -> f64 {
-    //unimplemented!()
-    f64::NAN
+    crate::gsw_internal_funcs::entropy_part(sa, t, p).unwrap_or(f64::NAN)
 }
 
 #[no_mangle]
