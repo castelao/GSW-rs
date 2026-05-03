@@ -9,6 +9,7 @@ use crate::gsw_sp_coefficients::*;
 use crate::gsw_specvol_coefficients::{V005, V006};
 use crate::{Error, Result};
 
+#[allow(unused_imports)]
 use entropy::entropy_part_zerop;
 
 const G0: f64 = 2.641_463_563_366_498e-1;
