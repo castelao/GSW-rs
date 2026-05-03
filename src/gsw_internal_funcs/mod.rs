@@ -2,10 +2,14 @@
 //!
 //! Functions not intended to be used outside this library
 
+mod entropy;
+
 use crate::gsw_internal_const::{DB2PA, GSW_CTU, GSW_PU, GSW_SFAC, OFFSET};
 use crate::gsw_sp_coefficients::*;
 use crate::gsw_specvol_coefficients::{V005, V006};
 use crate::{Error, Result};
+
+use entropy::entropy_part_zerop;
 
 const G0: f64 = 2.641_463_563_366_498e-1;
 const G1: f64 = 2.007_883_247_811_176e-4;
