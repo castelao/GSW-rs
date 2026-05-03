@@ -52,7 +52,7 @@ pub(crate) fn entropy_part_zerop(sa: f64, pt0: f64) -> Result<f64> {
     let sa = sanitize_salinity(sa)?;
 
     let x2 = GSW_SFAC * sa;
-    let x = x2.sqrt();
+    let x = libm::sqrt(x2);
     let y = pt0 * 0.025;
 
     // Temperature-dependent part of the Gibbs function
