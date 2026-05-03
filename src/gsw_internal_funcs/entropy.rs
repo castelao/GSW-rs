@@ -2,9 +2,10 @@
 
 use super::sanitize_salinity;
 use crate::gsw_internal_const::GSW_SFAC;
-use crate::{Error, Result};
+use crate::Result;
 
 #[inline]
+#[allow(dead_code)]
 /// Entropy part evaluated at the sea surface (zero pressure)
 ///
 /// Calculates entropy at zero sea pressure, but omits terms that depend solely
@@ -79,6 +80,7 @@ pub(crate) fn entropy_part_zerop(sa: f64, pt0: f64) -> Result<f64> {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::Error;
 
     #[test]
     fn test_basic_values() {
