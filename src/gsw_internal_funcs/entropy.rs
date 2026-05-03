@@ -80,7 +80,6 @@ pub(crate) fn entropy_part_zerop(sa: f64, pt0: f64) -> Result<f64> {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::Error;
 
     #[test]
     fn test_basic_values() {
@@ -99,7 +98,7 @@ mod tests {
     // Confirming that negative salinity returns an error by default
     fn test_negative_salinity_error() {
         let entropy = entropy_part_zerop(-1_000.0, 10.0);
-        assert!(matches!(entropy, Err(Error::NegativeSalinity)));
+        assert!(matches!(entropy, Err(crate::Error::NegativeSalinity)));
     }
 
     #[test]
