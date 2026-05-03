@@ -32,6 +32,9 @@ pub const PA2DB: f64 = 1.0e-4;
 /// One standard atmosphere [Pa]
 pub const GSW_P0: f64 = 101_325.0;
 
+/// Zero Celsius in Kelvin
+pub const GSW_T0: f64 = 273.15;
+
 /// SSO: Standard Ocean Reference Salinity [ g/kg ].
 pub const GSW_SSO: f64 = 35.16504;
 pub const GSW_SQRTSSO: f64 = 5.930011804372737;
