@@ -171,7 +171,7 @@ priority is to do it right.
 - [ ] gsw_enthalpy_ice (t, p)
 - [ ] gsw_enthalpy_t_exact(sa,t,p)
 - [ ] gsw_entropy_ice (t, p)
-- [ ] gsw_entropy_part_zerop(sa,pt0)
+- [X] gsw_entropy_part_zerop(sa,pt0)
 - [ ] gsw_fdelta(p,lon,lat)
 - [ ] gsw_gibbs_ice_part_t (t, p)
 - [ ] gsw_gibbs_ice_pt0 (pt0)
