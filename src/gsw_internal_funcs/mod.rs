@@ -1373,7 +1373,6 @@ gsw_SA_from_SP_Baltic
 gsw_SP_from_SA_Baltic
 gsw_infunnel
 gsw_entropy_part
-gsw_entropy_part_zerop
 gsw_quadprog
 gsw_wiggliness
 gsw_data_interp
